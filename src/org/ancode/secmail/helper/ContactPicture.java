@@ -1,11 +1,11 @@
 package org.ancode.secmail.helper;
 
-import android.content.Context;
-import android.util.TypedValue;
-
 import org.ancode.secmail.K9;
 import org.ancode.secmail.R;
 import org.ancode.secmail.activity.misc.ContactPictureLoader;
+
+import android.content.Context;
+import android.util.TypedValue;
 
 public class ContactPicture {
 

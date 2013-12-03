@@ -16,9 +16,9 @@ import android.util.Log;
 
 public class CoreReceiver extends BroadcastReceiver {
 
-    public static String WAKE_LOCK_RELEASE = "com.fsck.k9.service.CoreReceiver.wakeLockRelease";
+    public static String WAKE_LOCK_RELEASE = "org.ancode.secmail.service.CoreReceiver.wakeLockRelease";
 
-    public static String WAKE_LOCK_ID = "com.fsck.k9.service.CoreReceiver.wakeLockId";
+    public static String WAKE_LOCK_ID = "org.ancode.secmail.service.CoreReceiver.wakeLockId";
 
     private static ConcurrentHashMap<Integer, TracingWakeLock> wakeLocks = new ConcurrentHashMap<Integer, TracingWakeLock>();
     private static AtomicInteger wakeLockSeq = new AtomicInteger(0);

@@ -12,14 +12,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.ancode.secmail.K9;
+import org.ancode.secmail.R;
+
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
-
-import org.ancode.secmail.K9;
-import org.ancode.secmail.R;
 
 /**
  * Manager for different {@link StorageProvider} -classes that abstract access

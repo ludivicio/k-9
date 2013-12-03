@@ -1,12 +1,5 @@
 package org.ancode.secmail.view;
 
-import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
-import android.widget.*;
-
 import org.ancode.secmail.K9;
 import org.ancode.secmail.R;
 import org.ancode.secmail.crypto.CryptoProvider;
@@ -15,6 +8,17 @@ import org.ancode.secmail.mail.Message;
 import org.ancode.secmail.mail.MessagingException;
 import org.ancode.secmail.mail.Part;
 import org.ancode.secmail.mail.internet.MimeUtility;
+
+import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MessageCryptoView extends LinearLayout {

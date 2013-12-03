@@ -15,12 +15,12 @@ import android.util.Log;
 
 public class BootReceiver extends CoreReceiver {
 
-    public static String FIRE_INTENT = "com.fsck.k9.service.BroadcastReceiver.fireIntent";
-    public static String SCHEDULE_INTENT = "com.fsck.k9.service.BroadcastReceiver.scheduleIntent";
-    public static String CANCEL_INTENT = "com.fsck.k9.service.BroadcastReceiver.cancelIntent";
+    public static String FIRE_INTENT = "org.ancode.secmail.service.BroadcastReceiver.fireIntent";
+    public static String SCHEDULE_INTENT = "org.ancode.secmail.service.BroadcastReceiver.scheduleIntent";
+    public static String CANCEL_INTENT = "org.ancode.secmail.service.BroadcastReceiver.cancelIntent";
 
-    public static String ALARMED_INTENT = "com.fsck.k9.service.BroadcastReceiver.pendingIntent";
-    public static String AT_TIME = "com.fsck.k9.service.BroadcastReceiver.atTime";
+    public static String ALARMED_INTENT = "org.ancode.secmail.service.BroadcastReceiver.pendingIntent";
+    public static String AT_TIME = "org.ancode.secmail.service.BroadcastReceiver.atTime";
 
     @Override
     public Integer receive(Context context, Intent intent, Integer tmpWakeLockId) {

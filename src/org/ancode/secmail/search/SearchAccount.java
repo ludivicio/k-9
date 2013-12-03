@@ -1,11 +1,11 @@
 package org.ancode.secmail.search;
 
-import android.content.Context;
-
 import org.ancode.secmail.BaseAccount;
 import org.ancode.secmail.R;
 import org.ancode.secmail.search.SearchSpecification.Attribute;
 import org.ancode.secmail.search.SearchSpecification.Searchfield;
+
+import android.content.Context;
 
 /**
  * This class is basically a wrapper around a LocalSearch. It allows to expose it as

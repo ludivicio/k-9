@@ -1,11 +1,30 @@
 package org.ancode.secmail.view;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.R;
+import org.ancode.secmail.controller.MessagingController;
+import org.ancode.secmail.controller.MessagingListener;
+import org.ancode.secmail.helper.MediaScannerNotifier;
+import org.ancode.secmail.helper.SizeFormatter;
+import org.ancode.secmail.helper.Utility;
+import org.ancode.secmail.mail.Message;
+import org.ancode.secmail.mail.MessagingException;
+import org.ancode.secmail.mail.Part;
+import org.ancode.secmail.mail.crypto.v2.AesCryptor;
+import org.ancode.secmail.mail.crypto.v2.CryptorException;
+import org.ancode.secmail.mail.internet.MimeHeader;
+import org.ancode.secmail.mail.internet.MimeUtility;
+import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBody;
+import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBodyPart;
+import org.ancode.secmail.provider.AttachmentProvider;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -26,22 +45,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.R;
-import org.ancode.secmail.controller.MessagingController;
-import org.ancode.secmail.controller.MessagingListener;
-import org.ancode.secmail.helper.MediaScannerNotifier;
-import org.ancode.secmail.helper.SizeFormatter;
-import org.ancode.secmail.helper.Utility;
-import org.ancode.secmail.mail.Message;
-import org.ancode.secmail.mail.MessagingException;
-import org.ancode.secmail.mail.Part;
-import org.ancode.secmail.mail.internet.MimeHeader;
-import org.ancode.secmail.mail.internet.MimeUtility;
-import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBodyPart;
-import org.ancode.secmail.provider.AttachmentProvider;
-
 public class AttachmentView extends FrameLayout implements OnClickListener, OnLongClickListener {
     private Context mContext;
     public Button viewButton;
@@ -55,6 +58,11 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
     public String contentType;
     public long size;
     public ImageView iconView;
+    
+    // modified by lxc at 2013-11-24
+    private String aeskey;
+	private boolean isMailBody;
+	private boolean isSentMsg;
 
     private AttachmentFileDownloadCallback callback;
 
@@ -107,7 +115,7 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
      *          In case of an error
      */
     public boolean populateFromPart(Part inputPart, Message message, Account account,
-            MessagingController controller, MessagingListener listener) throws MessagingException {
+            MessagingController controller, MessagingListener listener, String aeskey, boolean isSentMsg) throws MessagingException {
         boolean firstClassAttachment = true;
         part = (LocalAttachmentBodyPart) inputPart;
 
@@ -178,21 +186,22 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
             attachmentIcon.setImageResource(R.drawable.attached_image_placeholder);
         }
 
+        
+        this.aeskey = aeskey;
+		isMailBody = name.startsWith("mbdy") && name.endsWith(".txt");
+		this.isSentMsg = isSentMsg;
+        
         return firstClassAttachment;
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.view: {
-                onViewButtonClicked();
-                break;
-            }
-            case R.id.download: {
-                onSaveButtonClicked();
-                break;
-            }
-        }
+        int id = view.getId();
+		if (id == R.id.view) {
+			onViewButtonClicked();
+		} else if (id == R.id.download) {
+			onSaveButtonClicked();
+		}
     }
 
     @Override
@@ -239,26 +248,65 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
      * @param directory: the base dir where the file should be saved.
      */
     public void writeFile(File directory) {
-        try {
-            String filename = Utility.sanitizeFilename(name);
-            File file = Utility.createUniqueFile(directory, filename);
-            Uri uri = AttachmentProvider.getAttachmentUri(mAccount, part.getAttachmentId());
-            InputStream in = mContext.getContentResolver().openInputStream(uri);
-            OutputStream out = new FileOutputStream(file);
-            IOUtils.copy(in, out);
-            out.flush();
-            out.close();
-            in.close();
-            attachmentSaved(file.toString());
-            new MediaScannerNotifier(mContext, file);
-        } catch (IOException ioe) {
-            if (K9.DEBUG) {
-                Log.e(K9.LOG_TAG, "Error saving attachment", ioe);
-            }
-            attachmentNotSaved();
-        }
+    	// modified by lxc at 2013-11-24
+    	try {
+			String filename = Utility.sanitizeFilename(name);
+			File file = Utility.createUniqueFile(directory, filename);
+			Uri uri = isSentMsg ? ((LocalAttachmentBody)part.getBody()).getContentUri() 
+					: AttachmentProvider.getAttachmentUri(mAccount, part.getAttachmentId());
+			InputStream in = mContext.getContentResolver().openInputStream(uri);
+			OutputStream out = new FileOutputStream(file);
+			if (aeskey != null) {
+				try {
+					AesCryptor cryptor = new AesCryptor(aeskey);
+					cryptor.decrypt(in, out);
+				} catch (CryptorException e) {
+					Log.e(K9.LOG_TAG, "Error Decrypt email attachement.", e);
+				}
+			} else {
+				IOUtils.copy(in, out);
+			}
+			out.flush();
+			out.close();
+			in.close();
+			attachmentSaved(file.toString());
+			new MediaScannerNotifier(mContext, file);
+		} catch (IOException ioe) {
+			if (K9.DEBUG) {
+				Log.e(K9.LOG_TAG, "Error saving attachment", ioe);
+			}
+			attachmentNotSaved();
+		}
     }
 
+    private Uri decryptAttachement(Uri uri) {
+		if (aeskey == null || isSentMsg)
+			return uri;
+		try {
+			// String filename = Utility.sanitizeFilename(name);
+			File file = Utility.createUniqueFile(new File(K9.getAttachmentDefaultPath()), name);
+			InputStream in = mContext.getContentResolver().openInputStream(uri);
+			OutputStream out = new FileOutputStream(file);
+			try {
+				AesCryptor cryptor = new AesCryptor(aeskey);
+				cryptor.decrypt(in, out);
+			} catch (CryptorException e) {
+				Log.e(K9.LOG_TAG, "Error Decrypt email attachement.", e);
+			}
+			out.flush();
+			out.close();
+			in.close();
+			return Uri.fromFile(file);
+		} catch (IOException ioe) {
+			if (K9.DEBUG) {
+				Log.e(K9.LOG_TAG, "Error Decrypt email attachement.", ioe);
+			}
+		}
+		return null;
+	}
+    
+    
+    
     /**
      * saves the file to the defaultpath setting in the config, or if the config
      * is not set => to the Environment
@@ -286,19 +334,24 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
 
 
     public void showFile() {
-        Uri uri = AttachmentProvider.getAttachmentUriForViewing(mAccount, part.getAttachmentId());
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        // We explicitly set the ContentType in addition to the URI because some attachment viewers (such as Polaris office 3.0.x) choke on documents without a mime type
-        intent.setDataAndType(uri, contentType);
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+    	Uri uri = isSentMsg ? ((LocalAttachmentBody)part.getBody()).getContentUri() 
+				: AttachmentProvider.getAttachmentUriForViewing(mAccount, part.getAttachmentId());
+		uri = decryptAttachement(uri);
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		// We explicitly set the ContentType in addition to the URI because some
+		// attachment viewers (such as Polaris office 3.0.x) choke on documents
+		// without a mime type
+		intent.setDataAndType(uri, contentType);
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
-        try {
-            mContext.startActivity(intent);
-        } catch (Exception e) {
-            Log.e(K9.LOG_TAG, "Could not display attachment of type " + contentType, e);
-            Toast toast = Toast.makeText(mContext, mContext.getString(R.string.message_view_no_viewer, contentType), Toast.LENGTH_LONG);
-            toast.show();
-        }
+		try {
+			mContext.startActivity(intent);
+		} catch (Exception e) {
+			Log.e(K9.LOG_TAG, "Could not display attachment of type " + contentType, e);
+			Toast toast = Toast.makeText(mContext, mContext.getString(R.string.message_view_no_viewer, contentType),
+					Toast.LENGTH_LONG);
+			toast.show();
+		}
     }
 
     /**
@@ -349,5 +402,52 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
     public void setCallback(AttachmentFileDownloadCallback callback) {
         this.callback = callback;
     }
+    
+    // modified by lxc at 2013-11-24
+    public String getAeskey() {
+		return aeskey;
+	}
+	public void setAeskey(String aeskey) {
+		this.aeskey = aeskey;
+	}
+	public boolean isMailBody() {
+		return isMailBody;
+	}
+	public void setMailBody(boolean isMailBody) {
+		this.isMailBody = isMailBody;
+	}
+	public String getMailBody() {
+		String msg = "";
+		if(isMailBody){
+			if(isSentMsg){
+				try {
+					InputStream in = mContext.getContentResolver().openInputStream(((LocalAttachmentBody)part.getBody()).getContentUri());
+					msg = IOUtils.toString(in);
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}	
+			}else if (aeskey != null) {
+				try {
+					Uri uri = AttachmentProvider.getAttachmentUri(mAccount, part.getAttachmentId());
+					InputStream in = mContext.getContentResolver().openInputStream(uri);
+					OutputStream out = new ByteArrayOutputStream();
+					try {
+						AesCryptor cryptor = new AesCryptor(aeskey);
+						cryptor.decrypt(in, out);
+					} catch (CryptorException e) {
+						e.printStackTrace();
+					}
+					msg = out.toString();
+					out.flush();
+					out.close();
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return msg;
+	}
 
 }

@@ -9,12 +9,10 @@ import org.ancode.secmail.K9;
 import org.ancode.secmail.helper.Utility;
 import org.ancode.secmail.mail.MessagingException;
 
-import android.annotation.TargetApi;
 import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.os.Build;
 import android.util.Log;
 
 public class LockableDatabase {
@@ -481,7 +479,7 @@ public class LockableDatabase {
             } catch (Exception e) {
             }
             try {
-                deleteDatabase(storageManager.getDatabase(uUid, mStorageProviderId));
+                storageManager.getDatabase(uUid, mStorageProviderId).delete();
             } catch (Exception e) {
                 Log.i(K9.LOG_TAG, "LockableDatabase: delete(): Unable to delete backing DB file", e);
             }
@@ -497,18 +495,4 @@ public class LockableDatabase {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void deleteDatabase(File database) {
-        boolean deleted = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            deleted = SQLiteDatabase.deleteDatabase(database);
-        } else {
-            deleted = database.delete();
-            deleted |= new File(database.getPath() + "-journal").delete();
-        }
-        if (!deleted) {
-            Log.i(K9.LOG_TAG,
-                    "LockableDatabase: deleteDatabase(): No files deleted.");
-        }
-    }
 }

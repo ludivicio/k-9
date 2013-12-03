@@ -8,8 +8,8 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class PushService extends CoreService {
-    private static String START_SERVICE = "com.fsck.k9.service.PushService.startService";
-    private static String STOP_SERVICE = "com.fsck.k9.service.PushService.stopService";
+    private static String START_SERVICE = "org.ancode.secmail.service.PushService.startService";
+    private static String STOP_SERVICE = "org.ancode.secmail.service.PushService.stopService";
 
     public static void startService(Context context) {
         Intent i = new Intent();

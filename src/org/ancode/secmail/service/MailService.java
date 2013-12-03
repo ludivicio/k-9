@@ -21,14 +21,14 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class MailService extends CoreService {
-    private static final String ACTION_CHECK_MAIL = "com.fsck.k9.intent.action.MAIL_SERVICE_WAKEUP";
-    private static final String ACTION_RESET = "com.fsck.k9.intent.action.MAIL_SERVICE_RESET";
-    private static final String ACTION_RESCHEDULE_POLL = "com.fsck.k9.intent.action.MAIL_SERVICE_RESCHEDULE_POLL";
-    private static final String ACTION_CANCEL = "com.fsck.k9.intent.action.MAIL_SERVICE_CANCEL";
-    private static final String ACTION_REFRESH_PUSHERS = "com.fsck.k9.intent.action.MAIL_SERVICE_REFRESH_PUSHERS";
-    private static final String ACTION_RESTART_PUSHERS = "com.fsck.k9.intent.action.MAIL_SERVICE_RESTART_PUSHERS";
-    private static final String CONNECTIVITY_CHANGE = "com.fsck.k9.intent.action.MAIL_SERVICE_CONNECTIVITY_CHANGE";
-    private static final String CANCEL_CONNECTIVITY_NOTICE = "com.fsck.k9.intent.action.MAIL_SERVICE_CANCEL_CONNECTIVITY_NOTICE";
+    private static final String ACTION_CHECK_MAIL = "org.ancode.secmail.intent.action.MAIL_SERVICE_WAKEUP";
+    private static final String ACTION_RESET = "org.ancode.secmail.intent.action.MAIL_SERVICE_RESET";
+    private static final String ACTION_RESCHEDULE_POLL = "org.ancode.secmail.intent.action.MAIL_SERVICE_RESCHEDULE_POLL";
+    private static final String ACTION_CANCEL = "org.ancode.secmail.intent.action.MAIL_SERVICE_CANCEL";
+    private static final String ACTION_REFRESH_PUSHERS = "org.ancode.secmail.intent.action.MAIL_SERVICE_REFRESH_PUSHERS";
+    private static final String ACTION_RESTART_PUSHERS = "org.ancode.secmail.intent.action.MAIL_SERVICE_RESTART_PUSHERS";
+    private static final String CONNECTIVITY_CHANGE = "org.ancode.secmail.intent.action.MAIL_SERVICE_CONNECTIVITY_CHANGE";
+    private static final String CANCEL_CONNECTIVITY_NOTICE = "org.ancode.secmail.intent.action.MAIL_SERVICE_CANCEL_CONNECTIVITY_NOTICE";
 
     private static long nextCheck = -1;
     private static boolean pushingRequested = false;
@@ -173,7 +173,7 @@ public class MailService extends CoreService {
 
     private void cancel() {
         Intent i = new Intent();
-        i.setClassName(getApplication().getPackageName(), "com.fsck.k9.service.MailService");
+        i.setClassName(getApplication().getPackageName(), "org.ancode.secmail.service.MailService");
         i.setAction(ACTION_CHECK_MAIL);
         BootReceiver.cancelIntent(this, i);
     }
@@ -314,7 +314,7 @@ public class MailService extends CoreService {
             }
 
             Intent i = new Intent();
-            i.setClassName(getApplication().getPackageName(), "com.fsck.k9.service.MailService");
+            i.setClassName(getApplication().getPackageName(), "org.ancode.secmail.service.MailService");
             i.setAction(ACTION_CHECK_MAIL);
             BootReceiver.scheduleIntent(MailService.this, nextTime, i);
         }
@@ -420,7 +420,7 @@ public class MailService extends CoreService {
             if (K9.DEBUG)
                 Log.d(K9.LOG_TAG, "Next pusher refresh scheduled for " + new Date(nextTime));
             Intent i = new Intent();
-            i.setClassName(getApplication().getPackageName(), "com.fsck.k9.service.MailService");
+            i.setClassName(getApplication().getPackageName(), "org.ancode.secmail.service.MailService");
             i.setAction(ACTION_REFRESH_PUSHERS);
             BootReceiver.scheduleIntent(MailService.this, nextTime, i);
         }

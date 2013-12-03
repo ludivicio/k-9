@@ -2,6 +2,9 @@ package org.ancode.secmail.helper;
 
 import java.io.File;
 
+import org.ancode.secmail.K9;
+import org.ancode.secmail.R;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -11,9 +14,6 @@ import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.widget.EditText;
-
-import org.ancode.secmail.K9;
-import org.ancode.secmail.R;
 
 public class FileBrowserHelper {
     /**

@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -400,6 +401,12 @@ public class MimeMessage extends Message {
         return mHeader.getFirstHeader(name);
     }
 
+    // modified by lxc at 2013-11-23
+    public Map<String, String> getCryptUUIDMap(){
+    	return mHeader.getCryptUUIDMap();
+    }
+    
+    
     @Override
     public void addHeader(String name, String value) throws UnavailableStorageException {
         mHeader.addHeader(name, value);

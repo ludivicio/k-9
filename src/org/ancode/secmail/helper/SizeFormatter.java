@@ -1,7 +1,8 @@
 package org.ancode.secmail.helper;
 
-import android.content.Context;
 import org.ancode.secmail.R;
+
+import android.content.Context;
 
 public class SizeFormatter {
     /*

@@ -15,8 +15,8 @@ import org.ancode.secmail.helper.power.TracingPowerManager;
 import org.ancode.secmail.helper.power.TracingPowerManager.TracingWakeLock;
 
 public class PollService extends CoreService {
-    private static String START_SERVICE = "com.fsck.k9.service.PollService.startService";
-    private static String STOP_SERVICE = "com.fsck.k9.service.PollService.stopService";
+    private static String START_SERVICE = "org.ancode.secmail.service.PollService.startService";
+    private static String STOP_SERVICE = "org.ancode.secmail.service.PollService.stopService";
 
     private Listener mListener = new Listener();
 

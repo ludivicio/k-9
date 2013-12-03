@@ -52,16 +52,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManager;
 
-import org.apache.commons.io.IOUtils;
-
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.PowerManager;
-import android.util.Log;
-
-import com.beetstra.jutf7.CharsetProvider;
-
 import org.ancode.secmail.Account;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.R;
@@ -97,7 +87,15 @@ import org.ancode.secmail.mail.store.ImapResponseParser.ImapList;
 import org.ancode.secmail.mail.store.ImapResponseParser.ImapResponse;
 import org.ancode.secmail.mail.store.imap.ImapUtility;
 import org.ancode.secmail.mail.transport.imap.ImapSettings;
+import org.apache.commons.io.IOUtils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.PowerManager;
+import android.util.Log;
+
+import com.beetstra.jutf7.CharsetProvider;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 
@@ -1919,7 +1917,7 @@ public class ImapStore extends Store {
                      * of them.
                      */
                     for (int i = 0, count = bodyParams.size(); i < count; i += 2) {
-                        contentType.append(String.format(";\r\n %s=\"%s\"",
+                        contentType.append(String.format(";\n %s=\"%s\"",
                                            bodyParams.getString(i),
                                            bodyParams.getString(i + 1)));
                     }
@@ -1954,7 +1952,7 @@ public class ImapStore extends Store {
                          * about the attachment out.
                          */
                         for (int i = 0, count = bodyDispositionParams.size(); i < count; i += 2) {
-                            contentDisposition.append(String.format(";\r\n %s=\"%s\"",
+                            contentDisposition.append(String.format(";\n %s=\"%s\"",
                                                       bodyDispositionParams.getString(i).toLowerCase(Locale.US),
                                                       bodyDispositionParams.getString(i + 1)));
                         }
@@ -1962,7 +1960,7 @@ public class ImapStore extends Store {
                 }
 
                 if (MimeUtility.getHeaderParameter(contentDisposition.toString(), "size") == null) {
-                    contentDisposition.append(String.format(";\r\n size=%d", size));
+                    contentDisposition.append(String.format(";\n size=%d", size));
                 }
 
                 /*
@@ -2451,7 +2449,7 @@ public class ImapStore extends Store {
                             sslContext.init(null, new TrustManager[] {
                                                 TrustManagerFactory.get(mSettings.getHost(), secure)
                                             }, new SecureRandom());
-                            mSocket = TrustedSocketFactory.createSocket(sslContext);
+                            mSocket = sslContext.getSocketFactory().createSocket();
                         } else {
                             mSocket = new Socket();
                         }
@@ -2506,8 +2504,8 @@ public class ImapStore extends Store {
                         sslContext.init(null, new TrustManager[] {
                                             TrustManagerFactory.get(mSettings.getHost(), secure)
                                         }, new SecureRandom());
-                        mSocket = TrustedSocketFactory.createSocket(sslContext, mSocket,
-                                mSettings.getHost(), mSettings.getPort(), true);
+                        mSocket = sslContext.getSocketFactory().createSocket(mSocket, mSettings.getHost(), mSettings.getPort(),
+                                  true);
                         mSocket.setSoTimeout(Store.SOCKET_READ_TIMEOUT);
                         mIn = new PeekableInputStream(new BufferedInputStream(mSocket
                                                       .getInputStream(), 1024));

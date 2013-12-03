@@ -7,16 +7,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import android.content.SharedPreferences;
-
 import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.R;
 import org.ancode.secmail.Account.FolderMode;
 import org.ancode.secmail.Account.SortType;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.R;
 import org.ancode.secmail.crypto.Apg;
 import org.ancode.secmail.mail.store.StorageManager;
-import org.ancode.secmail.preferences.Settings.*;
+import org.ancode.secmail.preferences.Settings.BooleanSetting;
+import org.ancode.secmail.preferences.Settings.ColorSetting;
+import org.ancode.secmail.preferences.Settings.EnumSetting;
+import org.ancode.secmail.preferences.Settings.IntegerRangeSetting;
+import org.ancode.secmail.preferences.Settings.InvalidSettingValueException;
+import org.ancode.secmail.preferences.Settings.PseudoEnumSetting;
+import org.ancode.secmail.preferences.Settings.SettingsDescription;
+import org.ancode.secmail.preferences.Settings.SettingsUpgrader;
+import org.ancode.secmail.preferences.Settings.StringSetting;
+import org.ancode.secmail.preferences.Settings.V;
+
+import android.content.SharedPreferences;
 
 public class AccountSettings {
     public static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;

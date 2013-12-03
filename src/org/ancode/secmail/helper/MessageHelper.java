@@ -1,9 +1,5 @@
 package org.ancode.secmail.helper;
 
-import android.content.Context;
-import android.text.SpannableStringBuilder;
-import android.util.Log;
-
 import org.ancode.secmail.Account;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.R;
@@ -12,8 +8,12 @@ import org.ancode.secmail.activity.MessageInfoHolder;
 import org.ancode.secmail.mail.Address;
 import org.ancode.secmail.mail.Flag;
 import org.ancode.secmail.mail.Message;
-import org.ancode.secmail.mail.MessagingException;
 import org.ancode.secmail.mail.Message.RecipientType;
+import org.ancode.secmail.mail.MessagingException;
+
+import android.content.Context;
+import android.text.SpannableStringBuilder;
+import android.util.Log;
 
 public class MessageHelper {
 

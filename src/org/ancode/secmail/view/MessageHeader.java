@@ -1,24 +1,10 @@
 package org.ancode.secmail.view;
 
-import android.content.Context;
-import android.graphics.Typeface;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
-import android.text.style.StyleSpan;
-import android.util.Log;
-import android.util.AttributeSet;
-import android.view.Gravity;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
-import android.widget.QuickContactBadge;
-import android.widget.TextView;
-import android.widget.Toast;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.ancode.secmail.Account;
 import org.ancode.secmail.FontSizes;
@@ -34,13 +20,29 @@ import org.ancode.secmail.mail.Flag;
 import org.ancode.secmail.mail.Message;
 import org.ancode.secmail.mail.MessagingException;
 import org.ancode.secmail.mail.internet.MimeUtility;
+import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
 
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import android.content.Context;
+import android.graphics.Typeface;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.format.DateUtils;
+import android.text.style.StyleSpan;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.CheckBox;
+import android.widget.QuickContactBadge;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class MessageHeader extends LinearLayout implements OnClickListener {
+public class MessageHeader extends ScrollView implements OnClickListener {
     private Context mContext;
     private TextView mFromView;
     private TextView mDateView;
@@ -62,6 +64,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener {
     private Contacts mContacts;
     private SavedState mSavedState;
 
+    // modified by lxc at 2013-11-24
+    private View mcryptStatusIcon;
+    
     private MessageHelper mMessageHelper;
     private ContactPictureLoader mContactsPictureLoader;
     private QuickContactBadge mContactBadge;
@@ -97,7 +102,10 @@ public class MessageHeader extends LinearLayout implements OnClickListener {
         mToLabel = (TextView) findViewById(R.id.to_label);
         mCcView = (TextView) findViewById(R.id.cc);
         mCcLabel = (TextView) findViewById(R.id.cc_label);
-
+        
+        // modified by lxc at 2013-11-24
+        mcryptStatusIcon = findViewById(R.id.cryptStatus);
+        
         mContactBadge = (QuickContactBadge) findViewById(R.id.contact_badge);
 
         mSubjectView = (TextView) findViewById(R.id.subject);
@@ -129,17 +137,14 @@ public class MessageHeader extends LinearLayout implements OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.from: {
-                onAddSenderToContacts();
-                break;
-            }
-            case R.id.to:
-            case R.id.cc: {
-                expand((TextView)view, ((TextView)view).getEllipsize() != null);
-                layoutChanged();
-            }
-        }
+        int id = view.getId();
+		if (id == R.id.from) {
+			onAddSenderToContacts();
+		} else if (id == R.id.to
+				|| id == R.id.cc) {
+			expand((TextView)view, ((TextView)view).getEllipsize() != null);
+			layoutChanged();
+		}
     }
 
     private void onAddSenderToContacts() {
@@ -294,6 +299,22 @@ public class MessageHeader extends LinearLayout implements OnClickListener {
 
         mChip.setBackgroundColor(mAccount.getChipColor());
 
+        // modified by lxc at 2013-11-24
+        if (mMessage instanceof LocalMessage) {
+			LocalMessage lm = (LocalMessage) mMessage;
+			lm.getHeaderNames();
+			Map<String, String> cryptUuidMap = lm.getCryptUUIDMap();
+			if (cryptUuidMap != null && !cryptUuidMap.isEmpty()) {
+				mcryptStatusIcon.setVisibility(View.VISIBLE);
+				mcryptStatusIcon.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_email_lock));
+			} else {
+				mcryptStatusIcon.setVisibility(View.GONE);
+			}
+
+		} else {
+			mcryptStatusIcon.setVisibility(View.GONE);
+		}
+        
         setVisibility(View.VISIBLE);
 
         if (mSavedState != null) {

@@ -1,5 +1,38 @@
 package org.ancode.secmail.view;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.util.List;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.R;
+import org.ancode.secmail.controller.MessagingController;
+import org.ancode.secmail.controller.MessagingListener;
+import org.ancode.secmail.crypto.CryptoProvider;
+import org.ancode.secmail.crypto.PgpData;
+import org.ancode.secmail.fragment.MessageViewFragment;
+import org.ancode.secmail.helper.ClipboardManager;
+import org.ancode.secmail.helper.Contacts;
+import org.ancode.secmail.helper.HtmlConverter;
+import org.ancode.secmail.helper.Utility;
+import org.ancode.secmail.mail.Address;
+import org.ancode.secmail.mail.Flag;
+import org.ancode.secmail.mail.Message;
+import org.ancode.secmail.mail.MessagingException;
+import org.ancode.secmail.mail.Multipart;
+import org.ancode.secmail.mail.Part;
+import org.ancode.secmail.mail.internet.MimeUtility;
+import org.ancode.secmail.mail.store.LocalStore;
+import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBody;
+import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
+import org.ancode.secmail.provider.AttachmentProvider.AttachmentProviderColumns;
+import org.apache.commons.io.IOUtils;
+
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -23,39 +56,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
-import android.view.View.*;
+import android.view.View.OnClickListener;
+import android.view.View.OnCreateContextMenuListener;
 import android.webkit.WebView;
 import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.R;
-import org.ancode.secmail.controller.MessagingController;
-import org.ancode.secmail.controller.MessagingListener;
-import org.ancode.secmail.crypto.CryptoProvider;
-import org.ancode.secmail.crypto.PgpData;
-import org.ancode.secmail.fragment.MessageViewFragment;
-import org.ancode.secmail.helper.ClipboardManager;
-import org.ancode.secmail.helper.Contacts;
-import org.ancode.secmail.helper.HtmlConverter;
-import org.ancode.secmail.helper.Utility;
-import org.ancode.secmail.mail.*;
-import org.ancode.secmail.mail.internet.MimeUtility;
-import org.ancode.secmail.mail.store.LocalStore;
-import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
-import org.ancode.secmail.provider.AttachmentProvider.AttachmentProviderColumns;
-import org.apache.commons.io.IOUtils;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLDecoder;
-import java.util.List;
 
 
 public class SingleMessageView extends LinearLayout implements OnClickListener,
@@ -100,11 +107,13 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
     private LayoutInflater mInflater;
     private Contacts mContacts;
     private AttachmentView.AttachmentFileDownloadCallback attachmentCallback;
+    private LinearLayout mHeaderPlaceHolder;
+    private LinearLayout mTitleBarHeaderContainer;
     private View mAttachmentsContainer;
+    private LinearLayout mInsideAttachmentsContainer;
     private SavedState mSavedState;
     private ClipboardManager mClipboardManager;
     private String mText;
-
 
     public void initialize(Fragment fragment) {
         Activity activity = fragment.getActivity();
@@ -114,10 +123,13 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
         activity.registerForContextMenu(mMessageContentView);
         mMessageContentView.setOnCreateContextMenuListener(this);
 
+        mHeaderPlaceHolder = (LinearLayout) findViewById(R.id.message_view_header_container);
+
         mHeaderContainer = (MessageHeader) findViewById(R.id.header_container);
         mHeaderContainer.setOnLayoutChangedListener(this);
 
         mAttachmentsContainer = findViewById(R.id.attachments_container);
+        mInsideAttachmentsContainer = (LinearLayout) findViewById(R.id.inside_attachments_container);
         mAttachments = (LinearLayout) findViewById(R.id.attachments);
         mHiddenAttachments = (LinearLayout) findViewById(R.id.hidden_attachments);
         mHiddenAttachments.setVisibility(View.GONE);
@@ -150,6 +162,7 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
             mMessageContentView.setVisibility(View.VISIBLE);
             mScreenReaderEnabled = false;
 
+            mHeaderPlaceHolder.removeView(mHeaderContainer);
             // the HTC version of WebView tries to force the background of the
             // titlebar, which is really unfair.
             TypedValue outValue = new TypedValue();
@@ -157,6 +170,10 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
             mHeaderContainer.setBackgroundColor(outValue.data);
             // also set background of the whole view (including the attachments view)
             setBackgroundColor(outValue.data);
+
+            mTitleBarHeaderContainer = new LinearLayout(activity);
+            mMessageContentView.setEmbeddedTitleBarCompat(mTitleBarHeaderContainer);
+            mTitleBarHeaderContainer.addView(mHeaderContainer);
         }
 
         mShowHiddenAttachments.setOnClickListener(this);
@@ -376,27 +393,19 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.show_hidden_attachments: {
-                onShowHiddenAttachments();
-                break;
-            }
-            case R.id.show_message: {
-                onShowMessage();
-                break;
-            }
-            case R.id.show_attachments: {
-                onShowAttachments();
-                break;
-            }
-            case R.id.show_pictures: {
-                // Allow network access first...
-                setLoadPictures(true);
-                // ...then re-populate the WebView with the message text
-                loadBodyFromText(mText);
-                break;
-            }
-        }
+        int id = view.getId();
+		if (id == R.id.show_hidden_attachments) {
+			onShowHiddenAttachments();
+		} else if (id == R.id.show_message) {
+			onShowMessage();
+		} else if (id == R.id.show_attachments) {
+			onShowAttachments();
+		} else if (id == R.id.show_pictures) {
+			// Allow network access first...
+			setLoadPictures(true);
+			// ...then re-populate the WebView with the message text
+			loadBodyFromText(mText);
+		}
     }
 
     private void onShowHiddenAttachments() {
@@ -537,7 +546,7 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
     }
 
     public void setMessage(Account account, LocalMessage message, PgpData pgpData,
-            MessagingController controller, MessagingListener listener) throws MessagingException {
+            MessagingController controller, MessagingListener listener, List<String> aesKeyList) throws MessagingException {
         resetView();
 
         String text = null;
@@ -552,15 +561,26 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
             text = message.getTextForDisplay();
         }
 
+        // modified by lxc at 2013-11-27
+        if (message.getSubject() != null && message.getSubject().startsWith("secmail")
+				&& message.getSubject().contains("regcode")) {
+			text = getContext().getString(R.string.reg_encrypt_confirm_mail_body);
+		}
+        
         // Save the text so we can reset the WebView when the user clicks the "Show pictures" button
         mText = text;
-
         mHasAttachments = message.hasAttachments();
 
-        if (mHasAttachments) {
-            renderAttachments(message, 0, message, account, controller, listener);
-        }
-
+        // modified by lxc at 2013-11-27
+		if (aesKeyList != null && !aesKeyList.isEmpty()) {
+			if (mHasAttachments) {
+				text = renderAttachments(message, 0, message, account, controller, listener, aesKeyList, 0);
+				mHasAttachments = message.hasAttachments();
+			}
+		} else {
+			renderAttachments(message, 0, message, account, controller, listener, null, 0);
+		}
+		
         mHiddenAttachments.setVisibility(View.GONE);
 
         boolean lookForImages = true;
@@ -635,6 +655,12 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
         boolean showHidden = (show && mHiddenAttachments.getVisibility() == View.GONE &&
                 mHiddenAttachments.getChildCount() > 0);
         mShowHiddenAttachments.setVisibility(showHidden ? View.VISIBLE : View.GONE);
+
+        if (show) {
+            moveHeaderToLayout();
+        } else {
+            moveHeaderToWebViewTitleBar();
+        }
     }
 
     public void showMessageWebView(boolean show) {
@@ -655,30 +681,53 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
         }
     }
 
-    public void renderAttachments(Part part, int depth, Message message, Account account,
-                                  MessagingController controller, MessagingListener listener) throws MessagingException {
-
-        if (part.getBody() instanceof Multipart) {
-            Multipart mp = (Multipart) part.getBody();
-            for (int i = 0; i < mp.getCount(); i++) {
-                renderAttachments(mp.getBodyPart(i), depth + 1, message, account, controller, listener);
-            }
-        } else if (part instanceof LocalStore.LocalAttachmentBodyPart) {
-            AttachmentView view = (AttachmentView)mInflater.inflate(R.layout.message_view_attachment, null);
-            view.setCallback(attachmentCallback);
-
-            try {
-                if (view.populateFromPart(part, message, account, controller, listener)) {
-                    addAttachment(view);
-                } else {
-                    addHiddenAttachment(view);
-                }
-            } catch (Exception e) {
-                Log.e(K9.LOG_TAG, "Error adding attachment view", e);
-            }
-        }
-    }
-
+    
+    public String renderAttachments(Part part, int depth, LocalMessage message, Account account,
+			MessagingController controller, MessagingListener listener, List<String> aesKeyList, int j)
+			throws MessagingException {
+		String text = "";
+		if (part.getBody() instanceof Multipart) {
+			Multipart mp = (Multipart) part.getBody();
+			int k = 0;
+			for (int i = 0; i < mp.getCount(); i++) {
+				Part _part = mp.getBodyPart(i);
+				text = renderAttachments(_part, depth + 1, message, account, controller, listener, aesKeyList, k);
+				if (_part instanceof LocalStore.LocalAttachmentBodyPart) {
+					k++;
+				}
+			}
+		} else if (part instanceof LocalStore.LocalAttachmentBodyPart) {
+			AttachmentView view = (AttachmentView) mInflater.inflate(R.layout.message_view_attachment, null);
+			view.setCallback(attachmentCallback);
+			String aesKey = null;
+			boolean isSentMsg = false;
+			if(part.getBody() instanceof LocalAttachmentBody 
+					&& ((LocalAttachmentBody)part.getBody()).getAeskey() != null 
+					&& message.getFrom()[0].getAddress().equalsIgnoreCase(account.getEmail())
+					&& ((LocalAttachmentBody)part.getBody()).getContentUri() != null){
+				isSentMsg = true;
+			}else{
+				aesKey = aesKeyList != null ? aesKeyList.get(j) : null;
+			}
+			try {
+				if (view.populateFromPart(part, message, account, controller, listener, aesKey, isSentMsg)) {
+					if (view.isMailBody()) {
+						text = view.getMailBody();
+						message.decreaseAttachmentCount();
+					} else {
+						addAttachment(view);
+					}
+				} else {
+					addHiddenAttachment(view);
+				}
+			} catch (Exception e) {
+				Log.e(K9.LOG_TAG, "Error adding attachment view", e);
+			}
+		}
+		return text;
+	}
+    
+ 
     public void addAttachment(View attachmentView) {
         mAttachments.addView(attachmentView);
     }
@@ -733,6 +782,20 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
     public void setAttachmentCallback(
         AttachmentView.AttachmentFileDownloadCallback attachmentCallback) {
         this.attachmentCallback = attachmentCallback;
+    }
+
+    private void moveHeaderToLayout() {
+        if (mTitleBarHeaderContainer != null && mTitleBarHeaderContainer.getChildCount() != 0) {
+            mTitleBarHeaderContainer.removeView(mHeaderContainer);
+            mInsideAttachmentsContainer.addView(mHeaderContainer, 0);
+        }
+    }
+
+    private void moveHeaderToWebViewTitleBar() {
+        if (mTitleBarHeaderContainer != null && mTitleBarHeaderContainer.getChildCount() == 0) {
+            mInsideAttachmentsContainer.removeView(mHeaderContainer);
+            mTitleBarHeaderContainer.addView(mHeaderContainer);
+        }
     }
 
     @Override

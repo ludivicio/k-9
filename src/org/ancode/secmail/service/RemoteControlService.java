@@ -1,14 +1,24 @@
 package org.ancode.secmail.service;
 
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_ACCOUNT_UUID;
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_ALL_ACCOUNTS;
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_BACKGROUND_OPERATIONS;
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_NOTIFICATION_ENABLED;
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_POLL_CLASSES;
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_POLL_FREQUENCY;
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_PUSH_CLASSES;
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_RING_ENABLED;
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_THEME;
+import static org.ancode.secmail.remotecontrol.K9RemoteControl.K9_VIBRATE_ENABLED;
+
 import org.ancode.secmail.Account;
+import org.ancode.secmail.Account.FolderMode;
 import org.ancode.secmail.K9;
+import org.ancode.secmail.K9.BACKGROUND_OPS;
 import org.ancode.secmail.Preferences;
 import org.ancode.secmail.R;
-import org.ancode.secmail.Account.FolderMode;
-import org.ancode.secmail.K9.BACKGROUND_OPS;
 import org.ancode.secmail.remotecontrol.K9RemoteControl;
 
-import static org.ancode.secmail.remotecontrol.K9RemoteControl.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,10 +27,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class RemoteControlService extends CoreService {
-    private final static String RESCHEDULE_ACTION = "com.fsck.k9.service.RemoteControlService.RESCHEDULE_ACTION";
-    private final static String PUSH_RESTART_ACTION = "com.fsck.k9.service.RemoteControlService.PUSH_RESTART_ACTION";
+    private final static String RESCHEDULE_ACTION = "org.ancode.secmail.service.RemoteControlService.RESCHEDULE_ACTION";
+    private final static String PUSH_RESTART_ACTION = "org.ancode.secmail.service.RemoteControlService.PUSH_RESTART_ACTION";
 
-    private final static String SET_ACTION = "com.fsck.k9.service.RemoteControlService.SET_ACTION";
+    private final static String SET_ACTION = "org.ancode.secmail.service.RemoteControlService.SET_ACTION";
 
     public static void set(Context context, Intent i, Integer wakeLockId) {
         //  Intent i = new Intent();
@@ -133,14 +143,14 @@ public class RemoteControlService extends CoreService {
 
                         if (needsReschedule) {
                             Intent i = new Intent();
-                            i.setClassName(getApplication().getPackageName(), "com.fsck.k9.service.RemoteControlService");
+                            i.setClassName(getApplication().getPackageName(), "org.ancode.secmail.service.RemoteControlService");
                             i.setAction(RESCHEDULE_ACTION);
                             long nextTime = System.currentTimeMillis() + 10000;
                             BootReceiver.scheduleIntent(RemoteControlService.this, nextTime, i);
                         }
                         if (needsPushRestart) {
                             Intent i = new Intent();
-                            i.setClassName(getApplication().getPackageName(), "com.fsck.k9.service.RemoteControlService");
+                            i.setClassName(getApplication().getPackageName(), "org.ancode.secmail.service.RemoteControlService");
                             i.setAction(PUSH_RESTART_ACTION);
                             long nextTime = System.currentTimeMillis() + 10000;
                             BootReceiver.scheduleIntent(RemoteControlService.this, nextTime, i);

@@ -10,18 +10,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import android.content.SharedPreferences;
-import android.os.Environment;
-
 import org.ancode.secmail.Account;
+import org.ancode.secmail.Account.SortType;
 import org.ancode.secmail.FontSizes;
 import org.ancode.secmail.K9;
-import org.ancode.secmail.R;
-import org.ancode.secmail.Account.SortType;
 import org.ancode.secmail.K9.NotificationHideSubject;
 import org.ancode.secmail.K9.SplitViewMode;
 import org.ancode.secmail.K9.Theme;
-import org.ancode.secmail.preferences.Settings.*;
+import org.ancode.secmail.R;
+import org.ancode.secmail.preferences.Settings.BooleanSetting;
+import org.ancode.secmail.preferences.Settings.ColorSetting;
+import org.ancode.secmail.preferences.Settings.EnumSetting;
+import org.ancode.secmail.preferences.Settings.FontSizeSetting;
+import org.ancode.secmail.preferences.Settings.IntegerRangeSetting;
+import org.ancode.secmail.preferences.Settings.InvalidSettingValueException;
+import org.ancode.secmail.preferences.Settings.PseudoEnumSetting;
+import org.ancode.secmail.preferences.Settings.SettingsDescription;
+import org.ancode.secmail.preferences.Settings.SettingsUpgrader;
+import org.ancode.secmail.preferences.Settings.V;
+import org.ancode.secmail.preferences.Settings.WebFontSizeSetting;
+
+import android.content.SharedPreferences;
+import android.os.Environment;
 
 public class GlobalSettings {
     public static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;

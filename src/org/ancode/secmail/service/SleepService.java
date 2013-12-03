@@ -14,8 +14,8 @@ import org.ancode.secmail.helper.power.TracingPowerManager.TracingWakeLock;
 
 public class SleepService extends CoreService {
 
-    private static String ALARM_FIRED = "com.fsck.k9.service.SleepService.ALARM_FIRED";
-    private static String LATCH_ID = "com.fsck.k9.service.SleepService.LATCH_ID_EXTRA";
+    private static String ALARM_FIRED = "org.ancode.secmail.service.SleepService.ALARM_FIRED";
+    private static String LATCH_ID = "org.ancode.secmail.service.SleepService.LATCH_ID_EXTRA";
 
 
     private static ConcurrentHashMap<Integer, SleepDatum> sleepData = new ConcurrentHashMap<Integer, SleepDatum>();
@@ -33,7 +33,7 @@ public class SleepService extends CoreService {
         sleepData.put(id, sleepDatum);
 
         Intent i = new Intent();
-        i.setClassName(context.getPackageName(), "com.fsck.k9.service.SleepService");
+        i.setClassName(context.getPackageName(), "org.ancode.secmail.service.SleepService");
         i.putExtra(LATCH_ID, id);
         i.setAction(ALARM_FIRED + "." + id);
         long startTime = System.currentTimeMillis();

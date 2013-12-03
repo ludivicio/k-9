@@ -229,6 +229,21 @@ public class Address {
         return sb.toString();
     }
 
+    public static String toAddressString(Address[] addresses){
+    	if (addresses == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < addresses.length; i++) {
+            sb.append(addresses[i].getAddress());
+            if (i < addresses.length - 1) {
+                sb.append(',');
+            }
+        }
+        return sb.toString();
+    }
+    
+    
     /**
      * Returns either the personal portion of the Address or the address portion if the personal
      * is not available.

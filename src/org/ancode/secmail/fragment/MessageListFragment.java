@@ -13,65 +13,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcelable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.CursorAdapter;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.format.DateUtils;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CheckBox;
-import android.widget.ListView;
-import android.widget.QuickContactBadge;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
-
 import org.ancode.secmail.Account;
+import org.ancode.secmail.Account.SortType;
 import org.ancode.secmail.FontSizes;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.Preferences;
 import org.ancode.secmail.R;
-import org.ancode.secmail.Account.SortType;
 import org.ancode.secmail.activity.ActivityListener;
 import org.ancode.secmail.activity.ChooseFolder;
 import org.ancode.secmail.activity.FolderInfoHolder;
@@ -99,10 +46,60 @@ import org.ancode.secmail.provider.EmailProvider.ThreadColumns;
 import org.ancode.secmail.search.ConditionsTreeNode;
 import org.ancode.secmail.search.LocalSearch;
 import org.ancode.secmail.search.SearchSpecification;
-import org.ancode.secmail.search.SqlQueryBuilder;
 import org.ancode.secmail.search.SearchSpecification.SearchCondition;
 import org.ancode.secmail.search.SearchSpecification.Searchfield;
+import org.ancode.secmail.search.SqlQueryBuilder;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.CursorAdapter;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.format.DateUtils;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
+import android.widget.ListView;
+import android.widget.QuickContactBadge;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.ActionMode;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.handmark.pulltorefresh.library.ILoadingLayout;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -130,8 +127,10 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         ThreadColumns.ROOT,
         SpecialColumns.ACCOUNT_UUID,
         SpecialColumns.FOLDER_NAME,
-
         SpecialColumns.THREAD_COUNT,
+        
+        // modified by lxc at 2013-11-25
+        MessageColumns.ENCRY_STATUS,
     };
 
     private static final int ID_COLUMN = 0;
@@ -153,6 +152,7 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
     private static final int ACCOUNT_UUID_COLUMN = 16;
     private static final int FOLDER_NAME_COLUMN = 17;
     private static final int THREAD_COUNT_COLUMN = 18;
+    private static final int ENCRY_STATUS_COLUMN = 19;
 
     private static final String[] PROJECTION = Utility.copyOf(THREADED_PROJECTION,
             THREAD_COUNT_COLUMN);
@@ -778,6 +778,7 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         }
     }
 
+    
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -808,13 +809,15 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         if (K9.showContactPicture()) {
             mContactsPictureLoader = ContactPicture.getContactPictureLoader(getActivity());
         }
-
+        
         restoreInstanceState(savedInstanceState);
         decodeArguments();
 
         createCacheBroadcastReceiver(appContext);
 
         mInitialized = true;
+        
+        Log.i("lxc","MessageListFragment --> onCreate");
     }
 
     @Override
@@ -829,15 +832,10 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
         initializeLayout();
         mListView.setVerticalFadingEdgeEnabled(false);
-
+        Log.i("lxc","MessageListFragment --> onCreateView");
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        mSavedListState = mListView.onSaveInstanceState();
-        super.onDestroyView();
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -859,8 +857,89 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             loaderManager.initLoader(i, null, this);
             mCursorValid[i] = false;
         }
+        
+        Log.i("lxc","MessageListFragment --> onActivityCreated");
     }
+    
 
+    
+    /**
+     * On resume we refresh messages for the folder that is currently open.
+     * This guarantees that things like unread message count and read status
+     * are updated.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Context appContext = getActivity().getApplicationContext();
+
+        mSenderAboveSubject = K9.messageListSenderAboveSubject();
+
+        if (!mLoaderJustInitialized) {
+            restartLoader();
+        } else {
+            mLoaderJustInitialized = false;
+        }
+
+        // Check if we have connectivity.  Cache the value.
+        if (mHasConnectivity == null) {
+            final ConnectivityManager connectivityManager =
+                (ConnectivityManager) getActivity().getApplication().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+            final NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+            if (netInfo != null && netInfo.getState() == NetworkInfo.State.CONNECTED) {
+                mHasConnectivity = true;
+            } else {
+                mHasConnectivity = false;
+            }
+        }
+
+        mLocalBroadcastManager.registerReceiver(mCacheBroadcastReceiver, mCacheIntentFilter);
+        mListener.onResume(getActivity());
+        mController.addListener(mListener);
+
+        //Cancel pending new mail notifications when we open an account
+        Account[] accountsWithNotification;
+
+        Account account = mAccount;
+        if (account != null) {
+            accountsWithNotification = new Account[] { account };
+        } else {
+            accountsWithNotification = mPreferences.getAccounts();
+        }
+
+        for (Account accountWithNotification : accountsWithNotification) {
+            mController.notifyAccountCancel(appContext, accountWithNotification);
+        }
+
+        if (mAccount != null && mFolderName != null && !mSearch.isManualSearch()) {
+            mController.getFolderUnreadMessageCount(mAccount, mFolderName, mListener);
+        }
+
+        updateTitle();
+        
+        Log.i("lxc","MessageListFragment --> onResume");
+        
+    }
+    
+    
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mLocalBroadcastManager.unregisterReceiver(mCacheBroadcastReceiver);
+        mListener.onPause(getActivity());
+        mController.removeListener(mListener);
+    }
+    
+    
+    @Override
+    public void onDestroyView() {
+        mSavedListState = mListView.onSaveInstanceState();
+        super.onDestroyView();
+    }
+    
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -1049,71 +1128,9 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
+    
 
-        mLocalBroadcastManager.unregisterReceiver(mCacheBroadcastReceiver);
-        mListener.onPause(getActivity());
-        mController.removeListener(mListener);
-    }
-
-    /**
-     * On resume we refresh messages for the folder that is currently open.
-     * This guarantees that things like unread message count and read status
-     * are updated.
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        Context appContext = getActivity().getApplicationContext();
-
-        mSenderAboveSubject = K9.messageListSenderAboveSubject();
-
-        if (!mLoaderJustInitialized) {
-            restartLoader();
-        } else {
-            mLoaderJustInitialized = false;
-        }
-
-        // Check if we have connectivity.  Cache the value.
-        if (mHasConnectivity == null) {
-            final ConnectivityManager connectivityManager =
-                (ConnectivityManager) getActivity().getApplication().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
-            final NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
-            if (netInfo != null && netInfo.getState() == NetworkInfo.State.CONNECTED) {
-                mHasConnectivity = true;
-            } else {
-                mHasConnectivity = false;
-            }
-        }
-
-        mLocalBroadcastManager.registerReceiver(mCacheBroadcastReceiver, mCacheIntentFilter);
-        mListener.onResume(getActivity());
-        mController.addListener(mListener);
-
-        //Cancel pending new mail notifications when we open an account
-        Account[] accountsWithNotification;
-
-        Account account = mAccount;
-        if (account != null) {
-            accountsWithNotification = new Account[] { account };
-        } else {
-            accountsWithNotification = mPreferences.getAccounts();
-        }
-
-        for (Account accountWithNotification : accountsWithNotification) {
-            mController.notifyAccountCancel(appContext, accountWithNotification);
-        }
-
-        if (mAccount != null && mFolderName != null && !mSearch.isManualSearch()) {
-            mController.getFolderUnreadMessageCount(mAccount, mFolderName, mListener);
-        }
-
-        updateTitle();
-    }
+    
 
     private void restartLoader() {
         if (mCursorValid == null) {
@@ -1383,26 +1400,19 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
     private void showDialog(int dialogId) {
         DialogFragment fragment;
-        switch (dialogId) {
-            case R.id.dialog_confirm_spam: {
-                String title = getString(R.string.dialog_confirm_spam_title);
-
-                int selectionSize = mActiveMessages.size();
-                String message = getResources().getQuantityString(
-                        R.plurals.dialog_confirm_spam_message, selectionSize,
-                        Integer.valueOf(selectionSize));
-
-                String confirmText = getString(R.string.dialog_confirm_spam_confirm_button);
-                String cancelText = getString(R.string.dialog_confirm_spam_cancel_button);
-
-                fragment = ConfirmationDialogFragment.newInstance(dialogId, title, message,
-                        confirmText, cancelText);
-                break;
-            }
-            default: {
-                throw new RuntimeException("Called showDialog(int) with unknown dialog id.");
-            }
-        }
+        if (dialogId == R.id.dialog_confirm_spam) {
+			String title = getString(R.string.dialog_confirm_spam_title);
+			int selectionSize = mActiveMessages.size();
+			String message = getResources().getQuantityString(
+			        R.plurals.dialog_confirm_spam_message, selectionSize,
+			        Integer.valueOf(selectionSize));
+			String confirmText = getString(R.string.dialog_confirm_spam_confirm_button);
+			String cancelText = getString(R.string.dialog_confirm_spam_cancel_button);
+			fragment = ConfirmationDialogFragment.newInstance(dialogId, title, message,
+			        confirmText, cancelText);
+		} else {
+			throw new RuntimeException("Called showDialog(int) with unknown dialog id.");
+		}
 
         fragment.setTargetFragment(this, dialogId);
         fragment.show(getFragmentManager(), getDialogTag(dialogId));
@@ -1415,40 +1425,31 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        switch (itemId) {
-        case R.id.set_sort_date: {
-            changeSort(SortType.SORT_DATE);
-            return true;
-        }
-        case R.id.set_sort_arrival: {
-            changeSort(SortType.SORT_ARRIVAL);
-            return true;
-        }
-        case R.id.set_sort_subject: {
-            changeSort(SortType.SORT_SUBJECT);
-            return true;
-        }
-        case R.id.set_sort_sender: {
-            changeSort(SortType.SORT_SENDER);
-            return true;
-        }
-        case R.id.set_sort_flag: {
-            changeSort(SortType.SORT_FLAGGED);
-            return true;
-        }
-        case R.id.set_sort_unread: {
-            changeSort(SortType.SORT_UNREAD);
-            return true;
-        }
-        case R.id.set_sort_attach: {
-            changeSort(SortType.SORT_ATTACHMENT);
-            return true;
-        }
-        case R.id.select_all: {
-            selectAll();
-            return true;
-        }
-        }
+        if (itemId == R.id.set_sort_date) {
+			changeSort(SortType.SORT_DATE);
+			return true;
+		} else if (itemId == R.id.set_sort_arrival) {
+			changeSort(SortType.SORT_ARRIVAL);
+			return true;
+		} else if (itemId == R.id.set_sort_subject) {
+			changeSort(SortType.SORT_SUBJECT);
+			return true;
+		} else if (itemId == R.id.set_sort_sender) {
+			changeSort(SortType.SORT_SENDER);
+			return true;
+		} else if (itemId == R.id.set_sort_flag) {
+			changeSort(SortType.SORT_FLAGGED);
+			return true;
+		} else if (itemId == R.id.set_sort_unread) {
+			changeSort(SortType.SORT_UNREAD);
+			return true;
+		} else if (itemId == R.id.set_sort_attach) {
+			changeSort(SortType.SORT_ATTACHMENT);
+			return true;
+		} else if (itemId == R.id.select_all) {
+			selectAll();
+			return true;
+		}
 
         if (!mSingleAccountMode) {
             // None of the options after this point are "safe" for search results
@@ -1456,21 +1457,17 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             return false;
         }
 
-        switch (itemId) {
-        case R.id.send_messages: {
-            onSendPendingMessages();
-            return true;
-        }
-        case R.id.expunge: {
-            if (mCurrentFolder != null) {
+        if (itemId == R.id.send_messages) {
+			onSendPendingMessages();
+			return true;
+		} else if (itemId == R.id.expunge) {
+			if (mCurrentFolder != null) {
                 onExpunge(mAccount, mCurrentFolder.name);
             }
-            return true;
-        }
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
     }
 
     public void onSendPendingMessages() {
@@ -1488,85 +1485,53 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             return false;
         }
 
-        switch (item.getItemId()) {
-            case R.id.deselect:
-            case R.id.select: {
-                toggleMessageSelectWithAdapterPosition(adapterPosition);
-                break;
-            }
-            case R.id.reply: {
-                Message message = getMessageAtPosition(adapterPosition);
-                onReply(message);
-                break;
-            }
-            case R.id.reply_all: {
-                Message message = getMessageAtPosition(adapterPosition);
-                onReplyAll(message);
-                break;
-            }
-            case R.id.forward: {
-                Message message = getMessageAtPosition(adapterPosition);
-                onForward(message);
-                break;
-            }
-            case R.id.send_again: {
-                Message message = getMessageAtPosition(adapterPosition);
-                onResendMessage(message);
-                mSelectedCount = 0;
-                break;
-            }
-            case R.id.same_sender: {
-                Cursor cursor = (Cursor) mAdapter.getItem(adapterPosition);
-                String senderAddress = getSenderAddressFromCursor(cursor);
-                if (senderAddress != null) {
-                    mFragmentListener.showMoreFromSameSender(senderAddress);
-                }
-                break;
-            }
-            case R.id.delete: {
-                Message message = getMessageAtPosition(adapterPosition);
-                onDelete(message);
-                break;
-            }
-            case R.id.mark_as_read: {
-                setFlag(adapterPosition, Flag.SEEN, true);
-                break;
-            }
-            case R.id.mark_as_unread: {
-                setFlag(adapterPosition, Flag.SEEN, false);
-                break;
-            }
-            case R.id.flag: {
-                setFlag(adapterPosition, Flag.FLAGGED, true);
-                break;
-            }
-            case R.id.unflag: {
-                setFlag(adapterPosition, Flag.FLAGGED, false);
-                break;
-            }
-
-            // only if the account supports this
-            case R.id.archive: {
-                Message message = getMessageAtPosition(adapterPosition);
-                onArchive(message);
-                break;
-            }
-            case R.id.spam: {
-                Message message = getMessageAtPosition(adapterPosition);
-                onSpam(message);
-                break;
-            }
-            case R.id.move: {
-                Message message = getMessageAtPosition(adapterPosition);
-                onMove(message);
-                break;
-            }
-            case R.id.copy: {
-                Message message = getMessageAtPosition(adapterPosition);
-                onCopy(message);
-                break;
-            }
-        }
+        int itemId = item.getItemId();
+		if (itemId == R.id.deselect
+				|| itemId == R.id.select) {
+			toggleMessageSelectWithAdapterPosition(adapterPosition);
+		} else if (itemId == R.id.reply) {
+			Message message = getMessageAtPosition(adapterPosition);
+			onReply(message);
+		} else if (itemId == R.id.reply_all) {
+			Message message = getMessageAtPosition(adapterPosition);
+			onReplyAll(message);
+		} else if (itemId == R.id.forward) {
+			Message message = getMessageAtPosition(adapterPosition);
+			onForward(message);
+		} else if (itemId == R.id.send_again) {
+			Message message = getMessageAtPosition(adapterPosition);
+			onResendMessage(message);
+			mSelectedCount = 0;
+		} else if (itemId == R.id.same_sender) {
+			Cursor cursor = (Cursor) mAdapter.getItem(adapterPosition);
+			String senderAddress = getSenderAddressFromCursor(cursor);
+			if (senderAddress != null) {
+			    mFragmentListener.showMoreFromSameSender(senderAddress);
+			}
+		} else if (itemId == R.id.delete) {
+			Message message = getMessageAtPosition(adapterPosition);
+			onDelete(message);
+		} else if (itemId == R.id.mark_as_read) {
+			setFlag(adapterPosition, Flag.SEEN, true);
+		} else if (itemId == R.id.mark_as_unread) {
+			setFlag(adapterPosition, Flag.SEEN, false);
+		} else if (itemId == R.id.flag) {
+			setFlag(adapterPosition, Flag.FLAGGED, true);
+		} else if (itemId == R.id.unflag) {
+			setFlag(adapterPosition, Flag.FLAGGED, false);
+		} else if (itemId == R.id.archive) {
+			Message message = getMessageAtPosition(adapterPosition);
+			onArchive(message);
+		} else if (itemId == R.id.spam) {
+			Message message = getMessageAtPosition(adapterPosition);
+			onSpam(message);
+		} else if (itemId == R.id.move) {
+			Message message = getMessageAtPosition(adapterPosition);
+			onMove(message);
+		} else if (itemId == R.id.copy) {
+			Message message = getMessageAtPosition(adapterPosition);
+			onCopy(message);
+		}
 
         mContextMenuUniqueId = 0;
         return true;
@@ -1639,44 +1604,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
     }
 
-    public void onSwipeRightToLeft(final MotionEvent e1, final MotionEvent e2) {
-        // Handle right-to-left as an un-select
-        handleSwipe(e1, false);
-    }
-
-    public void onSwipeLeftToRight(final MotionEvent e1, final MotionEvent e2) {
-        // Handle left-to-right as a select.
-        handleSwipe(e1, true);
-    }
-
-    /**
-     * Handle a select or unselect swipe event.
-     *
-     * @param downMotion
-     *         Event that started the swipe
-     * @param selected
-     *         {@code true} if this was an attempt to select (i.e. left to right).
-     */
-    private void handleSwipe(final MotionEvent downMotion, final boolean selected) {
-        int x = (int) downMotion.getRawX();
-        int y = (int) downMotion.getRawY();
-
-        Rect headerRect = new Rect();
-        mListView.getGlobalVisibleRect(headerRect);
-
-        // Only handle swipes in the visible area of the message list
-        if (headerRect.contains(x, y)) {
-            int[] listPosition = new int[2];
-            mListView.getLocationOnScreen(listPosition);
-
-            int listX = x - listPosition[0];
-            int listY = y - listPosition[1];
-
-            int listViewPosition = mListView.pointToPosition(listX, listY);
-
-            toggleMessageSelect(listViewPosition);
-        }
-    }
 
     private int listViewToAdapterPosition(int position) {
         if (position > 0 && position <= mAdapter.getCount()) {
@@ -1838,8 +1765,10 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             MessageViewHolder holder = new MessageViewHolder();
             holder.date = (TextView) view.findViewById(R.id.date);
             holder.chip = view.findViewById(R.id.chip);
-
-
+            
+            // modified by lxc at 2013-11-25
+            holder.encrypt_status = (TextView) view.findViewById(R.id.encrypt_status);
+            
             if (mPreviewLines == 0 && mContactsPictureLoader == null) {
                 view.findViewById(R.id.preview).setVisibility(View.GONE);
                 holder.preview = (TextView) view.findViewById(R.id.sender_compact);
@@ -1890,8 +1819,7 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
             holder.selected = (CheckBox) view.findViewById(R.id.selected_checkbox);
             holder.selected.setOnClickListener(holder);
-
-
+            
             view.setTag(holder);
 
             return view;
@@ -1973,7 +1901,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
                     holder.contactBadge.setPadding(0, 0, 0, 0);
                     mContactsPictureLoader.loadContactPicture(counterpartyAddress, holder.contactBadge);
                 } else {
-                    holder.contactBadge.assignContactUri(null);
                     holder.contactBadge.setImageResource(R.drawable.ic_contact_picture);
                 }
             }
@@ -2092,11 +2019,35 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
                 holder.subject.setText(subject);
             }
 
+            // modified lxc at 2013-11-25
+            if (holder.encrypt_status != null) {
+            	
+            	String encryStatus = null;
+            	try{
+            		encryStatus = cursor.getString(ENCRY_STATUS_COLUMN);
+            	}catch(Exception e) {
+            		Log.e("lxc", "出现异常");
+            		e.printStackTrace();
+            	}
+            	
+            	if( encryStatus != null && "Y".equalsIgnoreCase(encryStatus)){
+					holder.encrypt_status.setVisibility(View.VISIBLE);
+					holder.encrypt_status.setBackgroundDrawable(getResources()
+							.getDrawable(R.drawable.ic_button_lock_min));
+				} else {
+					holder.encrypt_status.setVisibility(View.GONE);
+				}
+			}
+            
             holder.date.setText(displayDate);
         }
     }
 
     class MessageViewHolder implements View.OnClickListener {
+    	
+    	// modified by lxc at 2013-11-25
+    	public TextView encrypt_status;
+    	
         public TextView subject;
         public TextView preview;
         public TextView from;
@@ -2112,15 +2063,13 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         public void onClick(View view) {
             if (position != -1) {
 
-                switch (view.getId()) {
-                    case R.id.selected_checkbox:
-                        toggleMessageSelectWithAdapterPosition(position);
-                        break;
-                    case R.id.flagged_bottom_right:
-                    case R.id.flagged_center_right:
-                        toggleMessageFlagWithAdapterPosition(position);
-                        break;
-                }
+                int id = view.getId();
+				if (id == R.id.selected_checkbox) {
+					toggleMessageSelectWithAdapterPosition(position);
+				} else if (id == R.id.flagged_bottom_right
+						|| id == R.id.flagged_center_right) {
+					toggleMessageFlagWithAdapterPosition(position);
+				}
             }
         }
     }
@@ -2834,67 +2783,38 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            /*
-             * In the following we assume that we can't move or copy
-             * mails to the same folder. Also that spam isn't available if we are
-             * in the spam folder,same for archive.
-             *
-             * This is the case currently so safe assumption.
-             */
-            switch (item.getItemId()) {
-            case R.id.delete: {
-                List<Message> messages = getCheckedMessages();
-                onDelete(messages);
-                mSelectedCount = 0;
-                break;
-            }
-            case R.id.mark_as_read: {
-                setFlagForSelected(Flag.SEEN, true);
-                break;
-            }
-            case R.id.mark_as_unread: {
-                setFlagForSelected(Flag.SEEN, false);
-                break;
-            }
-            case R.id.flag: {
-                setFlagForSelected(Flag.FLAGGED, true);
-                break;
-            }
-            case R.id.unflag: {
-                setFlagForSelected(Flag.FLAGGED, false);
-                break;
-            }
-            case R.id.select_all: {
-                selectAll();
-                break;
-            }
-
-            // only if the account supports this
-            case R.id.archive: {
-                List<Message> messages = getCheckedMessages();
-                onArchive(messages);
-                mSelectedCount = 0;
-                break;
-            }
-            case R.id.spam: {
-                List<Message> messages = getCheckedMessages();
-                onSpam(messages);
-                mSelectedCount = 0;
-                break;
-            }
-            case R.id.move: {
-                List<Message> messages = getCheckedMessages();
-                onMove(messages);
-                mSelectedCount = 0;
-                break;
-            }
-            case R.id.copy: {
-                List<Message> messages = getCheckedMessages();
-                onCopy(messages);
-                mSelectedCount = 0;
-                break;
-            }
-            }
+            int itemId = item.getItemId();
+			if (itemId == R.id.delete) {
+				List<Message> messages = getCheckedMessages();
+				onDelete(messages);
+				mSelectedCount = 0;
+			} else if (itemId == R.id.mark_as_read) {
+				setFlagForSelected(Flag.SEEN, true);
+			} else if (itemId == R.id.mark_as_unread) {
+				setFlagForSelected(Flag.SEEN, false);
+			} else if (itemId == R.id.flag) {
+				setFlagForSelected(Flag.FLAGGED, true);
+			} else if (itemId == R.id.unflag) {
+				setFlagForSelected(Flag.FLAGGED, false);
+			} else if (itemId == R.id.select_all) {
+				selectAll();
+			} else if (itemId == R.id.archive) {
+				List<Message> messages = getCheckedMessages();
+				onArchive(messages);
+				mSelectedCount = 0;
+			} else if (itemId == R.id.spam) {
+				List<Message> messages = getCheckedMessages();
+				onSpam(messages);
+				mSelectedCount = 0;
+			} else if (itemId == R.id.move) {
+				List<Message> messages = getCheckedMessages();
+				onMove(messages);
+				mSelectedCount = 0;
+			} else if (itemId == R.id.copy) {
+				List<Message> messages = getCheckedMessages();
+				onCopy(messages);
+				mSelectedCount = 0;
+			}
             if (mSelectedCount == 0) {
                 mActionMode.finish();
             }
@@ -2905,25 +2825,19 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
     @Override
     public void doPositiveClick(int dialogId) {
-        switch (dialogId) {
-            case R.id.dialog_confirm_spam: {
-                onSpamConfirmed(mActiveMessages);
-                // No further need for this reference
-                mActiveMessages = null;
-                break;
-            }
-        }
+        if (dialogId == R.id.dialog_confirm_spam) {
+			onSpamConfirmed(mActiveMessages);
+			// No further need for this reference
+			mActiveMessages = null;
+		}
     }
 
     @Override
     public void doNegativeClick(int dialogId) {
-        switch (dialogId) {
-            case R.id.dialog_confirm_spam: {
-                // No further need for this reference
-                mActiveMessages = null;
-                break;
-            }
-        }
+        if (dialogId == R.id.dialog_confirm_spam) {
+			// No further need for this reference
+			mActiveMessages = null;
+		}
     }
 
     @Override
@@ -3622,4 +3536,5 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         return (mAllAccounts || !isSingleAccountMode() || !isSingleFolderMode() ||
                 isRemoteFolder());
     }
+    
 }

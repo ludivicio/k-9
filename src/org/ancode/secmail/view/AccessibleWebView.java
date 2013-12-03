@@ -16,6 +16,11 @@
 
 package org.ancode.secmail.view;
 
+import java.util.Set;
+
+import org.ancode.secmail.activity.AccessibleEmailContentActivity;
+import org.ancode.secmail.controller.MessagingListener;
+
 import android.content.Context;
 import android.content.Intent;
 import android.text.Html;
@@ -24,11 +29,6 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
-
-import java.util.Set;
-
-import org.ancode.secmail.activity.AccessibleEmailContentActivity;
-import org.ancode.secmail.controller.MessagingListener;
 
 public class AccessibleWebView extends TextView {
     private Context mContext;

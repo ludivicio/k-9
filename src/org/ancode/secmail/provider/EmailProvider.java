@@ -44,7 +44,7 @@ import android.net.Uri;
 public class EmailProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-    public static final String AUTHORITY = "com.fsck.k9.provider.email";
+    public static final String AUTHORITY = "org.ancode.secmail.provider.email";
 
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
@@ -148,6 +148,9 @@ public class EmailProvider extends ContentProvider {
         public static final String FLAGGED = "flagged";
         public static final String ANSWERED = "answered";
         public static final String FORWARDED = "forwarded";
+        
+        // modified by lxc at 2013-11-25
+        public static final String ENCRY_STATUS = "encry_status";
     }
 
     private interface InternalMessageColumns extends MessageColumns {

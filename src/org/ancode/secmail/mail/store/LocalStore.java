@@ -25,26 +25,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.james.mime4j.codec.QuotedPrintableOutputStream;
-import org.apache.james.mime4j.util.MimeUtil;
-
-import android.app.Application;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.net.Uri;
-import android.util.Log;
-
 import org.ancode.secmail.Account;
+import org.ancode.secmail.Account.MessageFormat;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.Preferences;
 import org.ancode.secmail.R;
-import org.ancode.secmail.Account.MessageFormat;
 import org.ancode.secmail.activity.Search;
 import org.ancode.secmail.controller.MessageRemovalListener;
 import org.ancode.secmail.controller.MessageRetrievalListener;
@@ -59,18 +44,20 @@ import org.ancode.secmail.mail.FetchProfile;
 import org.ancode.secmail.mail.Flag;
 import org.ancode.secmail.mail.Folder;
 import org.ancode.secmail.mail.Message;
+import org.ancode.secmail.mail.Message.RecipientType;
 import org.ancode.secmail.mail.MessagingException;
 import org.ancode.secmail.mail.Part;
 import org.ancode.secmail.mail.Store;
-import org.ancode.secmail.mail.Message.RecipientType;
+import org.ancode.secmail.mail.crypto.v2.AesCryptor;
+import org.ancode.secmail.mail.crypto.v2.CryptorException;
 import org.ancode.secmail.mail.filter.Base64OutputStream;
 import org.ancode.secmail.mail.internet.MimeBodyPart;
 import org.ancode.secmail.mail.internet.MimeHeader;
 import org.ancode.secmail.mail.internet.MimeMessage;
 import org.ancode.secmail.mail.internet.MimeMultipart;
 import org.ancode.secmail.mail.internet.MimeUtility;
-import org.ancode.secmail.mail.internet.TextBody;
 import org.ancode.secmail.mail.internet.MimeUtility.ViewableContainer;
+import org.ancode.secmail.mail.internet.TextBody;
 import org.ancode.secmail.mail.store.LockableDatabase.DbCallback;
 import org.ancode.secmail.mail.store.LockableDatabase.WrappedException;
 import org.ancode.secmail.mail.store.StorageManager.StorageProvider;
@@ -78,9 +65,23 @@ import org.ancode.secmail.provider.AttachmentProvider;
 import org.ancode.secmail.provider.EmailProvider;
 import org.ancode.secmail.provider.EmailProvider.MessageColumns;
 import org.ancode.secmail.search.LocalSearch;
-import org.ancode.secmail.search.SqlQueryBuilder;
 import org.ancode.secmail.search.SearchSpecification.Attribute;
 import org.ancode.secmail.search.SearchSpecification.Searchfield;
+import org.ancode.secmail.search.SqlQueryBuilder;
+import org.apache.commons.io.IOUtils;
+import org.apache.james.mime4j.codec.QuotedPrintableOutputStream;
+import org.apache.james.mime4j.util.MimeUtil;
+
+import android.app.Application;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.net.Uri;
+import android.util.Log;
 
 /**
  * <pre>
@@ -104,7 +105,7 @@ public class LocalStore extends Store implements Serializable {
         "subject, sender_list, date, uid, flags, messages.id, to_list, cc_list, " +
         "bcc_list, reply_to_list, attachment_count, internal_date, messages.message_id, " +
         "folder_id, preview, threads.id, threads.root, deleted, read, flagged, answered, " +
-        "forwarded ";
+        "forwarded, encry_status ";
 
     private static final String GET_FOLDER_COLS =
         "folders.id, name, visible_limit, last_updated, status, push_state, last_pushed, " +
@@ -262,13 +263,14 @@ public class LocalStore extends Store implements Serializable {
                             "internal_date INTEGER, " +
                             "message_id TEXT, " +
                             "preview TEXT, " +
-                            "mime_type TEXT, "+
+                            "mime_type TEXT, " +
+                            "encry_status TEXT, " +
                             "normalized_subject_hash INTEGER, " +
                             "empty INTEGER, " +
                             "read INTEGER default 0, " +
                             "flagged INTEGER default 0, " +
                             "answered INTEGER default 0, " +
-                            "forwarded INTEGER default 0" +
+                            "forwarded INTEGER default 0 " +
                             ")");
 
                     db.execSQL("DROP TABLE IF EXISTS headers");
@@ -1343,6 +1345,10 @@ public class LocalStore extends Store implements Serializable {
         // know whether or not an unread message added to the local folder is actually "new" or not.
         private Integer mLastUid = null;
 
+        // modified by lxc at 2013-11-23
+        private int mUnreadMessageCount = -1;
+		private int mFlaggedMessageCount = -1;
+        
         public LocalFolder(String name) {
             super(LocalStore.this.mAccount);
             this.mName = name;
@@ -1415,7 +1421,9 @@ public class LocalStore extends Store implements Serializable {
         }
 
         private void open(Cursor cursor) throws MessagingException {
-            mFolderId = cursor.getInt(FOLDER_ID_INDEX);
+            
+        	
+        	mFolderId = cursor.getInt(FOLDER_ID_INDEX);
             mName = cursor.getString(FOLDER_NAME_INDEX);
             mVisibleLimit = cursor.getInt(FOLDER_VISIBLE_LIMIT_INDEX);
             mPushState = cursor.getString(FOLDER_PUSH_STATE_INDEX);
@@ -1595,6 +1603,21 @@ public class LocalStore extends Store implements Serializable {
             }
         }
 
+
+        // modified by lxc at 2013-11-23
+		public void setUnreadMessageCount(final int unreadMessageCount) throws MessagingException {
+			mUnreadMessageCount = Math.max(0, unreadMessageCount);
+			updateFolderColumn("unread_count", mUnreadMessageCount);
+		}
+		
+		// modified by lxc at 2013-11-23
+		public void setFlaggedMessageCount(final int flaggedMessageCount) throws MessagingException {
+			mFlaggedMessageCount = Math.max(0, flaggedMessageCount);
+			updateFolderColumn("flagged_count", mFlaggedMessageCount);
+		}
+        
+        
+        
         @Override
         public void setLastChecked(final long lastChecked) throws MessagingException {
             try {
@@ -1964,18 +1987,18 @@ public class LocalStore extends Store implements Serializable {
                                             bp.setEncoding(encoding);
                                             if (name != null) {
                                                 bp.setHeader(MimeHeader.HEADER_CONTENT_TYPE,
-                                                             String.format("%s;\r\n name=\"%s\"",
+                                                             String.format("%s;\n name=\"%s\"",
                                                                            type,
                                                                            name));
                                                 bp.setHeader(MimeHeader.HEADER_CONTENT_DISPOSITION,
-                                                             String.format("%s;\r\n filename=\"%s\";\r\n size=%d",
+                                                             String.format("%s;\n filename=\"%s\";\n size=%d",
                                                                            contentDisposition,
                                                                            name, // TODO: Should use encoded word defined in RFC 2231.
                                                                            size));
                                             } else {
                                                 bp.setHeader(MimeHeader.HEADER_CONTENT_TYPE, type);
                                                 bp.setHeader(MimeHeader.HEADER_CONTENT_DISPOSITION,
-                                                        String.format("%s;\r\n size=%d",
+                                                        String.format("%s;\n size=%d",
                                                                       contentDisposition,
                                                                       size));
                                             }
@@ -2355,7 +2378,11 @@ public class LocalStore extends Store implements Serializable {
                 @Override
                 public Message doDbWork(final SQLiteDatabase db) throws WrappedException, UnavailableStorageException {
                     try {
-                        appendMessages(new Message[] { message });
+                    	
+                    	// modified by lxc at 2013-11-25
+                        // appendMessages(new Message[] { message });
+                        appendMessages(new Message[] { message }, true);
+                        
                         final String uid = message.getUid();
                         final Message result = getMessage(uid);
                         runnable.run();
@@ -2384,6 +2411,12 @@ public class LocalStore extends Store implements Serializable {
         public Map<String, String> appendMessages(Message[] messages) throws MessagingException {
             return appendMessages(messages, false);
         }
+        
+        // modified by lxc at 2013-11-23
+        public Map<String, String> appendMessages(Message[] messages, boolean receive) throws MessagingException {
+			return appendMessages2(messages, false, receive);
+		}
+        
 
         public void destroyMessages(final Message[] messages) {
             try {
@@ -2405,6 +2438,8 @@ public class LocalStore extends Store implements Serializable {
             }
         }
 
+        
+        
         private ThreadInfo getThreadInfo(SQLiteDatabase db, String messageId, boolean onlyEmpty) {
             String sql = "SELECT t.id, t.message_id, t.root, t.parent " +
                     "FROM messages m " +
@@ -2448,7 +2483,7 @@ public class LocalStore extends Store implements Serializable {
          * @param copy
          * @return Map<String, String> uidMap of srcUids -> destUids
          */
-        private Map<String, String> appendMessages(final Message[] messages, final boolean copy) throws MessagingException {
+        private Map<String, String> appendMessages2(final Message[] messages, final boolean copy, final boolean receive) throws MessagingException {
             open(OPEN_MODE_RW);
             try {
                 final Map<String, String> uidMap = new HashMap<String, String>();
@@ -2556,7 +2591,13 @@ public class LocalStore extends Store implements Serializable {
                                            ? System.currentTimeMillis() : message.getInternalDate().getTime());
                                     cv.put("mime_type", message.getMimeType());
                                     cv.put("empty", 0);
-
+                                   
+                                    // modified by lxc at 2013-11-25
+                                    if (receive) {
+										cv.put("encry_status",
+												((MimeMessage) message).getCryptUUIDMap().isEmpty() ? "N" : "Y");
+									}
+                                    
                                     String messageId = message.getMessageId();
                                     if (messageId != null) {
                                         cv.put("message_id", messageId);
@@ -3461,6 +3502,9 @@ public class LocalStore extends Store implements Serializable {
         private long mThreadId;
         private long mRootId;
 
+        // modified by lxc at 2013-11-25
+        private boolean isEncry = false;
+        
         public LocalMessage() {
         }
 
@@ -3529,6 +3573,10 @@ public class LocalStore extends Store implements Serializable {
             setFlagInternal(Flag.FLAGGED, flagged);
             setFlagInternal(Flag.ANSWERED, answered);
             setFlagInternal(Flag.FORWARDED, forwarded);
+            
+            // modified by lxc at 2013-11-25
+            String encry_status = cursor.getString(22);
+			this.setEncry(encry_status != null && "Y".equalsIgnoreCase(encry_status));
         }
 
         /**
@@ -3601,7 +3649,16 @@ public class LocalStore extends Store implements Serializable {
             mMessageDirty = true;
         }
 
+        // modified by lxc at 2013-11-25
+        public boolean isEncry() {
+			return isEncry;
+		}
 
+		public void setEncry(boolean isEncry) {
+			this.isEncry = isEncry;
+		}
+        
+        
         @Override
         public void setMessageId(String messageId) {
             mMessageId = messageId;
@@ -3617,6 +3674,11 @@ public class LocalStore extends Store implements Serializable {
             return mAttachmentCount;
         }
 
+        // modified by lxc at 2013-11-24
+        public void decreaseAttachmentCount() {
+			mAttachmentCount -= 1;
+		}
+        
         @Override
         public void setFrom(Address from) throws MessagingException {
             this.mFrom = new Address[] { from };
@@ -4065,12 +4127,21 @@ public class LocalStore extends Store implements Serializable {
     public static class LocalAttachmentBody extends BinaryAttachmentBody {
         private Application mApplication;
         private Uri mUri;
+        
+        // modified by lxc at 2013-11-24
+        private String aeskey;
 
         public LocalAttachmentBody(Uri uri, Application application) {
             mApplication = application;
             mUri = uri;
         }
 
+        public LocalAttachmentBody(Uri uri, Application application, String aeskey) {
+			mApplication = application;
+			mUri = uri;
+			this.aeskey = aeskey;
+		}
+        
         @Override
         public InputStream getInputStream() throws MessagingException {
             try {
@@ -4084,9 +4155,40 @@ public class LocalStore extends Store implements Serializable {
             }
         }
 
-        public Uri getContentUri() {
-            return mUri;
+        @Override
+        public void writeTo(OutputStream out) throws IOException, MessagingException {
+            // modified by lxc at 2013-11-24
+            InputStream in = getInputStream();
+			Base64OutputStream base64Out = new Base64OutputStream(out);
+			if (aeskey != null) {
+				try {
+					AesCryptor cryptor = new AesCryptor(aeskey);
+					cryptor.encrypt(in, base64Out);
+				} catch (CryptorException e) {
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					IOUtils.copy(in, base64Out);
+				} finally {
+					base64Out.close();
+				}
+			}
+			in.close();
+            
         }
+
+        public Uri getContentUri() {
+			return mUri;
+		}
+
+		public String getAeskey() {
+			return aeskey;
+		}
+
+		public void setAeskey(String aeskey) {
+			this.aeskey = aeskey;
+		}
     }
 
     /**

@@ -26,6 +26,9 @@ public class MimeHeader {
     public static final String HEADER_CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
     public static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
     public static final String HEADER_CONTENT_ID = "Content-ID";
+    
+    // modified by lxc at 2013-11-23
+    public static final String HEADER_REG_CODE = "regcode";
 
     /**
      * Fields that should be omitted when writing the header using writeTo()
@@ -71,6 +74,17 @@ public class MimeHeader {
         return names;
     }
 
+    // modified by lxc at 2013-11-23
+    public Map<String, String> getCryptUUIDMap(){
+    	Map<String, String> map = new HashMap<String, String>();
+    	for (Field field : mFields) {
+            if (field.name.startsWith("secmail-uuid")) {
+                map.put(field.name, field.value);
+            }
+        }
+        return map;
+    }
+    
     public String[] getHeader(String name) {
         ArrayList<String> values = new ArrayList<String>();
         for (Field field : mFields) {

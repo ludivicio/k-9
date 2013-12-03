@@ -5,6 +5,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.MessageCompose;
+import org.ancode.secmail.mail.Message;
+import org.ancode.secmail.mail.MessagingException;
+import org.ancode.secmail.mail.Part;
+import org.ancode.secmail.mail.internet.MimeUtility;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentUris;
@@ -15,13 +22,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
-
-import org.ancode.secmail.R;
-import org.ancode.secmail.activity.MessageCompose;
-import org.ancode.secmail.mail.Message;
-import org.ancode.secmail.mail.MessagingException;
-import org.ancode.secmail.mail.Part;
-import org.ancode.secmail.mail.internet.MimeUtility;
 
 /**
  * APG integration.

@@ -289,7 +289,7 @@ public abstract class Message implements Part, CompositeBody {
      * <strong>Note:</strong>
      * This method was introduced as a hack to prevent {@code ConcurrentModificationException}s. It
      * shouldn't be used unless absolutely necessary. See the comment in
-     * {@link com.fsck.k9.activity.MessageView.Listener#loadMessageForViewHeadersAvailable(org.ancode.secmail.Account, String, String, Message)}
+     * {@link org.ancode.secmail.activity.MessageView.Listener#loadMessageForViewHeadersAvailable(org.ancode.secmail.Account, String, String, Message)}
      * for more information.
      * </p>
      */

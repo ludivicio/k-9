@@ -18,7 +18,6 @@ import org.ancode.secmail.mail.filter.PeekableInputStream;
 import org.ancode.secmail.mail.filter.SmtpDataStuffing;
 import org.ancode.secmail.mail.internet.MimeUtility;
 import org.ancode.secmail.mail.store.TrustManagerFactory;
-import org.ancode.secmail.mail.store.TrustedSocketFactory;
 import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
 
 import java.io.BufferedInputStream;
@@ -246,7 +245,7 @@ public class SmtpTransport extends Transport {
                         sslContext.init(null, new TrustManager[] {
                                             TrustManagerFactory.get(mHost, secure)
                                         }, new SecureRandom());
-                        mSocket = TrustedSocketFactory.createSocket(sslContext);
+                        mSocket = sslContext.getSocketFactory().createSocket();
                         mSocket.connect(socketAddress, SOCKET_CONNECT_TIMEOUT);
                     } else {
                         mSocket = new Socket();
@@ -305,8 +304,8 @@ public class SmtpTransport extends Transport {
                     sslContext.init(null, new TrustManager[] {
                                         TrustManagerFactory.get(mHost, secure)
                                     }, new SecureRandom());
-                    mSocket = TrustedSocketFactory.createSocket(sslContext, mSocket, mHost,
-                              mPort, true);
+                    mSocket = sslContext.getSocketFactory().createSocket(mSocket, mHost, mPort,
+                              true);
                     mIn = new PeekableInputStream(new BufferedInputStream(mSocket.getInputStream(),
                                                   1024));
                     mOut = mSocket.getOutputStream();

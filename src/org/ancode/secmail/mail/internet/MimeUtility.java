@@ -1,23 +1,11 @@
 
 package org.ancode.secmail.mail.internet;
 
-import android.content.Context;
-import android.util.Log;
-
-import org.ancode.secmail.K9;
-import org.ancode.secmail.R;
-import org.ancode.secmail.helper.HtmlConverter;
-import org.ancode.secmail.mail.*;
-import org.ancode.secmail.mail.Message.RecipientType;
-import org.ancode.secmail.mail.internet.BinaryTempFileBody.BinaryTempFileBodyInputStream;
-import org.apache.commons.io.IOUtils;
-import org.apache.james.mime4j.codec.Base64InputStream;
-import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
-import org.apache.james.mime4j.util.MimeUtil;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -26,8 +14,26 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
+
+import org.ancode.secmail.K9;
+import org.ancode.secmail.R;
+import org.ancode.secmail.helper.HtmlConverter;
+import org.ancode.secmail.mail.Address;
+import org.ancode.secmail.mail.Body;
+import org.ancode.secmail.mail.BodyPart;
+import org.ancode.secmail.mail.Message;
+import org.ancode.secmail.mail.Message.RecipientType;
+import org.ancode.secmail.mail.MessagingException;
+import org.ancode.secmail.mail.Multipart;
+import org.ancode.secmail.mail.Part;
+import org.ancode.secmail.mail.internet.BinaryTempFileBody.BinaryTempFileBodyInputStream;
+import org.apache.commons.io.IOUtils;
+import org.apache.james.mime4j.codec.Base64InputStream;
+import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
+import org.apache.james.mime4j.util.MimeUtil;
+
+import android.content.Context;
+import android.util.Log;
 
 
 public class MimeUtility {
@@ -1732,7 +1738,7 @@ public class MimeUtility {
             text.append(context.getString(R.string.message_compose_quote_header_from));
             text.append(' ');
             text.append(Address.toString(from));
-            text.append("\r\n");
+            text.append("\n");
         }
 
         // To: <recipients>
@@ -1741,7 +1747,7 @@ public class MimeUtility {
             text.append(context.getString(R.string.message_compose_quote_header_to));
             text.append(' ');
             text.append(Address.toString(to));
-            text.append("\r\n");
+            text.append("\n");
         }
 
         // Cc: <recipients>
@@ -1750,7 +1756,7 @@ public class MimeUtility {
             text.append(context.getString(R.string.message_compose_quote_header_cc));
             text.append(' ');
             text.append(Address.toString(cc));
-            text.append("\r\n");
+            text.append("\n");
         }
 
         // Date: <date>
@@ -1759,7 +1765,7 @@ public class MimeUtility {
             text.append(context.getString(R.string.message_compose_quote_header_send_date));
             text.append(' ');
             text.append(date.toString());
-            text.append("\r\n");
+            text.append("\n");
         }
 
         // Subject: <subject>
@@ -1771,7 +1777,7 @@ public class MimeUtility {
         } else {
             text.append(subject);
         }
-        text.append("\r\n\r\n");
+        text.append("\n\n");
     }
 
     /**
@@ -1919,7 +1925,7 @@ public class MimeUtility {
         if (prependDivider) {
             String filename = getPartName(part);
 
-            text.append("\r\n\r\n");
+            text.append("\n\n");
             int len = filename.length();
             if (len > 0) {
                 if (len > TEXT_DIVIDER_LENGTH - FILENAME_PREFIX_LENGTH - FILENAME_SUFFIX_LENGTH) {
@@ -1934,7 +1940,7 @@ public class MimeUtility {
             } else {
                 text.append(TEXT_DIVIDER);
             }
-            text.append("\r\n\r\n");
+            text.append("\n\n");
         }
     }
 
@@ -3416,7 +3422,7 @@ public class MimeUtility {
         if (part.isMimeType("text/plain")) {
             String bodyText = getTextFromPart(part);
             if (bodyText != null) {
-                text = bodyText;
+                text = fixDraftTextBody(bodyText);
                 html = HtmlConverter.textToHtml(text);
             }
         } else if (part.isMimeType("multipart/alternative") &&
@@ -3427,14 +3433,31 @@ public class MimeUtility {
                 String bodyText = getTextFromPart(bodyPart);
                 if (bodyText != null) {
                     if (text.length() == 0 && bodyPart.isMimeType("text/plain")) {
-                        text = bodyText;
+                        text = fixDraftTextBody(bodyText);
                     } else if (html.length() == 0 && bodyPart.isMimeType("text/html")) {
-                        html = bodyText;
+                        html = fixDraftTextBody(bodyText);
                     }
                 }
             }
         }
 
         return new ViewableContainer(text, html, attachments);
+    }
+
+    /**
+     * Fix line endings of text bodies in draft messages.
+     *
+     * <p>
+     * We create drafts with LF line endings. The values in the identity header are based on that.
+     * So we replace CRLF with LF when loading messages (from the server).
+     * </p>
+     *
+     * @param text
+     *         The body text with CRLF line endings
+     *
+     * @return The text with LF line endings
+     */
+    private static String fixDraftTextBody(String text) {
+        return text.replace("\r\n", "\n");
     }
 }

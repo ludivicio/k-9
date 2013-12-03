@@ -9,6 +9,7 @@ import org.ancode.secmail.helper.Utility;
 import org.ancode.secmail.mail.*;
 import org.ancode.secmail.mail.filter.EOLConvertingOutputStream;
 import org.ancode.secmail.mail.internet.MimeMessage;
+import org.ancode.secmail.mail.transport.TrustedSocketFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
@@ -1079,7 +1080,7 @@ public class WebDavStore extends Store {
 
             SchemeRegistry reg = mHttpClient.getConnectionManager().getSchemeRegistry();
             try {
-                Scheme s = new Scheme("https", new WebDavSocketFactory(mHost, mSecure), 443);
+                Scheme s = new Scheme("https", new TrustedSocketFactory(mHost, mSecure), 443);
                 reg.register(s);
             } catch (NoSuchAlgorithmException nsa) {
                 Log.e(K9.LOG_TAG, "NoSuchAlgorithmException in getHttpClient: " + nsa);

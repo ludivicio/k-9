@@ -7,12 +7,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import android.content.SharedPreferences;
-
 import org.ancode.secmail.EmailAddressValidator;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.R;
-import org.ancode.secmail.preferences.Settings.*;
+import org.ancode.secmail.preferences.Settings.BooleanSetting;
+import org.ancode.secmail.preferences.Settings.InvalidSettingValueException;
+import org.ancode.secmail.preferences.Settings.SettingsDescription;
+import org.ancode.secmail.preferences.Settings.SettingsUpgrader;
+import org.ancode.secmail.preferences.Settings.V;
+
+import android.content.SharedPreferences;
 
 public class IdentitySettings {
     public static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;

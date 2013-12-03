@@ -1,7 +1,37 @@
 package org.ancode.secmail.fragment;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.ChooseFolder;
+import org.ancode.secmail.activity.MessageReference;
+import org.ancode.secmail.controller.MessagingController;
+import org.ancode.secmail.controller.MessagingListener;
+import org.ancode.secmail.crypto.CryptoProvider.CryptoDecryptCallback;
+import org.ancode.secmail.crypto.PgpData;
+import org.ancode.secmail.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
+import org.ancode.secmail.helper.FileBrowserHelper;
+import org.ancode.secmail.helper.FileBrowserHelper.FileBrowserFailOverCallback;
+import org.ancode.secmail.mail.Flag;
+import org.ancode.secmail.mail.Message;
+import org.ancode.secmail.mail.MessagingException;
+import org.ancode.secmail.mail.Part;
+import org.ancode.secmail.mail.crypto.v2.AsyncHttpTools;
+import org.ancode.secmail.mail.crypto.v2.HttpPostUtil;
+import org.ancode.secmail.mail.crypto.v2.InvalidKeyCryptorException;
+import org.ancode.secmail.mail.crypto.v2.PostResultV2;
+import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
+import org.ancode.secmail.view.AttachmentView;
+import org.ancode.secmail.view.AttachmentView.AttachmentFileDownloadCallback;
+import org.ancode.secmail.view.MessageHeader;
+import org.ancode.secmail.view.SingleMessageView;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +43,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,29 +52,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
-
-import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-import org.ancode.secmail.activity.ChooseFolder;
-import org.ancode.secmail.activity.MessageReference;
-import org.ancode.secmail.controller.MessagingController;
-import org.ancode.secmail.controller.MessagingListener;
-import org.ancode.secmail.crypto.PgpData;
-import org.ancode.secmail.crypto.CryptoProvider.CryptoDecryptCallback;
-import org.ancode.secmail.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
-import org.ancode.secmail.helper.FileBrowserHelper;
-import org.ancode.secmail.helper.FileBrowserHelper.FileBrowserFailOverCallback;
-import org.ancode.secmail.mail.Flag;
-import org.ancode.secmail.mail.Message;
-import org.ancode.secmail.mail.MessagingException;
-import org.ancode.secmail.mail.Part;
-import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
-import org.ancode.secmail.view.AttachmentView;
-import org.ancode.secmail.view.MessageHeader;
-import org.ancode.secmail.view.SingleMessageView;
-import org.ancode.secmail.view.AttachmentView.AttachmentFileDownloadCallback;
 
 
 public class MessageViewFragment extends SherlockFragment implements OnClickListener,
@@ -501,16 +509,12 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.download: {
-                ((AttachmentView)view).saveFile();
-                break;
-            }
-            case R.id.download_remainder: {
-                onDownloadRemainder();
-                break;
-            }
-        }
+        int id = view.getId();
+		if (id == R.id.download) {
+			((AttachmentView)view).saveFile();
+		} else if (id == R.id.download_remainder) {
+			onDownloadRemainder();
+		}
     }
 
     private void setProgress(boolean enable) {
@@ -595,15 +599,19 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        mMessage = message;
-                        mMessageView.setMessage(account, (LocalMessage) message, mPgpData,
-                                mController, mListener);
-                        mFragmentListener.updateMenu();
-
-                    } catch (MessagingException e) {
-                        Log.v(K9.LOG_TAG, "loadMessageForViewBodyAvailable", e);
-                    }
+                	mMessage = message;
+                	
+                	// modified by lxc at 2013-11-27
+                	loadCryptMessage((LocalMessage) message, account, mPgpData);
+                	
+//                    try {
+//                    	mMessage = message;
+//                        mMessageView.setMessage(account, (LocalMessage) message, mPgpData,
+//                                mController, mListener);
+//                        mFragmentListener.updateMenu();
+//                    } catch (MessagingException e) {
+//                        Log.v(K9.LOG_TAG, "loadMessageForViewBodyAvailable", e);
+//                    }
                 }
             });
         }
@@ -714,53 +722,139 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
             });
         }
     }
+    
+    
+    /**
+     * Add by lxc at 2013-11-27
+     * 
+     * Get uuids from the message header.
+     * @param message 
+     * @param account
+     * @return the uuids
+     */
+    private List<String> getUuids(LocalMessage message, Account account) {
+    	// modified by lxc at 2013-11-24
+        Map<String, String> cryptUuidMap = message.getCryptUUIDMap();
+        List<String> uuidList = new ArrayList<String>();
+		if (cryptUuidMap != null && !cryptUuidMap.isEmpty() && account.hasReg()) {
+			List<String> keys = new ArrayList<String>(cryptUuidMap.keySet());
+			Collections.sort(keys);
+			
+			for (String key : keys) {
+				uuidList.add(cryptUuidMap.get(key));
+			}
+		}
+		return uuidList;
+    }
+    
+    /**
+     * Add by lxc at 2013-11-27
+     * 
+     * Get the aeskeys from the gezimail server, then set the message.
+     * @param message
+     * @param account
+     * @param pgpData
+     */
+    private void loadCryptMessage(final LocalMessage message, final Account account, final PgpData pgpData) {
+    	
+        final List<String> uuidList = getUuids(message, account);
+        final Account mAccount = account;
+		
+        // modified by lxc at 2013-11-11
+ 		// Send the post request.
+		AsyncHttpTools.execute(new AsyncHttpTools.TaskListener() {
 
+			@Override
+			public PostResultV2 executeTask() {
+				PostResultV2 pr = new PostResultV2();
+				List<String> aesKeyList = null;
+				try {
+					aesKeyList = HttpPostUtil.postReceiveEmail(mAccount, uuidList);
+					pr.setExtraData(aesKeyList);
+				} catch (InvalidKeyCryptorException e) {
+					pr.setExtraData(e);
+				}
+				return pr;
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void callBack(PostResultV2 result) {
+				
+				if(result == null) {
+					return;
+				}
+				
+				Object obj = result.getExtraData();
+				
+				if(obj instanceof ArrayList) {
+					
+					try {
+						mMessageView.setMessage(account, message, pgpData,
+						        mController, mListener, (ArrayList<String>) obj);
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
+					
+                    mFragmentListener.updateMenu();
+                    
+				} else if(obj instanceof InvalidKeyCryptorException) {
+					Toast toast = Toast.makeText(getActivity(), getActivity().getString(R.string.encrypt_mail_invalid_key),
+							Toast.LENGTH_LONG);
+					toast.setGravity(Gravity.TOP, 0, 0);
+					toast.show();
+					
+					mAccount.setRegCode(null);
+					mAccount.setAesKey(null);
+					mAccount.setDeviceUuid(null);
+					mAccount.save(Preferences.getPreferences(getActivity()));
+				}
+			}
+		});
+    }
+    
+    
     // This REALLY should be in MessageCryptoView
     @Override
     public void onDecryptDone(PgpData pgpData) {
         Account account = mAccount;
         LocalMessage message = (LocalMessage) mMessage;
-        MessagingController controller = mController;
-        Listener listener = mListener;
-        try {
-            mMessageView.setMessage(account, message, pgpData, controller, listener);
-        } catch (MessagingException e) {
-            Log.e(K9.LOG_TAG, "displayMessageBody failed", e);
-        }
+        
+        // modified by lxc at 2013-11-27
+        loadCryptMessage(message, account, pgpData);
+        
+//        MessagingController controller = mController;
+//        Listener listener = mListener;
+//        try {
+//            mMessageView.setMessage(account, message, pgpData, controller, listener);
+//        } catch (MessagingException e) {
+//            Log.e(K9.LOG_TAG, "displayMessageBody failed", e);
+//        }
+        
     }
 
     private void showDialog(int dialogId) {
         DialogFragment fragment;
-        switch (dialogId) {
-            case R.id.dialog_confirm_delete: {
-                String title = getString(R.string.dialog_confirm_delete_title);
-                String message = getString(R.string.dialog_confirm_delete_message);
-                String confirmText = getString(R.string.dialog_confirm_delete_confirm_button);
-                String cancelText = getString(R.string.dialog_confirm_delete_cancel_button);
-
-                fragment = ConfirmationDialogFragment.newInstance(dialogId, title, message,
-                        confirmText, cancelText);
-                break;
-            }
-            case R.id.dialog_confirm_spam: {
-                String title = getString(R.string.dialog_confirm_spam_title);
-                String message = getResources().getQuantityString(R.plurals.dialog_confirm_spam_message, 1);
-                String confirmText = getString(R.string.dialog_confirm_spam_confirm_button);
-                String cancelText = getString(R.string.dialog_confirm_spam_cancel_button);
-
-                fragment = ConfirmationDialogFragment.newInstance(dialogId, title, message,
-                        confirmText, cancelText);
-                break;
-            }
-            case R.id.dialog_attachment_progress: {
-                String message = getString(R.string.dialog_attachment_progress_title);
-                fragment = ProgressDialogFragment.newInstance(null, message);
-                break;
-            }
-            default: {
-                throw new RuntimeException("Called showDialog(int) with unknown dialog id.");
-            }
-        }
+        if (dialogId == R.id.dialog_confirm_delete) {
+			String title = getString(R.string.dialog_confirm_delete_title);
+			String message = getString(R.string.dialog_confirm_delete_message);
+			String confirmText = getString(R.string.dialog_confirm_delete_confirm_button);
+			String cancelText = getString(R.string.dialog_confirm_delete_cancel_button);
+			fragment = ConfirmationDialogFragment.newInstance(dialogId, title, message,
+			        confirmText, cancelText);
+		} else if (dialogId == R.id.dialog_confirm_spam) {
+			String title = getString(R.string.dialog_confirm_spam_title);
+			String message = getResources().getQuantityString(R.plurals.dialog_confirm_spam_message, 1);
+			String confirmText = getString(R.string.dialog_confirm_spam_confirm_button);
+			String cancelText = getString(R.string.dialog_confirm_spam_cancel_button);
+			fragment = ConfirmationDialogFragment.newInstance(dialogId, title, message,
+			        confirmText, cancelText);
+		} else if (dialogId == R.id.dialog_attachment_progress) {
+			String message = getString(R.string.dialog_attachment_progress_title);
+			fragment = ProgressDialogFragment.newInstance(null, message);
+		} else {
+			throw new RuntimeException("Called showDialog(int) with unknown dialog id.");
+		}
 
         fragment.setTargetFragment(this, dialogId);
         fragment.show(getFragmentManager(), getDialogTag(dialogId));
@@ -795,17 +889,12 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
 
     @Override
     public void doPositiveClick(int dialogId) {
-        switch (dialogId) {
-            case R.id.dialog_confirm_delete: {
-                delete();
-                break;
-            }
-            case R.id.dialog_confirm_spam: {
-                refileMessage(mDstFolder);
-                mDstFolder = null;
-                break;
-            }
-        }
+        if (dialogId == R.id.dialog_confirm_delete) {
+			delete();
+		} else if (dialogId == R.id.dialog_confirm_spam) {
+			refileMessage(mDstFolder);
+			mDstFolder = null;
+		}
     }
 
     @Override
