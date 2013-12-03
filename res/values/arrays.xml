@@ -326,7 +326,7 @@
         <item>Kirundi</item>
         <item>Kiswahili</item>
         <item>Latviešu</item>
-        <item>Lietuvių</item>
+        <item>Lietuviškai</item>
         <item>Magyar</item>
         <item>Malti</item>
         <item>Nederlands</item>
@@ -491,7 +491,6 @@
         <item>ja</item>
         <item>ko</item>
         <item>sk</item>
-        <item>lt</item>
     </string-array>
 
     <string-array name="settings_theme_entries">
@@ -734,5 +733,11 @@
         <item>ALWAYS</item>
         <item>NEVER</item>
         <item>WHEN_IN_LANDSCAPE</item>
+    </string-array>
+    
+    <!-- sec mail -->
+    <string-array name="account_cryptoguard_types">
+        <item>@string/account_cryptoguard_type_email</item>
+        <item>@string/account_cryptoguard_type_mobile</item>
     </string-array>
 </resources>

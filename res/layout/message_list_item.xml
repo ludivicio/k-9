@@ -23,8 +23,7 @@
             android:layout_gravity="center"
             android:visibility="visible"
             android:textColor="?android:attr/textColorPrimary"
-            android:baselineAligned="false"
-            android:layout_centerVertical="true">
+            android:baselineAligned="false" >
 
         <CheckBox
                 android:id="@+id/selected_checkbox"
@@ -150,6 +149,20 @@
                 />
 
         <TextView
+	            android:id="@+id/encrypt_status"
+	            android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/subject_wrapper"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/date"
+                android:paddingRight="2dip"
+                android:paddingLeft="2dip"
+                android:singleLine="true"
+	            android:textColor="?android:attr/textColorSecondary"
+	            android:background="@drawable/ic_button_lock_min" />
+        
+        <TextView
                 android:id="@+id/date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -162,8 +175,8 @@
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"/>
-
-        <CheckBox
+		
+		<CheckBox
                 android:id="@+id/flagged_bottom_right"
                 style="?android:attr/starStyle"
                 android:layout_width="wrap_content"

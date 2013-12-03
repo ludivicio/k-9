@@ -1,22 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
-
-    <release version="4.701" versioncode="19002" >
-        <change>KitKatでの問題を修正するためにメッセージビューのスクロールの仕方を見直しました。ありがとう Joe Steele!</change>
-        <change>TLS暗号スイートとバージョンを堅牢にしました</change>
-        <change>引用テキストがない場合に不要な空行を追加しないようにしました</change>
-        <change>メッセージの下書きに関連するいくつかの問題を修正しました</change>
-        <change>アカウントを削除した時に古いデータの削除を改善しました</change>
-        <change>KitKatのバグを一時的に回避するため設定のインポートを停止しました</change>
-        <change>ドイツ語、ギリシャ語、日本語、韓国語、リトアニア語、ポルトガル語、ロシア語そしてスロバキア語の翻訳を更新しました</change>
-    </release>
-    <release version="4.700" versioncode="19001" >
-        <change>コードをきれいにしました</change>
-        <change>ドラフトメッセージが送信されてしまうバグを修正しました</change>
-        <change>ドイツ語、日本語、ロシア語、スロバキア語の翻訳を更新しました</change>
-        <change>連絡先の画像生成に関するいくつかの小さなバグを修正しました</change>
-        <change>MessageComposeアクティビティが実行している間に添付ファイルを取得するようにしました(取得完了までプログレスバーが表示されます)</change>
-    </release>
     <release version="4.512" versioncode="18012" >
         <change>outlook.com でIMAPを使うときの自動設定を更新しました</change>
         <change>プロバイダgmx.deのための自動設定を更新しました</change>
