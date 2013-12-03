@@ -222,6 +222,15 @@ public class Account implements BaseAccount {
     private ColorChip mFlaggedReadColorChip;
     private ColorChip mCheckmarkChip;
 
+    
+    // Crypt regCode
+  	private String mRegCode; 
+  	private String mAesKey; 
+  	private String mDeviceUuid;
+  	// Third part email or phone number
+  	private String mVerification; 
+  	// Crypt flag
+  	private boolean mHasApplyReg;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -395,6 +404,14 @@ public class Account implements BaseAccount {
         mExpungePolicy = prefs.getString(mUuid  + ".expungePolicy", EXPUNGE_IMMEDIATELY);
         mSyncRemoteDeletions = prefs.getBoolean(mUuid  + ".syncRemoteDeletions", true);
 
+        // modified by lxc at 2013-11-22
+        // for secmail
+ 		mRegCode = prefs.getString(mUuid + ".regCode", "");
+ 		mAesKey = prefs.getString(mUuid + ".aesKey",  "");
+ 		mDeviceUuid = prefs.getString(mUuid + ".deviceUuid", "");
+ 		mVerification = prefs.getString(mUuid + ".verification", "");
+ 		mHasApplyReg = prefs.getBoolean(mUuid + ".hasApplyReg", false);
+        
         mMaxPushFolders = prefs.getInt(mUuid + ".maxPushFolders", 10);
         goToUnreadMessageSearch = prefs.getBoolean(mUuid + ".goToUnreadMessageSearch", false);
         mNotificationShowsUnreadCount = prefs.getBoolean(mUuid + ".notificationUnreadCount", true);
@@ -587,6 +604,15 @@ public class Account implements BaseAccount {
         editor.remove(mUuid + ".hideMoveButtonsEnum");
         editor.remove(mUuid + ".markMessageAsReadOnView");
         editor.remove(mUuid + ".alwaysShowCcBcc");
+        
+        // modified by lxc at 2013-11-22
+        // for secmail
+        editor.remove(mUuid + ".regCode");
+        editor.remove(mUuid + ".aesKey");
+        editor.remove(mUuid + ".deviceUuid");
+        editor.remove(mUuid + ".verification");
+        editor.remove(mUuid + ".hasApplyReg");
+        
         for (String type : networkTypes) {
             editor.remove(mUuid + ".useCompression." + type);
         }
@@ -761,6 +787,14 @@ public class Account implements BaseAccount {
         editor.putBoolean(mUuid + ".led", mNotificationSetting.isLed());
         editor.putInt(mUuid + ".ledColor", mNotificationSetting.getLedColor());
 
+        // modified by lxc at 2013-11-22
+        // for secmail
+ 		editor.putString(mUuid + ".regCode", mRegCode);
+ 		editor.putString(mUuid + ".aesKey", mAesKey);
+ 		editor.putString(mUuid + ".deviceUuid", mDeviceUuid);
+ 		editor.putString(mUuid + ".verification", mVerification);
+ 		editor.putBoolean(mUuid + ".hasApplyReg", mHasApplyReg);
+        
         for (String type : networkTypes) {
             Boolean useCompression = compressionMap.get(type);
             if (useCompression != null) {
@@ -1141,6 +1175,57 @@ public class Account implements BaseAccount {
         return !K9.FOLDER_NONE.equalsIgnoreCase(mArchiveFolderName);
     }
 
+    
+    /**
+	 * For secmail, setter and getter functions.
+	 */
+	
+	public synchronized String getRegCode() {
+		return mRegCode;
+	}
+
+	public synchronized void setRegCode(String mRegcode) {
+		this.mRegCode = mRegcode;
+	}
+
+	public synchronized boolean hasReg() {
+		return mRegCode != null && !"".equals(mRegCode.trim());
+	}
+	
+	public String getAesKey() {
+		return mAesKey;
+	}
+	
+	public void setAesKey(String mAesKey) {
+		this.mAesKey = mAesKey;
+	}
+	
+	public String getDeviceUuid() {
+		return mDeviceUuid;
+	}
+	
+	public void setDeviceUuid(String mDeviceUuid) {
+		this.mDeviceUuid = mDeviceUuid;
+	}
+	
+	public boolean hasApplyReg() {
+		return mHasApplyReg;
+	}
+
+	public void setApplyReg(boolean mHasApplyReg) {
+		this.mHasApplyReg = mHasApplyReg;
+	}
+	
+	public String getVerification() {
+		return mVerification;
+	}
+	
+	public void setVerification(String mVerification) {
+		this.mVerification = mVerification;
+	}
+    
+    
+	
     public synchronized String getSpamFolderName() {
         return mSpamFolderName;
     }
