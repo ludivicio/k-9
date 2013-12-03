@@ -1,38 +1,5 @@
 package org.ancode.secmail.view;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLDecoder;
-import java.util.List;
-
-import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.R;
-import org.ancode.secmail.controller.MessagingController;
-import org.ancode.secmail.controller.MessagingListener;
-import org.ancode.secmail.crypto.CryptoProvider;
-import org.ancode.secmail.crypto.PgpData;
-import org.ancode.secmail.fragment.MessageViewFragment;
-import org.ancode.secmail.helper.ClipboardManager;
-import org.ancode.secmail.helper.Contacts;
-import org.ancode.secmail.helper.HtmlConverter;
-import org.ancode.secmail.helper.Utility;
-import org.ancode.secmail.mail.Address;
-import org.ancode.secmail.mail.Flag;
-import org.ancode.secmail.mail.Message;
-import org.ancode.secmail.mail.MessagingException;
-import org.ancode.secmail.mail.Multipart;
-import org.ancode.secmail.mail.Part;
-import org.ancode.secmail.mail.internet.MimeUtility;
-import org.ancode.secmail.mail.store.LocalStore;
-import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBody;
-import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
-import org.ancode.secmail.provider.AttachmentProvider.AttachmentProviderColumns;
-import org.apache.commons.io.IOUtils;
-
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -56,633 +23,713 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnCreateContextMenuListener;
+import android.view.View.*;
 import android.webkit.WebView;
 import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.R;
+import org.ancode.secmail.controller.MessagingController;
+import org.ancode.secmail.controller.MessagingListener;
+import org.ancode.secmail.crypto.CryptoProvider;
+import org.ancode.secmail.crypto.PgpData;
+import org.ancode.secmail.fragment.MessageViewFragment;
+import org.ancode.secmail.helper.ClipboardManager;
+import org.ancode.secmail.helper.Contacts;
+import org.ancode.secmail.helper.HtmlConverter;
+import org.ancode.secmail.helper.Utility;
+import org.ancode.secmail.mail.*;
+import org.ancode.secmail.mail.internet.MimeUtility;
+import org.ancode.secmail.mail.store.LocalStore;
+import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBody;
+import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
+import org.ancode.secmail.provider.AttachmentProvider.AttachmentProviderColumns;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.util.List;
 
 public class SingleMessageView extends LinearLayout implements OnClickListener,
-        MessageHeader.OnLayoutChangedListener, OnCreateContextMenuListener {
-    private static final int MENU_ITEM_LINK_VIEW = Menu.FIRST;
-    private static final int MENU_ITEM_LINK_SHARE = Menu.FIRST + 1;
-    private static final int MENU_ITEM_LINK_COPY = Menu.FIRST + 2;
+		MessageHeader.OnLayoutChangedListener, OnCreateContextMenuListener {
+	private static final int MENU_ITEM_LINK_VIEW = Menu.FIRST;
+	private static final int MENU_ITEM_LINK_SHARE = Menu.FIRST + 1;
+	private static final int MENU_ITEM_LINK_COPY = Menu.FIRST + 2;
 
-    private static final int MENU_ITEM_IMAGE_VIEW = Menu.FIRST;
-    private static final int MENU_ITEM_IMAGE_SAVE = Menu.FIRST + 1;
-    private static final int MENU_ITEM_IMAGE_COPY = Menu.FIRST + 2;
+	private static final int MENU_ITEM_IMAGE_VIEW = Menu.FIRST;
+	private static final int MENU_ITEM_IMAGE_SAVE = Menu.FIRST + 1;
+	private static final int MENU_ITEM_IMAGE_COPY = Menu.FIRST + 2;
 
-    private static final int MENU_ITEM_PHONE_CALL = Menu.FIRST;
-    private static final int MENU_ITEM_PHONE_SAVE = Menu.FIRST + 1;
-    private static final int MENU_ITEM_PHONE_COPY = Menu.FIRST + 2;
+	private static final int MENU_ITEM_PHONE_CALL = Menu.FIRST;
+	private static final int MENU_ITEM_PHONE_SAVE = Menu.FIRST + 1;
+	private static final int MENU_ITEM_PHONE_COPY = Menu.FIRST + 2;
 
-    private static final int MENU_ITEM_EMAIL_SEND = Menu.FIRST;
-    private static final int MENU_ITEM_EMAIL_SAVE = Menu.FIRST + 1;
-    private static final int MENU_ITEM_EMAIL_COPY = Menu.FIRST + 2;
+	private static final int MENU_ITEM_EMAIL_SEND = Menu.FIRST;
+	private static final int MENU_ITEM_EMAIL_SAVE = Menu.FIRST + 1;
+	private static final int MENU_ITEM_EMAIL_COPY = Menu.FIRST + 2;
 
-    private static final String[] ATTACHMENT_PROJECTION = new String[] {
-        AttachmentProviderColumns._ID,
-        AttachmentProviderColumns.DISPLAY_NAME
-    };
-    private static final int DISPLAY_NAME_INDEX = 1;
+	private static final String[] ATTACHMENT_PROJECTION = new String[] {
+			AttachmentProviderColumns._ID,
+			AttachmentProviderColumns.DISPLAY_NAME };
+	private static final int DISPLAY_NAME_INDEX = 1;
 
+	private boolean mScreenReaderEnabled;
+	private MessageCryptoView mCryptoView;
+	private MessageWebView mMessageContentView;
+	private AccessibleWebView mAccessibleMessageContentView;
+	private MessageHeader mHeaderContainer;
+	private LinearLayout mAttachments;
+	private Button mShowHiddenAttachments;
+	private LinearLayout mHiddenAttachments;
+	private View mShowPicturesAction;
+	private View mShowMessageAction;
+	private View mShowAttachmentsAction;
+	private boolean mShowPictures;
+	private boolean mHasAttachments;
+	private Button mDownloadRemainder;
+	private LayoutInflater mInflater;
+	private Contacts mContacts;
+	private AttachmentView.AttachmentFileDownloadCallback attachmentCallback;
+	private View mAttachmentsContainer;
+	private SavedState mSavedState;
+	private ClipboardManager mClipboardManager;
+	private String mText;
 
-    private boolean mScreenReaderEnabled;
-    private MessageCryptoView mCryptoView;
-    private MessageWebView mMessageContentView;
-    private AccessibleWebView mAccessibleMessageContentView;
-    private MessageHeader mHeaderContainer;
-    private LinearLayout mAttachments;
-    private Button mShowHiddenAttachments;
-    private LinearLayout mHiddenAttachments;
-    private View mShowPicturesAction;
-    private View mShowMessageAction;
-    private View mShowAttachmentsAction;
-    private boolean mShowPictures;
-    private boolean mHasAttachments;
-    private Button mDownloadRemainder;
-    private LayoutInflater mInflater;
-    private Contacts mContacts;
-    private AttachmentView.AttachmentFileDownloadCallback attachmentCallback;
-    private LinearLayout mHeaderPlaceHolder;
-    private LinearLayout mTitleBarHeaderContainer;
-    private View mAttachmentsContainer;
-    private LinearLayout mInsideAttachmentsContainer;
-    private SavedState mSavedState;
-    private ClipboardManager mClipboardManager;
-    private String mText;
+	public void initialize(Fragment fragment) {
+		Activity activity = fragment.getActivity();
+		mMessageContentView = (MessageWebView) findViewById(R.id.message_content);
+		mAccessibleMessageContentView = (AccessibleWebView) findViewById(R.id.accessible_message_content);
+		mMessageContentView.configure();
+		activity.registerForContextMenu(mMessageContentView);
+		mMessageContentView.setOnCreateContextMenuListener(this);
 
-    public void initialize(Fragment fragment) {
-        Activity activity = fragment.getActivity();
-        mMessageContentView = (MessageWebView) findViewById(R.id.message_content);
-        mAccessibleMessageContentView = (AccessibleWebView) findViewById(R.id.accessible_message_content);
-        mMessageContentView.configure();
-        activity.registerForContextMenu(mMessageContentView);
-        mMessageContentView.setOnCreateContextMenuListener(this);
+		mHeaderContainer = (MessageHeader) findViewById(R.id.header_container);
+		mHeaderContainer.setOnLayoutChangedListener(this);
 
-        mHeaderPlaceHolder = (LinearLayout) findViewById(R.id.message_view_header_container);
+		mAttachmentsContainer = findViewById(R.id.attachments_container);
+		mAttachments = (LinearLayout) findViewById(R.id.attachments);
+		mHiddenAttachments = (LinearLayout) findViewById(R.id.hidden_attachments);
+		mHiddenAttachments.setVisibility(View.GONE);
+		mShowHiddenAttachments = (Button) findViewById(R.id.show_hidden_attachments);
+		mShowHiddenAttachments.setVisibility(View.GONE);
+		mCryptoView = (MessageCryptoView) findViewById(R.id.layout_decrypt);
+		mCryptoView.setFragment(fragment);
+		mCryptoView.setupChildViews();
+		mShowPicturesAction = findViewById(R.id.show_pictures);
+		mShowMessageAction = findViewById(R.id.show_message);
 
-        mHeaderContainer = (MessageHeader) findViewById(R.id.header_container);
-        mHeaderContainer.setOnLayoutChangedListener(this);
+		mShowAttachmentsAction = findViewById(R.id.show_attachments);
 
-        mAttachmentsContainer = findViewById(R.id.attachments_container);
-        mInsideAttachmentsContainer = (LinearLayout) findViewById(R.id.inside_attachments_container);
-        mAttachments = (LinearLayout) findViewById(R.id.attachments);
-        mHiddenAttachments = (LinearLayout) findViewById(R.id.hidden_attachments);
-        mHiddenAttachments.setVisibility(View.GONE);
-        mShowHiddenAttachments = (Button) findViewById(R.id.show_hidden_attachments);
-        mShowHiddenAttachments.setVisibility(View.GONE);
-        mCryptoView = (MessageCryptoView) findViewById(R.id.layout_decrypt);
-        mCryptoView.setFragment(fragment);
-        mCryptoView.setupChildViews();
-        mShowPicturesAction = findViewById(R.id.show_pictures);
-        mShowMessageAction = findViewById(R.id.show_message);
+		mShowPictures = false;
 
-        mShowAttachmentsAction = findViewById(R.id.show_attachments);
+		mContacts = Contacts.getInstance(activity);
 
-        mShowPictures = false;
+		mInflater = ((MessageViewFragment) fragment)
+				.getFragmentLayoutInflater();
+		mDownloadRemainder = (Button) findViewById(R.id.download_remainder);
+		mDownloadRemainder.setVisibility(View.GONE);
+		mAttachmentsContainer.setVisibility(View.GONE);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH
+				&& isScreenReaderActive(activity)) {
+			// Only use the special screen reader mode on pre-ICS devices with
+			// active screen reader
+			mAccessibleMessageContentView.setVisibility(View.VISIBLE);
+			mMessageContentView.setVisibility(View.GONE);
+			mScreenReaderEnabled = true;
+		} else {
+			mAccessibleMessageContentView.setVisibility(View.GONE);
+			mMessageContentView.setVisibility(View.VISIBLE);
+			mScreenReaderEnabled = false;
 
-        mContacts = Contacts.getInstance(activity);
+			// the HTC version of WebView tries to force the background of the
+			// titlebar, which is really unfair.
+			TypedValue outValue = new TypedValue();
+			getContext().getTheme().resolveAttribute(
+					R.attr.messageViewHeaderBackgroundColor, outValue, true);
+			mHeaderContainer.setBackgroundColor(outValue.data);
+			// also set background of the whole view (including the attachments
+			// view)
+			setBackgroundColor(outValue.data);
+		}
 
-        mInflater = ((MessageViewFragment) fragment).getFragmentLayoutInflater();
-        mDownloadRemainder = (Button) findViewById(R.id.download_remainder);
-        mDownloadRemainder.setVisibility(View.GONE);
-        mAttachmentsContainer.setVisibility(View.GONE);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH &&
-                isScreenReaderActive(activity)) {
-            // Only use the special screen reader mode on pre-ICS devices with active screen reader
-            mAccessibleMessageContentView.setVisibility(View.VISIBLE);
-            mMessageContentView.setVisibility(View.GONE);
-            mScreenReaderEnabled = true;
-        } else {
-            mAccessibleMessageContentView.setVisibility(View.GONE);
-            mMessageContentView.setVisibility(View.VISIBLE);
-            mScreenReaderEnabled = false;
+		mShowHiddenAttachments.setOnClickListener(this);
+		mShowMessageAction.setOnClickListener(this);
+		mShowAttachmentsAction.setOnClickListener(this);
+		mShowPicturesAction.setOnClickListener(this);
 
-            mHeaderPlaceHolder.removeView(mHeaderContainer);
-            // the HTC version of WebView tries to force the background of the
-            // titlebar, which is really unfair.
-            TypedValue outValue = new TypedValue();
-            getContext().getTheme().resolveAttribute(R.attr.messageViewHeaderBackgroundColor, outValue, true);
-            mHeaderContainer.setBackgroundColor(outValue.data);
-            // also set background of the whole view (including the attachments view)
-            setBackgroundColor(outValue.data);
+		mClipboardManager = ClipboardManager.getInstance(activity);
+	}
 
-            mTitleBarHeaderContainer = new LinearLayout(activity);
-            mMessageContentView.setEmbeddedTitleBarCompat(mTitleBarHeaderContainer);
-            mTitleBarHeaderContainer.addView(mHeaderContainer);
-        }
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu);
 
-        mShowHiddenAttachments.setOnClickListener(this);
-        mShowMessageAction.setOnClickListener(this);
-        mShowAttachmentsAction.setOnClickListener(this);
-        mShowPicturesAction.setOnClickListener(this);
+		WebView webview = (WebView) v;
+		WebView.HitTestResult result = webview.getHitTestResult();
 
-        mClipboardManager = ClipboardManager.getInstance(activity);
-    }
+		if (result == null) {
+			return;
+		}
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu);
+		int type = result.getType();
+		Context context = getContext();
 
-        WebView webview = (WebView) v;
-        WebView.HitTestResult result = webview.getHitTestResult();
+		switch (type) {
+		case HitTestResult.SRC_ANCHOR_TYPE: {
+			final String url = result.getExtra();
+			OnMenuItemClickListener listener = new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					switch (item.getItemId()) {
+					case MENU_ITEM_LINK_VIEW: {
+						Intent intent = new Intent(Intent.ACTION_VIEW,
+								Uri.parse(url));
+						getContext().startActivity(intent);
+						break;
+					}
+					case MENU_ITEM_LINK_SHARE: {
+						Intent intent = new Intent(Intent.ACTION_SEND);
+						intent.setType("text/plain");
+						intent.putExtra(Intent.EXTRA_TEXT, url);
+						getContext().startActivity(intent);
+						break;
+					}
+					case MENU_ITEM_LINK_COPY: {
+						String label = getContext()
+								.getString(
+										R.string.webview_contextmenu_link_clipboard_label);
+						mClipboardManager.setText(label, url);
+						break;
+					}
+					}
+					return true;
+				}
+			};
 
-        if (result == null) {
-            return;
-        }
+			menu.setHeaderTitle(url);
 
-        int type = result.getType();
-        Context context = getContext();
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_LINK_VIEW,
+					0,
+					context.getString(R.string.webview_contextmenu_link_view_action))
+					.setOnMenuItemClickListener(listener);
 
-        switch (type) {
-            case HitTestResult.SRC_ANCHOR_TYPE: {
-                final String url = result.getExtra();
-                OnMenuItemClickListener listener = new OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case MENU_ITEM_LINK_VIEW: {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                                getContext().startActivity(intent);
-                                break;
-                            }
-                            case MENU_ITEM_LINK_SHARE: {
-                                Intent intent = new Intent(Intent.ACTION_SEND);
-                                intent.setType("text/plain");
-                                intent.putExtra(Intent.EXTRA_TEXT, url);
-                                getContext().startActivity(intent);
-                                break;
-                            }
-                            case MENU_ITEM_LINK_COPY: {
-                                String label = getContext().getString(
-                                        R.string.webview_contextmenu_link_clipboard_label);
-                                mClipboardManager.setText(label, url);
-                                break;
-                            }
-                        }
-                        return true;
-                    }
-                };
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_LINK_SHARE,
+					1,
+					context.getString(R.string.webview_contextmenu_link_share_action))
+					.setOnMenuItemClickListener(listener);
 
-                menu.setHeaderTitle(url);
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_LINK_COPY,
+					2,
+					context.getString(R.string.webview_contextmenu_link_copy_action))
+					.setOnMenuItemClickListener(listener);
 
-                menu.add(Menu.NONE, MENU_ITEM_LINK_VIEW, 0,
-                        context.getString(R.string.webview_contextmenu_link_view_action))
-                        .setOnMenuItemClickListener(listener);
+			break;
+		}
+		case HitTestResult.IMAGE_TYPE:
+		case HitTestResult.SRC_IMAGE_ANCHOR_TYPE: {
+			final String url = result.getExtra();
+			final boolean externalImage = url.startsWith("http");
+			OnMenuItemClickListener listener = new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					switch (item.getItemId()) {
+					case MENU_ITEM_IMAGE_VIEW: {
+						Intent intent = new Intent(Intent.ACTION_VIEW,
+								Uri.parse(url));
+						if (!externalImage) {
+							// Grant read permission if this points to our
+							// AttachmentProvider
+							intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+						}
+						getContext().startActivity(intent);
+						break;
+					}
+					case MENU_ITEM_IMAGE_SAVE: {
+						new DownloadImageTask().execute(url);
+						break;
+					}
+					case MENU_ITEM_IMAGE_COPY: {
+						String label = getContext()
+								.getString(
+										R.string.webview_contextmenu_image_clipboard_label);
+						mClipboardManager.setText(label, url);
+						break;
+					}
+					}
+					return true;
+				}
+			};
 
-                menu.add(Menu.NONE, MENU_ITEM_LINK_SHARE, 1,
-                        context.getString(R.string.webview_contextmenu_link_share_action))
-                        .setOnMenuItemClickListener(listener);
+			menu.setHeaderTitle((externalImage) ? url : context
+					.getString(R.string.webview_contextmenu_image_title));
 
-                menu.add(Menu.NONE, MENU_ITEM_LINK_COPY, 2,
-                        context.getString(R.string.webview_contextmenu_link_copy_action))
-                        .setOnMenuItemClickListener(listener);
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_IMAGE_VIEW,
+					0,
+					context.getString(R.string.webview_contextmenu_image_view_action))
+					.setOnMenuItemClickListener(listener);
 
-                break;
-            }
-            case HitTestResult.IMAGE_TYPE:
-            case HitTestResult.SRC_IMAGE_ANCHOR_TYPE: {
-                final String url = result.getExtra();
-                final boolean externalImage = url.startsWith("http");
-                OnMenuItemClickListener listener = new OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case MENU_ITEM_IMAGE_VIEW: {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                                if (!externalImage) {
-                                    // Grant read permission if this points to our
-                                    // AttachmentProvider
-                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                }
-                                getContext().startActivity(intent);
-                                break;
-                            }
-                            case MENU_ITEM_IMAGE_SAVE: {
-                                new DownloadImageTask().execute(url);
-                                break;
-                            }
-                            case MENU_ITEM_IMAGE_COPY: {
-                                String label = getContext().getString(
-                                        R.string.webview_contextmenu_image_clipboard_label);
-                                mClipboardManager.setText(label, url);
-                                break;
-                            }
-                        }
-                        return true;
-                    }
-                };
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_IMAGE_SAVE,
+					1,
+					(externalImage) ? context
+							.getString(R.string.webview_contextmenu_image_download_action)
+							: context
+									.getString(R.string.webview_contextmenu_image_save_action))
+					.setOnMenuItemClickListener(listener);
 
-                menu.setHeaderTitle((externalImage) ?
-                        url : context.getString(R.string.webview_contextmenu_image_title));
+			if (externalImage) {
+				menu.add(
+						Menu.NONE,
+						MENU_ITEM_IMAGE_COPY,
+						2,
+						context.getString(R.string.webview_contextmenu_image_copy_action))
+						.setOnMenuItemClickListener(listener);
+			}
 
-                menu.add(Menu.NONE, MENU_ITEM_IMAGE_VIEW, 0,
-                        context.getString(R.string.webview_contextmenu_image_view_action))
-                        .setOnMenuItemClickListener(listener);
+			break;
+		}
+		case HitTestResult.PHONE_TYPE: {
+			final String phoneNumber = result.getExtra();
+			OnMenuItemClickListener listener = new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					switch (item.getItemId()) {
+					case MENU_ITEM_PHONE_CALL: {
+						Uri uri = Uri.parse(WebView.SCHEME_TEL + phoneNumber);
+						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+						getContext().startActivity(intent);
+						break;
+					}
+					case MENU_ITEM_PHONE_SAVE: {
+						Contacts contacts = Contacts.getInstance(getContext());
+						contacts.addPhoneContact(phoneNumber);
+						break;
+					}
+					case MENU_ITEM_PHONE_COPY: {
+						String label = getContext()
+								.getString(
+										R.string.webview_contextmenu_phone_clipboard_label);
+						mClipboardManager.setText(label, phoneNumber);
+						break;
+					}
+					}
 
-                menu.add(Menu.NONE, MENU_ITEM_IMAGE_SAVE, 1,
-                        (externalImage) ?
-                            context.getString(R.string.webview_contextmenu_image_download_action) :
-                            context.getString(R.string.webview_contextmenu_image_save_action))
-                        .setOnMenuItemClickListener(listener);
+					return true;
+				}
+			};
 
-                if (externalImage) {
-                    menu.add(Menu.NONE, MENU_ITEM_IMAGE_COPY, 2,
-                            context.getString(R.string.webview_contextmenu_image_copy_action))
-                            .setOnMenuItemClickListener(listener);
-                }
+			menu.setHeaderTitle(phoneNumber);
 
-                break;
-            }
-            case HitTestResult.PHONE_TYPE: {
-                final String phoneNumber = result.getExtra();
-                OnMenuItemClickListener listener = new OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case MENU_ITEM_PHONE_CALL: {
-                                Uri uri = Uri.parse(WebView.SCHEME_TEL + phoneNumber);
-                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                getContext().startActivity(intent);
-                                break;
-                            }
-                            case MENU_ITEM_PHONE_SAVE: {
-                                Contacts contacts = Contacts.getInstance(getContext());
-                                contacts.addPhoneContact(phoneNumber);
-                                break;
-                            }
-                            case MENU_ITEM_PHONE_COPY: {
-                                String label = getContext().getString(
-                                        R.string.webview_contextmenu_phone_clipboard_label);
-                                mClipboardManager.setText(label, phoneNumber);
-                                break;
-                            }
-                        }
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_PHONE_CALL,
+					0,
+					context.getString(R.string.webview_contextmenu_phone_call_action))
+					.setOnMenuItemClickListener(listener);
 
-                        return true;
-                    }
-                };
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_PHONE_SAVE,
+					1,
+					context.getString(R.string.webview_contextmenu_phone_save_action))
+					.setOnMenuItemClickListener(listener);
 
-                menu.setHeaderTitle(phoneNumber);
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_PHONE_COPY,
+					2,
+					context.getString(R.string.webview_contextmenu_phone_copy_action))
+					.setOnMenuItemClickListener(listener);
 
-                menu.add(Menu.NONE, MENU_ITEM_PHONE_CALL, 0,
-                        context.getString(R.string.webview_contextmenu_phone_call_action))
-                        .setOnMenuItemClickListener(listener);
+			break;
+		}
+		case WebView.HitTestResult.EMAIL_TYPE: {
+			final String email = result.getExtra();
+			OnMenuItemClickListener listener = new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					switch (item.getItemId()) {
+					case MENU_ITEM_EMAIL_SEND: {
+						Uri uri = Uri.parse(WebView.SCHEME_MAILTO + email);
+						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+						getContext().startActivity(intent);
+						break;
+					}
+					case MENU_ITEM_EMAIL_SAVE: {
+						Contacts contacts = Contacts.getInstance(getContext());
+						contacts.createContact(new Address(email));
+						break;
+					}
+					case MENU_ITEM_EMAIL_COPY: {
+						String label = getContext()
+								.getString(
+										R.string.webview_contextmenu_email_clipboard_label);
+						mClipboardManager.setText(label, email);
+						break;
+					}
+					}
 
-                menu.add(Menu.NONE, MENU_ITEM_PHONE_SAVE, 1,
-                        context.getString(R.string.webview_contextmenu_phone_save_action))
-                        .setOnMenuItemClickListener(listener);
+					return true;
+				}
+			};
 
-                menu.add(Menu.NONE, MENU_ITEM_PHONE_COPY, 2,
-                        context.getString(R.string.webview_contextmenu_phone_copy_action))
-                        .setOnMenuItemClickListener(listener);
+			menu.setHeaderTitle(email);
 
-                break;
-            }
-            case WebView.HitTestResult.EMAIL_TYPE: {
-                final String email = result.getExtra();
-                OnMenuItemClickListener listener = new OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case MENU_ITEM_EMAIL_SEND: {
-                                Uri uri = Uri.parse(WebView.SCHEME_MAILTO + email);
-                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                getContext().startActivity(intent);
-                                break;
-                            }
-                            case MENU_ITEM_EMAIL_SAVE: {
-                                Contacts contacts = Contacts.getInstance(getContext());
-                                contacts.createContact(new Address(email));
-                                break;
-                            }
-                            case MENU_ITEM_EMAIL_COPY: {
-                                String label = getContext().getString(
-                                        R.string.webview_contextmenu_email_clipboard_label);
-                                mClipboardManager.setText(label, email);
-                                break;
-                            }
-                        }
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_EMAIL_SEND,
+					0,
+					context.getString(R.string.webview_contextmenu_email_send_action))
+					.setOnMenuItemClickListener(listener);
 
-                        return true;
-                    }
-                };
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_EMAIL_SAVE,
+					1,
+					context.getString(R.string.webview_contextmenu_email_save_action))
+					.setOnMenuItemClickListener(listener);
 
-                menu.setHeaderTitle(email);
+			menu.add(
+					Menu.NONE,
+					MENU_ITEM_EMAIL_COPY,
+					2,
+					context.getString(R.string.webview_contextmenu_email_copy_action))
+					.setOnMenuItemClickListener(listener);
 
-                menu.add(Menu.NONE, MENU_ITEM_EMAIL_SEND, 0,
-                        context.getString(R.string.webview_contextmenu_email_send_action))
-                        .setOnMenuItemClickListener(listener);
+			break;
+		}
+		}
+	}
 
-                menu.add(Menu.NONE, MENU_ITEM_EMAIL_SAVE, 1,
-                        context.getString(R.string.webview_contextmenu_email_save_action))
-                        .setOnMenuItemClickListener(listener);
-
-                menu.add(Menu.NONE, MENU_ITEM_EMAIL_COPY, 2,
-                        context.getString(R.string.webview_contextmenu_email_copy_action))
-                        .setOnMenuItemClickListener(listener);
-
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
-		if (id == R.id.show_hidden_attachments) {
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()) {
+		case R.id.show_hidden_attachments: {
 			onShowHiddenAttachments();
-		} else if (id == R.id.show_message) {
+			break;
+		}
+		case R.id.show_message: {
 			onShowMessage();
-		} else if (id == R.id.show_attachments) {
+			break;
+		}
+		case R.id.show_attachments: {
 			onShowAttachments();
-		} else if (id == R.id.show_pictures) {
+			break;
+		}
+		case R.id.show_pictures: {
 			// Allow network access first...
 			setLoadPictures(true);
 			// ...then re-populate the WebView with the message text
 			loadBodyFromText(mText);
+			break;
 		}
-    }
+		}
+	}
 
-    private void onShowHiddenAttachments() {
-        mShowHiddenAttachments.setVisibility(View.GONE);
-        mHiddenAttachments.setVisibility(View.VISIBLE);
-    }
+	private void onShowHiddenAttachments() {
+		mShowHiddenAttachments.setVisibility(View.GONE);
+		mHiddenAttachments.setVisibility(View.VISIBLE);
+	}
 
-    public void onShowMessage() {
-        showShowMessageAction(false);
-        showAttachments(false);
-        showShowAttachmentsAction(mHasAttachments);
-        showMessageWebView(true);
-    }
+	public void onShowMessage() {
+		showShowMessageAction(false);
+		showAttachments(false);
+		showShowAttachmentsAction(mHasAttachments);
+		showMessageWebView(true);
+	}
 
-    public void onShowAttachments() {
-        showMessageWebView(false);
-        showShowAttachmentsAction(false);
-        showShowMessageAction(true);
-        showAttachments(true);
-    }
+	public void onShowAttachments() {
+		showMessageWebView(false);
+		showShowAttachmentsAction(false);
+		showShowMessageAction(true);
+		showAttachments(true);
+	}
 
-    public SingleMessageView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+	public SingleMessageView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
 
+	private boolean isScreenReaderActive(Activity activity) {
+		final String SCREENREADER_INTENT_ACTION = "android.accessibilityservice.AccessibilityService";
+		final String SCREENREADER_INTENT_CATEGORY = "android.accessibilityservice.category.FEEDBACK_SPOKEN";
+		// Restrict the set of intents to only accessibility services that have
+		// the category FEEDBACK_SPOKEN (aka, screen readers).
+		Intent screenReaderIntent = new Intent(SCREENREADER_INTENT_ACTION);
+		screenReaderIntent.addCategory(SCREENREADER_INTENT_CATEGORY);
+		List<ResolveInfo> screenReaders = activity.getPackageManager()
+				.queryIntentServices(screenReaderIntent, 0);
+		ContentResolver cr = activity.getContentResolver();
+		Cursor cursor = null;
+		int status = 0;
+		for (ResolveInfo screenReader : screenReaders) {
+			// All screen readers are expected to implement a content provider
+			// that responds to
+			// content://<nameofpackage>.providers.StatusProvider
+			cursor = cr.query(
+					Uri.parse("content://"
+							+ screenReader.serviceInfo.packageName
+							+ ".providers.StatusProvider"), null, null, null,
+					null);
+			try {
+				if (cursor != null && cursor.moveToFirst()) {
+					// These content providers use a special cursor that only
+					// has
+					// one element,
+					// an integer that is 1 if the screen reader is running.
+					status = cursor.getInt(0);
+					if (status == 1) {
+						return true;
+					}
+				}
+			} finally {
+				if (cursor != null) {
+					cursor.close();
+				}
+			}
+		}
+		return false;
+	}
 
-    private boolean isScreenReaderActive(Activity activity) {
-        final String SCREENREADER_INTENT_ACTION = "android.accessibilityservice.AccessibilityService";
-        final String SCREENREADER_INTENT_CATEGORY = "android.accessibilityservice.category.FEEDBACK_SPOKEN";
-        // Restrict the set of intents to only accessibility services that have
-        // the category FEEDBACK_SPOKEN (aka, screen readers).
-        Intent screenReaderIntent = new Intent(SCREENREADER_INTENT_ACTION);
-        screenReaderIntent.addCategory(SCREENREADER_INTENT_CATEGORY);
-        List<ResolveInfo> screenReaders = activity.getPackageManager().queryIntentServices(
-                                              screenReaderIntent, 0);
-        ContentResolver cr = activity.getContentResolver();
-        Cursor cursor = null;
-        int status = 0;
-        for (ResolveInfo screenReader : screenReaders) {
-            // All screen readers are expected to implement a content provider
-            // that responds to
-            // content://<nameofpackage>.providers.StatusProvider
-            cursor = cr.query(Uri.parse("content://" + screenReader.serviceInfo.packageName
-                                        + ".providers.StatusProvider"), null, null, null, null);
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    // These content providers use a special cursor that only has
-                    // one element,
-                    // an integer that is 1 if the screen reader is running.
-                    status = cursor.getInt(0);
-                    if (status == 1) {
-                        return true;
-                    }
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        }
-        return false;
-    }
+	public boolean showPictures() {
+		return mShowPictures;
+	}
 
-    public boolean showPictures() {
-        return mShowPictures;
-    }
+	public void setShowPictures(Boolean show) {
+		mShowPictures = show;
+	}
 
-    public void setShowPictures(Boolean show) {
-        mShowPictures = show;
-    }
+	/**
+	 * Enable/disable image loading of the WebView. But always hide the
+	 * "Show pictures" button!
+	 * 
+	 * @param enable
+	 *            true, if (network) images should be loaded. false, otherwise.
+	 */
+	public void setLoadPictures(boolean enable) {
+		mMessageContentView.blockNetworkData(!enable);
+		setShowPictures(enable);
+		showShowPicturesAction(false);
+	}
 
-    /**
-     * Enable/disable image loading of the WebView. But always hide the
-     * "Show pictures" button!
-     *
-     * @param enable true, if (network) images should be loaded.
-     *               false, otherwise.
-     */
-    public void setLoadPictures(boolean enable) {
-        mMessageContentView.blockNetworkData(!enable);
-        setShowPictures(enable);
-        showShowPicturesAction(false);
-    }
+	public Button downloadRemainderButton() {
+		return mDownloadRemainder;
+	}
 
-    public Button downloadRemainderButton() {
-        return  mDownloadRemainder;
-    }
+	public void showShowPicturesAction(boolean show) {
+		mShowPicturesAction.setVisibility(show ? View.VISIBLE : View.GONE);
+	}
 
-    public void showShowPicturesAction(boolean show) {
-        mShowPicturesAction.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-    public void showShowMessageAction(boolean show) {
-        mShowMessageAction.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-    public void showShowAttachmentsAction(boolean show) {
-        mShowAttachmentsAction.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
+	public void showShowMessageAction(boolean show) {
+		mShowMessageAction.setVisibility(show ? View.VISIBLE : View.GONE);
+	}
 
-    /**
-     * Fetch the message header view.  This is not the same as the message headers; this is the View shown at the top
-     * of messages.
-     * @return MessageHeader View.
-     */
-    public MessageHeader getMessageHeaderView() {
-        return mHeaderContainer;
-    }
+	public void showShowAttachmentsAction(boolean show) {
+		mShowAttachmentsAction.setVisibility(show ? View.VISIBLE : View.GONE);
+	}
 
-    public void setHeaders(final Message message, Account account) {
-        try {
-            mHeaderContainer.populate(message, account);
-            mHeaderContainer.setVisibility(View.VISIBLE);
+	/**
+	 * Fetch the message header view. This is not the same as the message
+	 * headers; this is the View shown at the top of messages.
+	 * 
+	 * @return MessageHeader View.
+	 */
+	public MessageHeader getMessageHeaderView() {
+		return mHeaderContainer;
+	}
 
+	public void setHeaders(final Message message, Account account) {
+		try {
+			mHeaderContainer.populate(message, account);
+			mHeaderContainer.setVisibility(View.VISIBLE);
 
-        } catch (Exception me) {
-            Log.e(K9.LOG_TAG, "setHeaders - error", me);
-        }
-    }
+		} catch (Exception me) {
+			Log.e(K9.LOG_TAG, "setHeaders - error", me);
+		}
+	}
 
-    public void setShowDownloadButton(Message message) {
-        if (message.isSet(Flag.X_DOWNLOADED_FULL)) {
-            mDownloadRemainder.setVisibility(View.GONE);
-        } else {
-            mDownloadRemainder.setEnabled(true);
-            mDownloadRemainder.setVisibility(View.VISIBLE);
-        }
-    }
+	public void setShowDownloadButton(Message message) {
+		if (message.isSet(Flag.X_DOWNLOADED_FULL)) {
+			mDownloadRemainder.setVisibility(View.GONE);
+		} else {
+			mDownloadRemainder.setEnabled(true);
+			mDownloadRemainder.setVisibility(View.VISIBLE);
+		}
+	}
 
-    public void setOnFlagListener(OnClickListener listener) {
-        mHeaderContainer.setOnFlagListener(listener);
-    }
+	public void setOnFlagListener(OnClickListener listener) {
+		mHeaderContainer.setOnFlagListener(listener);
+	}
 
-    public void showAllHeaders() {
-        mHeaderContainer.onShowAdditionalHeaders();
-    }
+	public void showAllHeaders() {
+		mHeaderContainer.onShowAdditionalHeaders();
+	}
 
-    public boolean additionalHeadersVisible() {
-        return mHeaderContainer.additionalHeadersVisible();
-    }
+	public boolean additionalHeadersVisible() {
+		return mHeaderContainer.additionalHeadersVisible();
+	}
 
-    public void setMessage(Account account, LocalMessage message, PgpData pgpData,
-            MessagingController controller, MessagingListener listener, List<String> aesKeyList) throws MessagingException {
-        resetView();
+	public void setMessage(Account account, LocalMessage message,
+			PgpData pgpData, MessagingController controller,
+			MessagingListener listener, List<String> aesKeyList) throws MessagingException {
+		resetView();
 
-        String text = null;
-        if (pgpData != null) {
-            text = pgpData.getDecryptedData();
-            if (text != null) {
-                text = HtmlConverter.textToHtml(text);
-            }
-        }
+		String text = null;
+		if (pgpData != null) {
+			text = pgpData.getDecryptedData();
+			if (text != null) {
+				text = HtmlConverter.textToHtml(text);
+			}
+		}
 
-        if (text == null) {
-            text = message.getTextForDisplay();
-        }
+		if (text == null) {
+			text = message.getTextForDisplay();
+		}
 
-        // modified by lxc at 2013-11-27
+		 // modified by lxc at 2013-11-27
         if (message.getSubject() != null && message.getSubject().startsWith("secmail")
 				&& message.getSubject().contains("regcode")) {
 			text = getContext().getString(R.string.reg_encrypt_confirm_mail_body);
 		}
-        
-        // Save the text so we can reset the WebView when the user clicks the "Show pictures" button
-        mText = text;
-        mHasAttachments = message.hasAttachments();
+		
+		// Save the text so we can reset the WebView when the user clicks the
+		// "Show pictures" button
+		mText = text;
 
-        // modified by lxc at 2013-11-27
+		mHasAttachments = message.hasAttachments();
+
+		// modified by lxc at 2013-11-27
 		if (aesKeyList != null && !aesKeyList.isEmpty()) {
 			if (mHasAttachments) {
-				text = renderAttachments(message, 0, message, account, controller, listener, aesKeyList, 0);
+				text = renderAttachments(message, 0, message, account,
+						controller, listener, aesKeyList, 0);
 				mHasAttachments = message.hasAttachments();
 			}
 		} else {
-			renderAttachments(message, 0, message, account, controller, listener, null, 0);
+			renderAttachments(message, 0, message, account, controller,
+					listener, null, 0);
 		}
-		
-        mHiddenAttachments.setVisibility(View.GONE);
 
-        boolean lookForImages = true;
-        if (mSavedState != null) {
-            if (mSavedState.showPictures) {
-                setLoadPictures(true);
-                lookForImages = false;
-            }
+		mHiddenAttachments.setVisibility(View.GONE);
 
-            if (mSavedState.attachmentViewVisible) {
-                onShowAttachments();
-            } else {
-                onShowMessage();
-            }
+		boolean lookForImages = true;
+		if (mSavedState != null) {
+			if (mSavedState.showPictures) {
+				setLoadPictures(true);
+				lookForImages = false;
+			}
 
-            if (mSavedState.hiddenAttachmentsVisible) {
-                onShowHiddenAttachments();
-            }
+			if (mSavedState.attachmentViewVisible) {
+				onShowAttachments();
+			} else {
+				onShowMessage();
+			}
 
-            mSavedState = null;
-        } else {
-            onShowMessage();
-        }
+			if (mSavedState.hiddenAttachmentsVisible) {
+				onShowHiddenAttachments();
+			}
 
-        if (text != null && lookForImages) {
-            // If the message contains external pictures and the "Show pictures"
-            // button wasn't already pressed, see if the user's preferences has us
-            // showing them anyway.
-            if (Utility.hasExternalImages(text) && !showPictures()) {
-                Address[] from = message.getFrom();
-                if ((account.getShowPictures() == Account.ShowPictures.ALWAYS) ||
-                        ((account.getShowPictures() == Account.ShowPictures.ONLY_FROM_CONTACTS) &&
-                         // Make sure we have at least one from address
-                         (from != null && from.length > 0) &&
-                         mContacts.isInContacts(from[0].getAddress()))) {
-                    setLoadPictures(true);
-                } else {
-                    showShowPicturesAction(true);
-                }
-            }
-        }
+			mSavedState = null;
+		} else {
+			onShowMessage();
+		}
 
-        if (text != null) {
-            loadBodyFromText(text);
-            updateCryptoLayout(account.getCryptoProvider(), pgpData, message);
-        } else {
-            showStatusMessage(getContext().getString(R.string.webview_empty_message));
-        }
-    }
+		if (text != null && lookForImages) {
+			// If the message contains external pictures and the "Show pictures"
+			// button wasn't already pressed, see if the user's preferences has
+			// us
+			// showing them anyway.
+			if (Utility.hasExternalImages(text) && !showPictures()) {
+				Address[] from = message.getFrom();
+				if ((account.getShowPictures() == Account.ShowPictures.ALWAYS)
+						|| ((account.getShowPictures() == Account.ShowPictures.ONLY_FROM_CONTACTS)
+								&&
+								// Make sure we have at least one from address
+								(from != null && from.length > 0) && mContacts
+									.isInContacts(from[0].getAddress()))) {
+					setLoadPictures(true);
+				} else {
+					showShowPicturesAction(true);
+				}
+			}
+		}
 
-    public void showStatusMessage(String status) {
-        String text = "<div style=\"text-align:center; color: grey;\">" + status + "</div>";
-        loadBodyFromText(text);
-        mCryptoView.hide();
-    }
+		if (text != null) {
+			loadBodyFromText(text);
+			updateCryptoLayout(account.getCryptoProvider(), pgpData, message);
+		} else {
+			showStatusMessage(getContext().getString(
+					R.string.webview_empty_message));
+		}
+	}
 
-    private void loadBodyFromText(String emailText) {
-        if (mScreenReaderEnabled) {
-            mAccessibleMessageContentView.setText(emailText);
-        } else {
-            mMessageContentView.setText(emailText);
-        }
+	public void showStatusMessage(String status) {
+		String text = "<div style=\"text-align:center; color: grey;\">"
+				+ status + "</div>";
+		loadBodyFromText(text);
+		mCryptoView.hide();
+	}
 
-    }
+	private void loadBodyFromText(String emailText) {
+		if (mScreenReaderEnabled) {
+			mAccessibleMessageContentView.setText(emailText);
+		} else {
+			mMessageContentView.setText(emailText);
+		}
 
-    public void updateCryptoLayout(CryptoProvider cp, PgpData pgpData, Message message) {
-        mCryptoView.updateLayout(cp, pgpData, message);
-    }
+	}
 
-    public void showAttachments(boolean show) {
-        mAttachmentsContainer.setVisibility(show ? View.VISIBLE : View.GONE);
-        boolean showHidden = (show && mHiddenAttachments.getVisibility() == View.GONE &&
-                mHiddenAttachments.getChildCount() > 0);
-        mShowHiddenAttachments.setVisibility(showHidden ? View.VISIBLE : View.GONE);
+	public void updateCryptoLayout(CryptoProvider cp, PgpData pgpData,
+			Message message) {
+		mCryptoView.updateLayout(cp, pgpData, message);
+	}
 
-        if (show) {
-            moveHeaderToLayout();
-        } else {
-            moveHeaderToWebViewTitleBar();
-        }
-    }
+	public void showAttachments(boolean show) {
+		mAttachmentsContainer.setVisibility(show ? View.VISIBLE : View.GONE);
+		boolean showHidden = (show
+				&& mHiddenAttachments.getVisibility() == View.GONE && mHiddenAttachments
+				.getChildCount() > 0);
+		mShowHiddenAttachments.setVisibility(showHidden ? View.VISIBLE
+				: View.GONE);
+	}
 
-    public void showMessageWebView(boolean show) {
-        mMessageContentView.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
+	public void showMessageWebView(boolean show) {
+		mMessageContentView.setVisibility(show ? View.VISIBLE : View.GONE);
+	}
 
-    public void setAttachmentsEnabled(boolean enabled) {
-        for (int i = 0, count = mAttachments.getChildCount(); i < count; i++) {
-            AttachmentView attachment = (AttachmentView) mAttachments.getChildAt(i);
-            attachment.viewButton.setEnabled(enabled);
-            attachment.downloadButton.setEnabled(enabled);
-        }
-    }
+	public void setAttachmentsEnabled(boolean enabled) {
+		for (int i = 0, count = mAttachments.getChildCount(); i < count; i++) {
+			AttachmentView attachment = (AttachmentView) mAttachments
+					.getChildAt(i);
+			attachment.viewButton.setEnabled(enabled);
+			attachment.downloadButton.setEnabled(enabled);
+		}
+	}
 
-    public void removeAllAttachments() {
-        for (int i = 0, count = mAttachments.getChildCount(); i < count; i++) {
-            mAttachments.removeView(mAttachments.getChildAt(i));
-        }
-    }
+	public void removeAllAttachments() {
+		for (int i = 0, count = mAttachments.getChildCount(); i < count; i++) {
+			mAttachments.removeView(mAttachments.getChildAt(i));
+		}
+	}
 
-    
-    public String renderAttachments(Part part, int depth, LocalMessage message, Account account,
+	public String renderAttachments(Part part, int depth, LocalMessage message, Account account,
 			MessagingController controller, MessagingListener listener, List<String> aesKeyList, int j)
 			throws MessagingException {
 		String text = "";
@@ -726,262 +773,253 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
 		}
 		return text;
 	}
-    
- 
-    public void addAttachment(View attachmentView) {
-        mAttachments.addView(attachmentView);
-    }
 
-    public void addHiddenAttachment(View attachmentView) {
-        mHiddenAttachments.addView(attachmentView);
-    }
+	public void addAttachment(View attachmentView) {
+		mAttachments.addView(attachmentView);
+	}
 
-    public void zoom(KeyEvent event) {
-        if (mScreenReaderEnabled) {
-            mAccessibleMessageContentView.zoomIn();
-        } else {
-            if (event.isShiftPressed()) {
-                mMessageContentView.zoomIn();
-            } else {
-                mMessageContentView.zoomOut();
-            }
-        }
-    }
+	public void addHiddenAttachment(View attachmentView) {
+		mHiddenAttachments.addView(attachmentView);
+	}
 
-    public void beginSelectingText() {
-        mMessageContentView.emulateShiftHeld();
-    }
+	public void zoom(KeyEvent event) {
+		if (mScreenReaderEnabled) {
+			mAccessibleMessageContentView.zoomIn();
+		} else {
+			if (event.isShiftPressed()) {
+				mMessageContentView.zoomIn();
+			} else {
+				mMessageContentView.zoomOut();
+			}
+		}
+	}
 
-    public void resetView() {
-        mDownloadRemainder.setVisibility(View.GONE);
-        setLoadPictures(false);
-        showShowAttachmentsAction(false);
-        showShowMessageAction(false);
-        showShowPicturesAction(false);
-        mAttachments.removeAllViews();
-        mHiddenAttachments.removeAllViews();
+	public void beginSelectingText() {
+		mMessageContentView.emulateShiftHeld();
+	}
 
-        /*
-         * Clear the WebView content
-         *
-         * For some reason WebView.clearView() doesn't clear the contents when the WebView changes
-         * its size because the button to download the complete message was previously shown and
-         * is now hidden.
-         */
-        loadBodyFromText("");
-    }
+	public void resetView() {
+		mDownloadRemainder.setVisibility(View.GONE);
+		setLoadPictures(false);
+		showShowAttachmentsAction(false);
+		showShowMessageAction(false);
+		showShowPicturesAction(false);
+		mAttachments.removeAllViews();
+		mHiddenAttachments.removeAllViews();
 
-    public void resetHeaderView() {
-        mHeaderContainer.setVisibility(View.GONE);
-    }
+		/*
+		 * Clear the WebView content
+		 * 
+		 * For some reason WebView.clearView() doesn't clear the contents when
+		 * the WebView changes its size because the button to download the
+		 * complete message was previously shown and is now hidden.
+		 */
+		loadBodyFromText("");
+	}
 
-    public AttachmentView.AttachmentFileDownloadCallback getAttachmentCallback() {
-        return attachmentCallback;
-    }
+	public void resetHeaderView() {
+		mHeaderContainer.setVisibility(View.GONE);
+	}
 
-    public void setAttachmentCallback(
-        AttachmentView.AttachmentFileDownloadCallback attachmentCallback) {
-        this.attachmentCallback = attachmentCallback;
-    }
+	public AttachmentView.AttachmentFileDownloadCallback getAttachmentCallback() {
+		return attachmentCallback;
+	}
 
-    private void moveHeaderToLayout() {
-        if (mTitleBarHeaderContainer != null && mTitleBarHeaderContainer.getChildCount() != 0) {
-            mTitleBarHeaderContainer.removeView(mHeaderContainer);
-            mInsideAttachmentsContainer.addView(mHeaderContainer, 0);
-        }
-    }
+	public void setAttachmentCallback(
+			AttachmentView.AttachmentFileDownloadCallback attachmentCallback) {
+		this.attachmentCallback = attachmentCallback;
+	}
 
-    private void moveHeaderToWebViewTitleBar() {
-        if (mTitleBarHeaderContainer != null && mTitleBarHeaderContainer.getChildCount() == 0) {
-            mInsideAttachmentsContainer.removeView(mHeaderContainer);
-            mTitleBarHeaderContainer.addView(mHeaderContainer);
-        }
-    }
+	@Override
+	public Parcelable onSaveInstanceState() {
+		Parcelable superState = super.onSaveInstanceState();
 
-    @Override
-    public Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
+		SavedState savedState = new SavedState(superState);
 
-        SavedState savedState = new SavedState(superState);
+		savedState.attachmentViewVisible = (mAttachmentsContainer != null && mAttachmentsContainer
+				.getVisibility() == View.VISIBLE);
+		savedState.hiddenAttachmentsVisible = (mHiddenAttachments != null && mHiddenAttachments
+				.getVisibility() == View.VISIBLE);
+		savedState.showPictures = mShowPictures;
 
-        savedState.attachmentViewVisible = (mAttachmentsContainer != null &&
-                mAttachmentsContainer.getVisibility() == View.VISIBLE);
-        savedState.hiddenAttachmentsVisible = (mHiddenAttachments != null &&
-                mHiddenAttachments.getVisibility() == View.VISIBLE);
-        savedState.showPictures = mShowPictures;
+		return savedState;
+	}
 
-        return savedState;
-    }
+	@Override
+	public void onRestoreInstanceState(Parcelable state) {
+		if (!(state instanceof SavedState)) {
+			super.onRestoreInstanceState(state);
+			return;
+		}
 
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        if(!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
-            return;
-        }
+		SavedState savedState = (SavedState) state;
+		super.onRestoreInstanceState(savedState.getSuperState());
 
-        SavedState savedState = (SavedState)state;
-        super.onRestoreInstanceState(savedState.getSuperState());
+		mSavedState = savedState;
+	}
 
-        mSavedState = savedState;
-    }
+	@Override
+	public void onLayoutChanged() {
+		if (mMessageContentView != null) {
+			mMessageContentView.invalidate();
+		}
+	}
 
-    @Override
-    public void onLayoutChanged() {
-        if (mMessageContentView != null) {
-            mMessageContentView.invalidate();
-        }
-    }
+	static class SavedState extends BaseSavedState {
+		boolean attachmentViewVisible;
+		boolean hiddenAttachmentsVisible;
+		boolean showPictures;
 
-    static class SavedState extends BaseSavedState {
-        boolean attachmentViewVisible;
-        boolean hiddenAttachmentsVisible;
-        boolean showPictures;
+		public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+			@Override
+			public SavedState createFromParcel(Parcel in) {
+				return new SavedState(in);
+			}
 
-        public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
-            @Override
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
+			@Override
+			public SavedState[] newArray(int size) {
+				return new SavedState[size];
+			}
+		};
 
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
+		SavedState(Parcelable superState) {
+			super(superState);
+		}
 
+		private SavedState(Parcel in) {
+			super(in);
+			this.attachmentViewVisible = (in.readInt() != 0);
+			this.hiddenAttachmentsVisible = (in.readInt() != 0);
+			this.showPictures = (in.readInt() != 0);
+		}
 
-        SavedState(Parcelable superState) {
-            super(superState);
-        }
+		@Override
+		public void writeToParcel(Parcel out, int flags) {
+			super.writeToParcel(out, flags);
+			out.writeInt((this.attachmentViewVisible) ? 1 : 0);
+			out.writeInt((this.hiddenAttachmentsVisible) ? 1 : 0);
+			out.writeInt((this.showPictures) ? 1 : 0);
+		}
+	}
 
-        private SavedState(Parcel in) {
-            super(in);
-            this.attachmentViewVisible = (in.readInt() != 0);
-            this.hiddenAttachmentsVisible = (in.readInt() != 0);
-            this.showPictures = (in.readInt() != 0);
-        }
+	class DownloadImageTask extends AsyncTask<String, Void, String> {
+		@Override
+		protected String doInBackground(String... params) {
+			String urlString = params[0];
+			try {
+				boolean externalImage = urlString.startsWith("http");
 
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeInt((this.attachmentViewVisible) ? 1 : 0);
-            out.writeInt((this.hiddenAttachmentsVisible) ? 1 : 0);
-            out.writeInt((this.showPictures) ? 1 : 0);
-        }
-    }
+				String filename = null;
+				String mimeType = null;
+				InputStream in = null;
 
-    class DownloadImageTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            String urlString = params[0];
-            try {
-                boolean externalImage = urlString.startsWith("http");
+				try {
+					if (externalImage) {
+						URL url = new URL(urlString);
+						URLConnection conn = url.openConnection();
+						in = conn.getInputStream();
 
-                String filename = null;
-                String mimeType = null;
-                InputStream in = null;
+						String path = url.getPath();
 
-                try {
-                    if (externalImage) {
-                        URL url = new URL(urlString);
-                        URLConnection conn = url.openConnection();
-                        in = conn.getInputStream();
+						// Try to get the filename from the URL
+						int start = path.lastIndexOf("/");
+						if (start != -1 && start + 1 < path.length()) {
+							filename = URLDecoder.decode(
+									path.substring(start + 1), "UTF-8");
+						} else {
+							// Use a dummy filename if necessary
+							filename = "saved_image";
+						}
 
-                        String path = url.getPath();
+						// Get the MIME type if we couldn't find a file
+						// extension
+						if (filename.indexOf('.') == -1) {
+							mimeType = conn.getContentType();
+						}
+					} else {
+						ContentResolver contentResolver = getContext()
+								.getContentResolver();
+						Uri uri = Uri.parse(urlString);
 
-                        // Try to get the filename from the URL
-                        int start = path.lastIndexOf("/");
-                        if (start != -1 && start + 1 < path.length()) {
-                            filename = URLDecoder.decode(path.substring(start + 1), "UTF-8");
-                        } else {
-                            // Use a dummy filename if necessary
-                            filename = "saved_image";
-                        }
+						// Get the filename from AttachmentProvider
+						Cursor cursor = contentResolver.query(uri,
+								ATTACHMENT_PROJECTION, null, null, null);
+						if (cursor != null) {
+							try {
+								if (cursor.moveToNext()) {
+									filename = cursor
+											.getString(DISPLAY_NAME_INDEX);
+								}
+							} finally {
+								cursor.close();
+							}
+						}
 
-                        // Get the MIME type if we couldn't find a file extension
-                        if (filename.indexOf('.') == -1) {
-                            mimeType = conn.getContentType();
-                        }
-                    } else {
-                        ContentResolver contentResolver = getContext().getContentResolver();
-                        Uri uri = Uri.parse(urlString);
+						// Use a dummy filename if necessary
+						if (filename == null) {
+							filename = "saved_image";
+						}
 
-                        // Get the filename from AttachmentProvider
-                        Cursor cursor = contentResolver.query(uri, ATTACHMENT_PROJECTION, null, null, null);
-                        if (cursor != null) {
-                            try {
-                                if (cursor.moveToNext()) {
-                                    filename = cursor.getString(DISPLAY_NAME_INDEX);
-                                }
-                            } finally {
-                                cursor.close();
-                            }
-                        }
+						// Get the MIME type if we couldn't find a file
+						// extension
+						if (filename.indexOf('.') == -1) {
+							mimeType = contentResolver.getType(uri);
+						}
 
-                        // Use a dummy filename if necessary
-                        if (filename == null) {
-                            filename = "saved_image";
-                        }
+						in = contentResolver.openInputStream(uri);
+					}
 
-                        // Get the MIME type if we couldn't find a file extension
-                        if (filename.indexOf('.') == -1) {
-                            mimeType = contentResolver.getType(uri);
-                        }
+					// Do we still need an extension?
+					if (filename.indexOf('.') == -1) {
+						// Use JPEG as fallback
+						String extension = "jpeg";
+						if (mimeType != null) {
+							// Try to find an extension for the given MIME type
+							String ext = MimeUtility
+									.getExtensionByMimeType(mimeType);
+							if (ext != null) {
+								extension = ext;
+							}
+						}
+						filename += "." + extension;
+					}
 
-                        in = contentResolver.openInputStream(uri);
-                    }
+					String sanitized = Utility.sanitizeFilename(filename);
 
-                    // Do we still need an extension?
-                    if (filename.indexOf('.') == -1) {
-                        // Use JPEG as fallback
-                        String extension = "jpeg";
-                        if (mimeType != null) {
-                            // Try to find an extension for the given MIME type
-                            String ext = MimeUtility.getExtensionByMimeType(mimeType);
-                            if (ext != null) {
-                                extension = ext;
-                            }
-                        }
-                        filename += "." + extension;
-                    }
+					File directory = new File(K9.getAttachmentDefaultPath());
+					File file = Utility.createUniqueFile(directory, sanitized);
+					FileOutputStream out = new FileOutputStream(file);
+					try {
+						IOUtils.copy(in, out);
+						out.flush();
+					} finally {
+						out.close();
+					}
 
-                    String sanitized = Utility.sanitizeFilename(filename);
+					return file.getName();
 
-                    File directory = new File(K9.getAttachmentDefaultPath());
-                    File file = Utility.createUniqueFile(directory, sanitized);
-                    FileOutputStream out = new FileOutputStream(file);
-                    try {
-                        IOUtils.copy(in, out);
-                        out.flush();
-                    } finally {
-                        out.close();
-                    }
+				} finally {
+					if (in != null) {
+						in.close();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
 
-                    return file.getName();
+		@Override
+		protected void onPostExecute(String filename) {
+			String text;
+			if (filename == null) {
+				text = getContext().getString(R.string.image_saving_failed);
+			} else {
+				text = getContext()
+						.getString(R.string.image_saved_as, filename);
+			}
 
-                } finally {
-                    if (in != null) {
-                        in.close();
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String filename) {
-            String text;
-            if (filename == null) {
-                text = getContext().getString(R.string.image_saving_failed);
-            } else {
-                text = getContext().getString(R.string.image_saved_as, filename);
-            }
-
-            Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
-        }
-    }
+			Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
+		}
+	}
 }

@@ -17,15 +17,15 @@
 
 package org.ancode.secmail.view;
 
-import org.ancode.secmail.Clock;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.Throttle;
-import org.ancode.secmail.helper.Utility;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.webkit.WebView;
+
+import org.ancode.secmail.Clock;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Throttle;
+import org.ancode.secmail.helper.Utility;
 
 /**
  * A custom WebView that is robust to rapid resize events in sequence.
