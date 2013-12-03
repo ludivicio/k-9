@@ -1,13 +1,13 @@
 package org.ancode.secmail.activity;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Parcelable;
-
 import org.ancode.secmail.Account;
 import org.ancode.secmail.BaseAccount;
 import org.ancode.secmail.R;
 import org.ancode.secmail.search.SearchAccount;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Parcelable;
 
 public class LauncherShortcuts extends AccountList {
     @Override

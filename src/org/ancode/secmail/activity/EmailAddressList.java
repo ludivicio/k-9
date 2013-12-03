@@ -1,16 +1,16 @@
 package org.ancode.secmail.activity;
 
+import org.ancode.secmail.R;
+import org.ancode.secmail.helper.ContactItem;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-
-import org.ancode.secmail.R;
-import org.ancode.secmail.helper.ContactItem;
 
 public class EmailAddressList extends K9ListActivity implements OnItemClickListener {
     public static final String EXTRA_CONTACT_ITEM = "contact";

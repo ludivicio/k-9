@@ -1,13 +1,31 @@
 
 package org.ancode.secmail.activity.setup;
 
-import android.app.Dialog;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.ancode.secmail.Account;
+import org.ancode.secmail.Account.FolderMode;
+import org.ancode.secmail.Account.QuoteStyle;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.NotificationSetting;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.ChooseFolder;
+import org.ancode.secmail.activity.ChooseIdentity;
+import org.ancode.secmail.activity.ColorPickerDialog;
+import org.ancode.secmail.activity.K9PreferenceActivity;
+import org.ancode.secmail.activity.ManageIdentities;
+import org.ancode.secmail.crypto.Apg;
+import org.ancode.secmail.mail.Folder;
+import org.ancode.secmail.mail.Store;
+import org.ancode.secmail.mail.store.LocalStore.LocalFolder;
+import org.ancode.secmail.mail.store.StorageManager;
+import org.ancode.secmail.service.MailService;
+
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,25 +41,6 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.util.Log;
-
-import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.NotificationSetting;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-import org.ancode.secmail.Account.FolderMode;
-import org.ancode.secmail.Account.QuoteStyle;
-import org.ancode.secmail.activity.ChooseFolder;
-import org.ancode.secmail.activity.ChooseIdentity;
-import org.ancode.secmail.activity.ColorPickerDialog;
-import org.ancode.secmail.activity.K9PreferenceActivity;
-import org.ancode.secmail.activity.ManageIdentities;
-import org.ancode.secmail.crypto.Apg;
-import org.ancode.secmail.mail.Folder;
-import org.ancode.secmail.mail.Store;
-import org.ancode.secmail.mail.store.StorageManager;
-import org.ancode.secmail.mail.store.LocalStore.LocalFolder;
-import org.ancode.secmail.service.MailService;
 
 
 public class AccountSettings extends K9PreferenceActivity {

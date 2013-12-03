@@ -1,6 +1,20 @@
 
 package org.ancode.secmail.activity.setup;
 
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.EmailAddressValidator;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.K9Activity;
+import org.ancode.secmail.helper.Utility;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -16,16 +30,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-
-import org.ancode.secmail.*;
-import org.ancode.secmail.activity.K9Activity;
-import org.ancode.secmail.helper.Utility;
-
 /**
  * Prompts the user for the email address and password.
  * Attempts to lookup default settings for the domain the user specified. If the
@@ -35,10 +39,10 @@ import org.ancode.secmail.helper.Utility;
  */
 public class AccountSetupBasics extends K9Activity
     implements OnClickListener, TextWatcher {
-    private final static String EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account";
+    private final static String EXTRA_ACCOUNT = "org.ancode.secmail.AccountSetupBasics.account";
     private final static int DIALOG_NOTE = 1;
     private final static String STATE_KEY_PROVIDER =
-        "com.fsck.k9.AccountSetupBasics.provider";
+        "org.ancode.secmail.AccountSetupBasics.provider";
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -322,14 +326,12 @@ public class AccountSetupBasics extends K9Activity
     }
 
     public void onClick(View v) {
-        switch (v.getId()) {
-        case R.id.next:
-            onNext();
-            break;
-        case R.id.manual_setup:
-            onManualSetup();
-            break;
-        }
+        int id = v.getId();
+		if (id == R.id.next) {
+			onNext();
+		} else if (id == R.id.manual_setup) {
+			onManualSetup();
+		}
     }
 
     /**

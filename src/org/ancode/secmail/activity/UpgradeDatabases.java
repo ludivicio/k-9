@@ -4,6 +4,7 @@ import org.ancode.secmail.Account;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.Preferences;
 import org.ancode.secmail.R;
+import org.ancode.secmail.controller.MessagingController;
 import org.ancode.secmail.mail.Store;
 import org.ancode.secmail.service.DatabaseUpgradeService;
 

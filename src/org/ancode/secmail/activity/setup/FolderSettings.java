@@ -1,13 +1,16 @@
 
 package org.ancode.secmail.activity.setup;
 
-import org.ancode.secmail.*;
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
 import org.ancode.secmail.activity.FolderInfoHolder;
 import org.ancode.secmail.activity.K9PreferenceActivity;
 import org.ancode.secmail.mail.Folder;
+import org.ancode.secmail.mail.Folder.FolderClass;
 import org.ancode.secmail.mail.MessagingException;
 import org.ancode.secmail.mail.Store;
-import org.ancode.secmail.mail.Folder.FolderClass;
 import org.ancode.secmail.mail.store.LocalStore;
 import org.ancode.secmail.mail.store.LocalStore.LocalFolder;
 import org.ancode.secmail.service.MailService;
@@ -22,8 +25,8 @@ import android.util.Log;
 
 public class FolderSettings extends K9PreferenceActivity {
 
-    private static final String EXTRA_FOLDER_NAME = "com.fsck.k9.folderName";
-    private static final String EXTRA_ACCOUNT = "com.fsck.k9.account";
+    private static final String EXTRA_FOLDER_NAME = "org.ancode.secmail.folderName";
+    private static final String EXTRA_ACCOUNT = "org.ancode.secmail.account";
 
     private static final String PREFERENCE_TOP_CATERGORY = "folder_settings";
     private static final String PREFERENCE_DISPLAY_CLASS = "folder_settings_folder_display_mode";

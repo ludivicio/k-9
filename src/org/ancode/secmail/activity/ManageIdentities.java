@@ -1,5 +1,9 @@
 package org.ancode.secmail.activity;
 
+import org.ancode.secmail.Identity;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+
 import android.content.Intent;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -12,13 +16,9 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import org.ancode.secmail.Identity;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-
 public class ManageIdentities extends ChooseIdentity {
     private boolean mIdentitiesChanged = false;
-    public static final String EXTRA_IDENTITIES = "com.fsck.k9.EditIdentity_identities";
+    public static final String EXTRA_IDENTITIES = "org.ancode.secmail.EditIdentity_identities";
 
     private static final int ACTIVITY_EDIT_IDENTITY = 1;
 
@@ -51,15 +51,14 @@ public class ManageIdentities extends ChooseIdentity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.new_identity:
-            Intent intent = new Intent(ManageIdentities.this, EditIdentity.class);
-            intent.putExtra(EditIdentity.EXTRA_ACCOUNT, mAccount.getUuid());
-            startActivityForResult(intent, ACTIVITY_EDIT_IDENTITY);
-            break;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
+        int itemId = item.getItemId();
+		if (itemId == R.id.new_identity) {
+			Intent intent = new Intent(ManageIdentities.this, EditIdentity.class);
+			intent.putExtra(EditIdentity.EXTRA_ACCOUNT, mAccount.getUuid());
+			startActivityForResult(intent, ACTIVITY_EDIT_IDENTITY);
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
         return true;
     }
 
@@ -73,35 +72,30 @@ public class ManageIdentities extends ChooseIdentity {
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
         AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo)item.getMenuInfo();
-        switch (item.getItemId()) {
-        case R.id.edit:
-            editItem(menuInfo.position);
-            break;
-        case R.id.up:
-            if (menuInfo.position > 0) {
+        int itemId = item.getItemId();
+		if (itemId == R.id.edit) {
+			editItem(menuInfo.position);
+		} else if (itemId == R.id.up) {
+			if (menuInfo.position > 0) {
                 Identity identity = identities.remove(menuInfo.position);
                 identities.add(menuInfo.position - 1, identity);
                 mIdentitiesChanged = true;
                 refreshView();
             }
-
-            break;
-        case R.id.down:
-            if (menuInfo.position < identities.size() - 1) {
+		} else if (itemId == R.id.down) {
+			if (menuInfo.position < identities.size() - 1) {
                 Identity identity = identities.remove(menuInfo.position);
                 identities.add(menuInfo.position + 1, identity);
                 mIdentitiesChanged = true;
                 refreshView();
             }
-            break;
-        case R.id.top:
-            Identity identity = identities.remove(menuInfo.position);
-            identities.add(0, identity);
-            mIdentitiesChanged = true;
-            refreshView();
-            break;
-        case R.id.remove:
-            if (identities.size() > 1) {
+		} else if (itemId == R.id.top) {
+			Identity identity = identities.remove(menuInfo.position);
+			identities.add(0, identity);
+			mIdentitiesChanged = true;
+			refreshView();
+		} else if (itemId == R.id.remove) {
+			if (identities.size() > 1) {
                 identities.remove(menuInfo.position);
                 mIdentitiesChanged = true;
                 refreshView();
@@ -109,8 +103,7 @@ public class ManageIdentities extends ChooseIdentity {
                 Toast.makeText(this, getString(R.string.no_removable_identity),
                                Toast.LENGTH_LONG).show();
             }
-            break;
-        }
+		}
         return true;
     }
 

@@ -4,56 +4,15 @@ package org.ancode.secmail.activity;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Application;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnMultiChoiceClickListener;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.util.SparseBooleanArray;
-import android.view.ContextMenu;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnClickListener;
-import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import org.ancode.secmail.Account;
 import org.ancode.secmail.AccountStats;
@@ -73,6 +32,10 @@ import org.ancode.secmail.helper.SizeFormatter;
 import org.ancode.secmail.mail.ServerSettings;
 import org.ancode.secmail.mail.Store;
 import org.ancode.secmail.mail.Transport;
+import org.ancode.secmail.mail.crypto.v2.AsyncHttpTools;
+import org.ancode.secmail.mail.crypto.v2.CryptoguardUiHelper;
+import org.ancode.secmail.mail.crypto.v2.HttpPostUtil;
+import org.ancode.secmail.mail.crypto.v2.PostResultV2;
 import org.ancode.secmail.mail.internet.MimeUtility;
 import org.ancode.secmail.mail.store.StorageManager;
 import org.ancode.secmail.mail.store.WebDavStore;
@@ -87,7 +50,58 @@ import org.ancode.secmail.search.LocalSearch;
 import org.ancode.secmail.search.SearchAccount;
 import org.ancode.secmail.search.SearchSpecification.Attribute;
 import org.ancode.secmail.search.SearchSpecification.Searchfield;
+import org.ancode.secmail.update.AppUpdate;
+import org.ancode.secmail.update.AppUpdateService;
+import org.ancode.secmail.update.internal.SimpleJSONParser;
 import org.ancode.secmail.view.ColorChip;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Application;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnMultiChoiceClickListener;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 import de.cketti.library.changelog.ChangeLog;
 
@@ -113,6 +127,12 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     private static final int DIALOG_CLEAR_ACCOUNT = 2;
     private static final int DIALOG_RECREATE_ACCOUNT = 3;
     private static final int DIALOG_NO_FILE_MANAGER = 4;
+    
+    // modified by lxc at 2013-11-22
+    private static final int DIALOG_REG_SUCCESS = 5;
+	private static final int DIALOG_REG_FAILED = 6;
+	private static final int DIALOG_CANCEL_REG = 7;
+	private static final int DIALOG_PROTECT_ENABLED = 8;
 
     private ConcurrentHashMap<String, AccountStats> accountStats = new ConcurrentHashMap<String, AccountStats>();
 
@@ -127,13 +147,22 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     private SearchAccount mUnifiedInboxAccount = null;
     private FontSizes mFontSizes = K9.getFontSizes();
 
+    // modified by lxc at 2013-11-22
+    private BaseAccount mSelectedAccount;
+    
     private MenuItem mRefreshMenuItem;
     private ActionBar mActionBar;
 
     private TextView mActionBarTitle;
     private TextView mActionBarSubTitle;
     private TextView mActionBarUnread;
-
+    
+    // modified by lxc at 2013-11-22
+    private final static String UPDATE_URL = "http://www.han2011.com/update/update.ini";
+//    private final static String UPDATE_URL = "http://www.gezimail.com/update/update.ini";
+    private AppUpdate appUpdate;
+	
+    
     /**
      * Contains information about objects that need to be retained on configuration changes.
      *
@@ -236,6 +265,17 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 }
             });
         }
+        
+        // modified by lxc at 2013-11-22
+        @Override
+		public void handleMessage(Message msg) {
+			
+			if( msg.what == 0x001 ) {
+				CryptoguardUiHelper.openProtectDialog(Accounts.this);
+			}
+			
+			super.handleMessage(msg);
+		}
     }
 
     public void setProgress(boolean progress) {
@@ -388,6 +428,10 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
+        // modified by lxc at 2013-11-22
+        appUpdate = AppUpdateService.getAppUpdate(this);
+		appUpdate.checkLatestVersion(UPDATE_URL, new SimpleJSONParser());
+        
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts();
         }
@@ -1101,6 +1145,71 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 }
             });
         }
+        
+        // modified by lxc at 2013-11-22
+        // Case for secmail.
+        case DIALOG_REG_SUCCESS: {
+			return ConfirmationDialog.create(this, id, R.string.apply_reg_encrypt_result_title,
+					R.string.apply_reg_encrypt_result_success_message, R.string.okay_action, R.string.cancel_action,
+					new Runnable() {
+						@Override
+						public void run() {
+							
+							// modified by lxc at 2013-11-05
+							// Set the handler to update the ui.
+							MessagingController.getInstance(getApplication()).setHandler(mHandler);
+							MessagingController.getInstance(getApplication()).checkMail(getBaseContext(),
+									(Account) mSelectedContextAccount, true, true, null);
+						}
+					});
+		}
+		case DIALOG_REG_FAILED: {
+			return ConfirmationDialog.create(this, id, R.string.apply_reg_encrypt_result_title,
+					R.string.apply_reg_encrypt_result_failed_message, R.string.okay_action, R.string.cancel_action,
+					new Runnable() {
+						@Override
+						public void run() {
+						}
+					});
+		}
+		case DIALOG_CANCEL_REG: {
+			return ConfirmationDialog.create(this, id, R.string.cancel_reg_encrypt_result_title,
+					getString(R.string.cancel_reg_encrypt_message), R.string.okay_action, R.string.cancel_action,
+					new Runnable() {
+						@Override
+						public void run() {
+							if (mSelectedAccount instanceof Account) {
+								Account realAccount = (Account) mSelectedAccount;
+								
+								// modified by lxc at 2013-11-01
+								// cancel the register action
+								realAccount.setRegCode(null);
+								realAccount.setAesKey(null);
+								realAccount.setDeviceUuid(null);
+								realAccount.save(Preferences.getPreferences(Accounts.this));
+								mSelectedAccount = null;
+							}
+							refresh();
+						}
+					}, new Runnable() {
+						@Override
+						public void run() {
+							refresh();
+						}
+					});
+		}
+		case DIALOG_PROTECT_ENABLED: {
+			return ConfirmationDialog.create(this, id, R.string.apply_reg_encrypt_result_title,
+					R.string.apply_reg_encrypt_result_protect_enabled, R.string.okay_action, R.string.cancel_action,
+					new Runnable() {
+						@Override
+						public void run() {
+						}
+					});
+		}
+        
+        
+        
         }
 
         return super.onCreateDialog(id);
@@ -1142,38 +1251,28 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         if (mSelectedContextAccount instanceof Account) {
             realAccount = (Account)mSelectedContextAccount;
         }
-        switch (item.getItemId()) {
-        case R.id.delete_account:
-            onDeleteAccount(realAccount);
-            break;
-        case R.id.account_settings:
-            onEditAccount(realAccount);
-            break;
-        case R.id.activate:
-            onActivateAccount(realAccount);
-            break;
-        case R.id.clear_pending:
-            onClearCommands(realAccount);
-            break;
-        case R.id.empty_trash:
-            onEmptyTrash(realAccount);
-            break;
-        case R.id.clear:
-            onClear(realAccount);
-            break;
-        case R.id.recreate:
-            onRecreate(realAccount);
-            break;
-        case R.id.export:
-            onExport(false, realAccount);
-            break;
-        case R.id.move_up:
-            onMove(realAccount, true);
-            break;
-        case R.id.move_down:
-            onMove(realAccount, false);
-            break;
-        }
+        int itemId = item.getItemId();
+		if (itemId == R.id.delete_account) {
+			onDeleteAccount(realAccount);
+		} else if (itemId == R.id.account_settings) {
+			onEditAccount(realAccount);
+		} else if (itemId == R.id.activate) {
+			onActivateAccount(realAccount);
+		} else if (itemId == R.id.clear_pending) {
+			onClearCommands(realAccount);
+		} else if (itemId == R.id.empty_trash) {
+			onEmptyTrash(realAccount);
+		} else if (itemId == R.id.clear) {
+			onClear(realAccount);
+		} else if (itemId == R.id.recreate) {
+			onRecreate(realAccount);
+		} else if (itemId == R.id.export) {
+			onExport(false, realAccount);
+		} else if (itemId == R.id.move_up) {
+			onMove(realAccount, true);
+		} else if (itemId == R.id.move_down) {
+			onMove(realAccount, false);
+		}
         return true;
     }
 
@@ -1199,34 +1298,26 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.add_new_account:
-            onAddNewAccount();
-            break;
-        case R.id.edit_prefs:
-            onEditPrefs();
-            break;
-        case R.id.check_mail:
-            onCheckMail(null);
-            break;
-        case R.id.compose:
-            onCompose();
-            break;
-        case R.id.about:
-            onAbout();
-            break;
-        case R.id.search:
-            onSearchRequested();
-            break;
-        case R.id.export_all:
-            onExport(true, null);
-            break;
-        case R.id.import_settings:
-            onImport();
-            break;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
+        int itemId = item.getItemId();
+		if (itemId == R.id.add_new_account) {
+			onAddNewAccount();
+		} else if (itemId == R.id.edit_prefs) {
+			onEditPrefs();
+		} else if (itemId == R.id.check_mail) {
+			onCheckMail(null);
+		} else if (itemId == R.id.compose) {
+			onCompose();
+		} else if (itemId == R.id.about) {
+			onAbout();
+		} else if (itemId == R.id.search) {
+			onSearchRequested();
+		} else if (itemId == R.id.export_all) {
+			onExport(true, null);
+		} else if (itemId == R.id.import_settings) {
+			onImport();
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
         return true;
     }
 
@@ -1339,7 +1430,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         menu.setHeaderTitle(R.string.accounts_context_menu_title);
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        BaseAccount account =  mAdapter.getItem(info.position);
+        BaseAccount account = mAdapter.getItem(info.position);
 
         if ((account instanceof Account) && !((Account) account).isEnabled()) {
             getMenuInflater().inflate(R.menu.disabled_accounts_context, menu);
@@ -1372,8 +1463,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
     private void onImport() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType("*/*");
+        i.setType(MimeUtility.K9_SETTINGS_MIME_TYPE);
 
         PackageManager packageManager = getPackageManager();
         List<ResolveInfo> infos = packageManager.queryIntentActivities(i, 0);
@@ -1719,6 +1811,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 holder.folders = (ImageButton) view.findViewById(R.id.folders);
                 holder.accountsItemLayout = (LinearLayout)view.findViewById(R.id.accounts_item_layout);
 
+                // modified by lxc at 2013-11-22
+                holder.encryStatus = (TextView) view.findViewById(R.id.encrypt_status);
+                
                 view.setTag(holder);
             }
             AccountStats stats = accountStats.get(account.getUuid());
@@ -1781,14 +1876,32 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             }
 
 
-
-
             mFontSizes.setViewTextSize(holder.description, mFontSizes.getAccountName());
             mFontSizes.setViewTextSize(holder.email, mFontSizes.getAccountDescription());
 
             if (account instanceof SearchAccount) {
+            	
+            	// modified by lxc at 2013-11-22
+            	holder.encryStatus.setVisibility(View.GONE);
                 holder.folders.setVisibility(View.GONE);
             } else {
+            	
+            	// modified by lxc at 2013-11-22
+            	Account _account = (Account) account;
+				if (_account.getRegCode() == null || _account.getRegCode().trim().equals("")) {
+					holder.encryStatus.setVisibility(View.VISIBLE);
+					holder.encryStatus.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_unlock));
+					// holder.encryStatus.setText(getString(R.string.apply_reg_encrypt));
+					holder.encryStatus.setOnClickListener(new RegEncryptClickListener((Account) account,
+							getApplicationContext()));
+				} else {
+					holder.encryStatus.setVisibility(View.VISIBLE);
+					holder.encryStatus.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_lock));
+					// holder.encryStatus.setText(getString(R.string.applied_reg_encrypt));
+					holder.encryStatus.setOnClickListener(new RegDecryptClickListener((Account) account));
+				}
+				
+            	
                 holder.folders.setVisibility(View.VISIBLE);
                 holder.folders.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
@@ -1842,9 +1955,77 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             public View chip;
             public ImageButton folders;
             public LinearLayout accountsItemLayout;
+            // modified by lxc at 2013-11-22
+            public TextView encryStatus;
         }
     }
 
+    
+    
+    private class RegDecryptClickListener implements OnClickListener {
+
+		final Account account;
+
+		RegDecryptClickListener(Account nAccount) {
+			account = nAccount;
+		}
+
+		@Override
+		public void onClick(View v) {
+			mSelectedAccount = account;
+			showDialog(DIALOG_CANCEL_REG);
+		}
+
+	}
+
+	private class RegEncryptClickListener implements OnClickListener {
+
+		final Account account;
+		Context context;
+
+		RegEncryptClickListener(Account nAccount, Context mContext) {
+			account = nAccount;
+			context = mContext;
+		}
+
+		@Override
+		public void onClick(View v) {
+			
+			// modified by lxc at 2013-11-11
+			AsyncHttpTools.execute(new AsyncHttpTools.TaskListener() {
+				
+				@Override
+				public PostResultV2 executeTask() {
+					return HttpPostUtil.postRegRequest(account, getApplicationContext());
+				}
+				
+				@Override
+				public void callBack(PostResultV2 result) {
+					if (result == null) {
+						Toast.makeText(
+								context,
+								context.getString(R.string.apply_reg_encrypt_network_anomaly),
+								Toast.LENGTH_LONG).show();
+						return;
+					}
+					if (result.isSuccess()) {
+						account.setApplyReg(true);
+						account.setDeviceUuid(result.getDeviceUuid());
+						account.save(Preferences.getPreferences(context));
+						showDialog(DIALOG_REG_SUCCESS);
+					} else if (result.hasProtected()) {
+						showDialog(DIALOG_PROTECT_ENABLED);
+					} else {
+						showDialog(DIALOG_REG_FAILED);
+					}
+				}
+			});
+			
+		}
+
+	}
+    
+    
     private class AccountClickListener implements OnClickListener {
 
         final LocalSearch search;

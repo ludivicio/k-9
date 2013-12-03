@@ -6,16 +6,20 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.ancode.secmail.Account;
+import org.ancode.secmail.Account.FolderMode;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.controller.MessagingController;
+import org.ancode.secmail.controller.MessagingListener;
+import org.ancode.secmail.mail.Folder;
+import org.ancode.secmail.mail.MessagingException;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
-import com.actionbarsherlock.widget.SearchView;
-
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,25 +27,20 @@ import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-import org.ancode.secmail.Account.FolderMode;
-import org.ancode.secmail.controller.MessagingController;
-import org.ancode.secmail.controller.MessagingListener;
-import org.ancode.secmail.mail.Folder;
-import org.ancode.secmail.mail.MessagingException;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
+import com.actionbarsherlock.widget.SearchView;
 
 public class ChooseFolder extends K9ListActivity {
-    public static final String EXTRA_ACCOUNT = "com.fsck.k9.ChooseFolder_account";
-    public static final String EXTRA_CUR_FOLDER = "com.fsck.k9.ChooseFolder_curfolder";
-    public static final String EXTRA_SEL_FOLDER = "com.fsck.k9.ChooseFolder_selfolder";
-    public static final String EXTRA_NEW_FOLDER = "com.fsck.k9.ChooseFolder_newfolder";
-    public static final String EXTRA_MESSAGE = "com.fsck.k9.ChooseFolder_message";
-    public static final String EXTRA_SHOW_CURRENT = "com.fsck.k9.ChooseFolder_showcurrent";
-    public static final String EXTRA_SHOW_FOLDER_NONE = "com.fsck.k9.ChooseFolder_showOptionNone";
-    public static final String EXTRA_SHOW_DISPLAYABLE_ONLY = "com.fsck.k9.ChooseFolder_showDisplayableOnly";
+    public static final String EXTRA_ACCOUNT = "org.ancode.secmail.ChooseFolder_account";
+    public static final String EXTRA_CUR_FOLDER = "org.ancode.secmail.ChooseFolder_curfolder";
+    public static final String EXTRA_SEL_FOLDER = "org.ancode.secmail.ChooseFolder_selfolder";
+    public static final String EXTRA_NEW_FOLDER = "org.ancode.secmail.ChooseFolder_newfolder";
+    public static final String EXTRA_MESSAGE = "org.ancode.secmail.ChooseFolder_message";
+    public static final String EXTRA_SHOW_CURRENT = "org.ancode.secmail.ChooseFolder_showcurrent";
+    public static final String EXTRA_SHOW_FOLDER_NONE = "org.ancode.secmail.ChooseFolder_showOptionNone";
+    public static final String EXTRA_SHOW_DISPLAYABLE_ONLY = "org.ancode.secmail.ChooseFolder_showDisplayableOnly";
 
 
     String mFolder;
@@ -197,31 +196,25 @@ public class ChooseFolder extends K9ListActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.display_1st_class: {
-                setDisplayMode(FolderMode.FIRST_CLASS);
-                return true;
-            }
-            case R.id.display_1st_and_2nd_class: {
-                setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
-                return true;
-            }
-            case R.id.display_not_second_class: {
-                setDisplayMode(FolderMode.NOT_SECOND_CLASS);
-                return true;
-            }
-            case R.id.display_all: {
-                setDisplayMode(FolderMode.ALL);
-                return true;
-            }
-            case R.id.list_folders: {
-                onRefresh();
-                return true;
-            }
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
-        }
+        int itemId = item.getItemId();
+		if (itemId == R.id.display_1st_class) {
+			setDisplayMode(FolderMode.FIRST_CLASS);
+			return true;
+		} else if (itemId == R.id.display_1st_and_2nd_class) {
+			setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
+			return true;
+		} else if (itemId == R.id.display_not_second_class) {
+			setDisplayMode(FolderMode.NOT_SECOND_CLASS);
+			return true;
+		} else if (itemId == R.id.display_all) {
+			setDisplayMode(FolderMode.ALL);
+			return true;
+		} else if (itemId == R.id.list_folders) {
+			onRefresh();
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
     }
 
     private void onRefresh() {

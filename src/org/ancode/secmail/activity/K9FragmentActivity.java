@@ -6,10 +6,10 @@ import org.ancode.secmail.activity.misc.SwipeGestureDetector.OnSwipeGestureListe
 import android.os.Bundle;
 import android.view.MotionEvent;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 
-public class K9FragmentActivity extends SherlockFragmentActivity implements K9ActivityMagic {
+public class K9FragmentActivity extends SlidingFragmentActivity implements K9ActivityMagic {
 
     private K9ActivityCommon mBase;
 

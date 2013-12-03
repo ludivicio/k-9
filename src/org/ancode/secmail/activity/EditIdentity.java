@@ -1,5 +1,12 @@
 package org.ancode.secmail.activity;
 
+import java.util.List;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.Identity;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -7,18 +14,11 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import org.ancode.secmail.Account;
-import org.ancode.secmail.Identity;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-
-import java.util.List;
-
 public class EditIdentity extends K9Activity {
 
-    public static final String EXTRA_IDENTITY = "com.fsck.k9.EditIdentity_identity";
-    public static final String EXTRA_IDENTITY_INDEX = "com.fsck.k9.EditIdentity_identity_index";
-    public static final String EXTRA_ACCOUNT = "com.fsck.k9.EditIdentity_account";
+    public static final String EXTRA_IDENTITY = "org.ancode.secmail.EditIdentity_identity";
+    public static final String EXTRA_IDENTITY_INDEX = "org.ancode.secmail.EditIdentity_identity_index";
+    public static final String EXTRA_ACCOUNT = "org.ancode.secmail.EditIdentity_account";
 
     private Account mAccount;
     private Identity mIdentity;

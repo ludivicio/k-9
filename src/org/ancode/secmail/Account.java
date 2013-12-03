@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.ancode.secmail.R;
 import org.ancode.secmail.crypto.Apg;
 import org.ancode.secmail.crypto.CryptoProvider;
 import org.ancode.secmail.helper.Utility;
@@ -224,13 +223,14 @@ public class Account implements BaseAccount {
 
     
     // Crypt regCode
-  	private String mRegCode; 
-  	private String mAesKey; 
-  	private String mDeviceUuid;
-  	// Third part email or phone number
-  	private String mVerification; 
-  	// Crypt flag
-  	private boolean mHasApplyReg;
+ 	private String mRegCode; 
+ 	private String mAesKey; 
+ 	private String mDeviceUuid;
+ 	// Third part email or phone number
+ 	private String mVerification; 
+ 	// Crypt flag
+ 	private boolean mHasApplyReg;
+    
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -411,6 +411,7 @@ public class Account implements BaseAccount {
  		mDeviceUuid = prefs.getString(mUuid + ".deviceUuid", "");
  		mVerification = prefs.getString(mUuid + ".verification", "");
  		mHasApplyReg = prefs.getBoolean(mUuid + ".hasApplyReg", false);
+        
         
         mMaxPushFolders = prefs.getInt(mUuid + ".maxPushFolders", 10);
         goToUnreadMessageSearch = prefs.getBoolean(mUuid + ".goToUnreadMessageSearch", false);
@@ -753,6 +754,15 @@ public class Account implements BaseAccount {
         editor.putBoolean(mUuid + ".subscribedFoldersOnly", subscribedFoldersOnly);
         editor.putInt(mUuid + ".maximumPolledMessageAge", maximumPolledMessageAge);
         editor.putInt(mUuid + ".maximumAutoDownloadMessageSize", maximumAutoDownloadMessageSize);
+        
+        // modified by lxc at 2013-11-22
+        // for secmail
+ 		editor.putString(mUuid + ".regCode", mRegCode);
+ 		editor.putString(mUuid + ".aesKey", mAesKey);
+ 		editor.putString(mUuid + ".deviceUuid", mDeviceUuid);
+ 		editor.putString(mUuid + ".verification", mVerification);
+ 		editor.putBoolean(mUuid + ".hasApplyReg", mHasApplyReg);
+     		
         if (MessageFormat.AUTO.equals(mMessageFormat)) {
             // saving MessageFormat.AUTO as is to the database will cause downgrades to crash on
             // startup, so we save as MessageFormat.TEXT instead with a separate flag for auto.
@@ -787,14 +797,6 @@ public class Account implements BaseAccount {
         editor.putBoolean(mUuid + ".led", mNotificationSetting.isLed());
         editor.putInt(mUuid + ".ledColor", mNotificationSetting.getLedColor());
 
-        // modified by lxc at 2013-11-22
-        // for secmail
- 		editor.putString(mUuid + ".regCode", mRegCode);
- 		editor.putString(mUuid + ".aesKey", mAesKey);
- 		editor.putString(mUuid + ".deviceUuid", mDeviceUuid);
- 		editor.putString(mUuid + ".verification", mVerification);
- 		editor.putBoolean(mUuid + ".hasApplyReg", mHasApplyReg);
-        
         for (String type : networkTypes) {
             Boolean useCompression = compressionMap.get(type);
             if (useCompression != null) {
@@ -1225,7 +1227,6 @@ public class Account implements BaseAccount {
 	}
     
     
-	
     public synchronized String getSpamFolderName() {
         return mSpamFolderName;
     }

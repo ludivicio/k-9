@@ -1,7 +1,9 @@
 
 package org.ancode.secmail.activity.setup;
 
-import org.ancode.secmail.*;
+import org.ancode.secmail.Account;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
 import org.ancode.secmail.activity.Accounts;
 import org.ancode.secmail.activity.K9Activity;
 import org.ancode.secmail.helper.Utility;
@@ -92,10 +94,9 @@ public class AccountSetupNames extends K9Activity implements OnClickListener {
     }
 
     public void onClick(View v) {
-        switch (v.getId()) {
-        case R.id.done:
-            onNext();
-            break;
-        }
+        int id = v.getId();
+		if (id == R.id.done) {
+			onNext();
+		}
     }
 }

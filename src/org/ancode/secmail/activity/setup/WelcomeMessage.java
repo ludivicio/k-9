@@ -1,5 +1,10 @@
 package org.ancode.secmail.activity.setup;
 
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.Accounts;
+import org.ancode.secmail.activity.K9Activity;
+import org.ancode.secmail.helper.HtmlConverter;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,11 +13,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-
-import org.ancode.secmail.R;
-import org.ancode.secmail.activity.Accounts;
-import org.ancode.secmail.activity.K9Activity;
-import org.ancode.secmail.helper.HtmlConverter;
 
 /**
  * Displays a welcome message when no accounts have been created yet.
@@ -39,17 +39,13 @@ public class WelcomeMessage extends K9Activity implements OnClickListener{
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.next: {
-                AccountSetupBasics.actionNewAccount(this);
-                finish();
-                break;
-            }
-            case R.id.import_settings: {
-                Accounts.importSettings(this);
-                finish();
-                break;
-            }
-        }
+        int id = view.getId();
+		if (id == R.id.next) {
+			AccountSetupBasics.actionNewAccount(this);
+			finish();
+		} else if (id == R.id.import_settings) {
+			Accounts.importSettings(this);
+			finish();
+		}
     }
 }

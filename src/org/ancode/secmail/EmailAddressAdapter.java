@@ -16,7 +16,6 @@
 
 package org.ancode.secmail;
 
-import org.ancode.secmail.R;
 import org.ancode.secmail.helper.Contacts;
 import org.ancode.secmail.mail.Address;
 

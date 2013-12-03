@@ -1,6 +1,20 @@
 
 package org.ancode.secmail.activity.setup;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.K9Activity;
+import org.ancode.secmail.helper.Utility;
+import org.ancode.secmail.mail.transport.SmtpTransport;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,19 +25,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-
-import org.ancode.secmail.*;
-import org.ancode.secmail.activity.K9Activity;
-import org.ancode.secmail.helper.Utility;
-import org.ancode.secmail.mail.transport.SmtpTransport;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 public class AccountSetupOutgoing extends K9Activity implements OnClickListener,
     OnCheckedChangeListener {
@@ -327,11 +337,10 @@ public class AccountSetupOutgoing extends K9Activity implements OnClickListener,
     }
 
     public void onClick(View v) {
-        switch (v.getId()) {
-        case R.id.next:
-            onNext();
-            break;
-        }
+        int id = v.getId();
+		if (id == R.id.next) {
+			onNext();
+		}
     }
 
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

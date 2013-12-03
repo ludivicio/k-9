@@ -5,6 +5,31 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.ancode.secmail.Account;
+import org.ancode.secmail.Account.FolderMode;
+import org.ancode.secmail.AccountStats;
+import org.ancode.secmail.BaseAccount;
+import org.ancode.secmail.FontSizes;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.setup.AccountSettings;
+import org.ancode.secmail.activity.setup.FolderSettings;
+import org.ancode.secmail.activity.setup.Prefs;
+import org.ancode.secmail.controller.MessagingController;
+import org.ancode.secmail.controller.MessagingListener;
+import org.ancode.secmail.helper.SizeFormatter;
+import org.ancode.secmail.helper.power.TracingPowerManager;
+import org.ancode.secmail.helper.power.TracingPowerManager.TracingWakeLock;
+import org.ancode.secmail.mail.Folder;
+import org.ancode.secmail.mail.Message;
+import org.ancode.secmail.mail.MessagingException;
+import org.ancode.secmail.mail.store.LocalStore.LocalFolder;
+import org.ancode.secmail.search.LocalSearch;
+import org.ancode.secmail.search.SearchSpecification.Attribute;
+import org.ancode.secmail.search.SearchSpecification.Searchfield;
+import org.ancode.secmail.service.MailService;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,31 +61,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
-
-import org.ancode.secmail.Account;
-import org.ancode.secmail.AccountStats;
-import org.ancode.secmail.BaseAccount;
-import org.ancode.secmail.FontSizes;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-import org.ancode.secmail.Account.FolderMode;
-import org.ancode.secmail.activity.setup.AccountSettings;
-import org.ancode.secmail.activity.setup.FolderSettings;
-import org.ancode.secmail.activity.setup.Prefs;
-import org.ancode.secmail.controller.MessagingController;
-import org.ancode.secmail.controller.MessagingListener;
-import org.ancode.secmail.helper.SizeFormatter;
-import org.ancode.secmail.helper.power.TracingPowerManager;
-import org.ancode.secmail.helper.power.TracingPowerManager.TracingWakeLock;
-import org.ancode.secmail.mail.Folder;
-import org.ancode.secmail.mail.Message;
-import org.ancode.secmail.mail.MessagingException;
-import org.ancode.secmail.mail.store.LocalStore.LocalFolder;
-import org.ancode.secmail.search.LocalSearch;
-import org.ancode.secmail.search.SearchSpecification.Attribute;
-import org.ancode.secmail.search.SearchSpecification.Searchfield;
-import org.ancode.secmail.service.MailService;
 
 import de.cketti.library.changelog.ChangeLog;
 
@@ -488,76 +488,52 @@ public class FolderList extends K9ListActivity {
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case android.R.id.home:
-            onAccounts();
-
-            return true;
-
-        case R.id.search:
-            onSearchRequested();
-
-            return true;
-
-        case R.id.compose:
-            MessageCompose.actionCompose(this, mAccount);
-
-            return true;
-
-        case R.id.check_mail:
-            MessagingController.getInstance(getApplication()).checkMail(this, mAccount, true, true, mAdapter.mListener);
-
-            return true;
-
-        case R.id.send_messages:
-            MessagingController.getInstance(getApplication()).sendPendingMessages(mAccount, null);
-
-            return true;
-
-        case R.id.list_folders:
-            onRefresh(REFRESH_REMOTE);
-
-            return true;
-
-        case R.id.account_settings:
-            onEditAccount();
-
-            return true;
-
-        case R.id.app_settings:
-            onEditPrefs();
-
-            return true;
-
-        case R.id.empty_trash:
-            onEmptyTrash(mAccount);
-
-            return true;
-
-        case R.id.compact:
-            onCompact(mAccount);
-
-            return true;
-
-        case R.id.display_1st_class: {
-            setDisplayMode(FolderMode.FIRST_CLASS);
-            return true;
-        }
-        case R.id.display_1st_and_2nd_class: {
-            setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
-            return true;
-        }
-        case R.id.display_not_second_class: {
-            setDisplayMode(FolderMode.NOT_SECOND_CLASS);
-            return true;
-        }
-        case R.id.display_all: {
-            setDisplayMode(FolderMode.ALL);
-            return true;
-        }
-        default:
-            return super.onOptionsItemSelected(item);
-        }
+        int itemId = item.getItemId();
+		if (itemId == android.R.id.home) {
+			onAccounts();
+			return true;
+		} else if (itemId == R.id.search) {
+			onSearchRequested();
+			return true;
+		} else if (itemId == R.id.compose) {
+			MessageCompose.actionCompose(this, mAccount);
+			return true;
+		} else if (itemId == R.id.check_mail) {
+			MessagingController.getInstance(getApplication()).checkMail(this, mAccount, true, true, mAdapter.mListener);
+			return true;
+		} else if (itemId == R.id.send_messages) {
+			MessagingController.getInstance(getApplication()).sendPendingMessages(mAccount, null);
+			return true;
+		} else if (itemId == R.id.list_folders) {
+			onRefresh(REFRESH_REMOTE);
+			return true;
+		} else if (itemId == R.id.account_settings) {
+			onEditAccount();
+			return true;
+		} else if (itemId == R.id.app_settings) {
+			onEditPrefs();
+			return true;
+		} else if (itemId == R.id.empty_trash) {
+			onEmptyTrash(mAccount);
+			return true;
+		} else if (itemId == R.id.compact) {
+			onCompact(mAccount);
+			return true;
+		} else if (itemId == R.id.display_1st_class) {
+			setDisplayMode(FolderMode.FIRST_CLASS);
+			return true;
+		} else if (itemId == R.id.display_1st_and_2nd_class) {
+			setDisplayMode(FolderMode.FIRST_AND_SECOND_CLASS);
+			return true;
+		} else if (itemId == R.id.display_not_second_class) {
+			setDisplayMode(FolderMode.NOT_SECOND_CLASS);
+			return true;
+		} else if (itemId == R.id.display_all) {
+			setDisplayMode(FolderMode.ALL);
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
     }
 
     @Override
@@ -622,17 +598,14 @@ public class FolderList extends K9ListActivity {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item .getMenuInfo();
         FolderInfoHolder folder = (FolderInfoHolder) mAdapter.getItem(info.position);
 
-        switch (item.getItemId()) {
-        case R.id.clear_local_folder:
-            onClearFolder(mAccount, folder.name);
-            break;
-        case R.id.refresh_folder:
-            checkMail(folder);
-            break;
-        case R.id.folder_settings:
-            FolderSettings.actionSettings(this, mAccount, folder.name);
-            break;
-        }
+        int itemId = item.getItemId();
+		if (itemId == R.id.clear_local_folder) {
+			onClearFolder(mAccount, folder.name);
+		} else if (itemId == R.id.refresh_folder) {
+			checkMail(folder);
+		} else if (itemId == R.id.folder_settings) {
+			FolderSettings.actionSettings(this, mAccount, folder.name);
+		}
 
         return super.onContextItemSelected(item);
     }

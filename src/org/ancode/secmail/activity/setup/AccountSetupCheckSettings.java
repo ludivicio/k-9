@@ -1,6 +1,28 @@
 
 package org.ancode.secmail.activity.setup;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.List;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.K9Activity;
+import org.ancode.secmail.controller.MessagingController;
+import org.ancode.secmail.mail.AuthenticationFailedException;
+import org.ancode.secmail.mail.CertificateValidationException;
+import org.ancode.secmail.mail.Store;
+import org.ancode.secmail.mail.Transport;
+import org.ancode.secmail.mail.filter.Hex;
+import org.ancode.secmail.mail.store.TrustManagerFactory;
+import org.ancode.secmail.mail.store.WebDavStore;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -15,25 +37,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
-import java.security.NoSuchAlgorithmException;
-import java.security.MessageDigest;
-import java.util.Collection;
-import java.util.List;
-
-import org.ancode.secmail.*;
-import org.ancode.secmail.activity.K9Activity;
-import org.ancode.secmail.controller.MessagingController;
-import org.ancode.secmail.mail.AuthenticationFailedException;
-import org.ancode.secmail.mail.CertificateValidationException;
-import org.ancode.secmail.mail.Store;
-import org.ancode.secmail.mail.Transport;
-import org.ancode.secmail.mail.filter.Hex;
-import org.ancode.secmail.mail.store.TrustManagerFactory;
-import org.ancode.secmail.mail.store.WebDavStore;
 
 /**
  * Checks the given settings to make sure that they can be used to send and
@@ -409,10 +412,9 @@ public class AccountSetupCheckSettings extends K9Activity implements OnClickList
     }
 
     public void onClick(View v) {
-        switch (v.getId()) {
-        case R.id.cancel:
-            onCancel();
-            break;
-        }
+        int id = v.getId();
+		if (id == R.id.cancel) {
+			onCancel();
+		}
     }
 }

@@ -1,19 +1,19 @@
 package org.ancode.secmail.activity.setup;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-
 import org.ancode.secmail.Account;
 import org.ancode.secmail.Preferences;
 import org.ancode.secmail.R;
 import org.ancode.secmail.activity.K9Activity;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
 
 public class AccountSetupComposition extends K9Activity {
 

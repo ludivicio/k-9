@@ -1,16 +1,16 @@
 package org.ancode.secmail.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.text.format.DateUtils;
-
 import org.ancode.secmail.Account;
 import org.ancode.secmail.AccountStats;
 import org.ancode.secmail.R;
 import org.ancode.secmail.controller.MessagingListener;
 import org.ancode.secmail.service.MailService;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.text.format.DateUtils;
 
 public class ActivityListener extends MessagingListener {
     private Account mAccount = null;

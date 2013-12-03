@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.ancode.secmail.Account;
+import org.ancode.secmail.BaseAccount;
+import org.ancode.secmail.FontSizes;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.search.SearchAccount;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -13,14 +21,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import org.ancode.secmail.Account;
-import org.ancode.secmail.BaseAccount;
-import org.ancode.secmail.FontSizes;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-import org.ancode.secmail.search.SearchAccount;
 
 
 /**

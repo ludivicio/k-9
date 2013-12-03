@@ -6,6 +6,22 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import org.ancode.secmail.K9;
+import org.ancode.secmail.K9.NotificationHideSubject;
+import org.ancode.secmail.K9.NotificationQuickDelete;
+import org.ancode.secmail.K9.SplitViewMode;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.ColorPickerDialog;
+import org.ancode.secmail.activity.K9PreferenceActivity;
+import org.ancode.secmail.controller.MessagingController;
+import org.ancode.secmail.helper.FileBrowserHelper;
+import org.ancode.secmail.helper.FileBrowserHelper.FileBrowserFailOverCallback;
+import org.ancode.secmail.preferences.CheckBoxListPreference;
+import org.ancode.secmail.preferences.TimePickerPreference;
+import org.ancode.secmail.service.MailService;
+import org.ancode.secmail.view.MessageWebView;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,22 +37,6 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.text.TextUtils;
 import android.widget.Toast;
-
-import org.ancode.secmail.K9;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-import org.ancode.secmail.K9.NotificationHideSubject;
-import org.ancode.secmail.K9.NotificationQuickDelete;
-import org.ancode.secmail.K9.SplitViewMode;
-import org.ancode.secmail.activity.ColorPickerDialog;
-import org.ancode.secmail.activity.K9PreferenceActivity;
-import org.ancode.secmail.controller.MessagingController;
-import org.ancode.secmail.helper.FileBrowserHelper;
-import org.ancode.secmail.helper.FileBrowserHelper.FileBrowserFailOverCallback;
-import org.ancode.secmail.preferences.CheckBoxListPreference;
-import org.ancode.secmail.preferences.TimePickerPreference;
-import org.ancode.secmail.service.MailService;
-import org.ancode.secmail.view.MessageWebView;
 
 
 public class Prefs extends K9PreferenceActivity {

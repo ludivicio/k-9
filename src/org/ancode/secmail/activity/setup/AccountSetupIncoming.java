@@ -1,6 +1,28 @@
 
 package org.ancode.secmail.activity.setup;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.K9Activity;
+import org.ancode.secmail.helper.Utility;
+import org.ancode.secmail.mail.ConnectionSecurity;
+import org.ancode.secmail.mail.ServerSettings;
+import org.ancode.secmail.mail.Store;
+import org.ancode.secmail.mail.store.ImapStore;
+import org.ancode.secmail.mail.store.ImapStore.ImapStoreSettings;
+import org.ancode.secmail.mail.store.Pop3Store;
+import org.ancode.secmail.mail.store.WebDavStore;
+import org.ancode.secmail.mail.store.WebDavStore.WebDavStoreSettings;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,27 +33,16 @@ import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.ancode.secmail.*;
-import org.ancode.secmail.activity.K9Activity;
-import org.ancode.secmail.helper.Utility;
-import org.ancode.secmail.mail.ConnectionSecurity;
-import org.ancode.secmail.mail.ServerSettings;
-import org.ancode.secmail.mail.Store;
-import org.ancode.secmail.mail.store.ImapStore;
-import org.ancode.secmail.mail.store.Pop3Store;
-import org.ancode.secmail.mail.store.WebDavStore;
-import org.ancode.secmail.mail.store.ImapStore.ImapStoreSettings;
-import org.ancode.secmail.mail.store.WebDavStore.WebDavStoreSettings;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class AccountSetupIncoming extends K9Activity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
@@ -446,11 +457,10 @@ public class AccountSetupIncoming extends K9Activity implements OnClickListener 
 
     public void onClick(View v) {
         try {
-            switch (v.getId()) {
-            case R.id.next:
-                onNext();
-                break;
-            }
+            int id = v.getId();
+			if (id == R.id.next) {
+				onNext();
+			}
         } catch (Exception e) {
             failure(e);
         }

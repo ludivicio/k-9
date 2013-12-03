@@ -1,6 +1,9 @@
 package org.ancode.secmail.activity.setup;
 
-import org.ancode.secmail.*;
+import org.ancode.secmail.FontSizes;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
 import org.ancode.secmail.activity.K9PreferenceActivity;
 
 import android.content.Context;
@@ -8,7 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.preference.*;
+import android.preference.ListPreference;
 
 /**
  * Activity to configure the font size of the information displayed in the

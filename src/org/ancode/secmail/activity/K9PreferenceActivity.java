@@ -2,12 +2,12 @@ package org.ancode.secmail.activity;
 
 import org.ancode.secmail.K9;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
 
 public class K9PreferenceActivity extends SherlockPreferenceActivity {

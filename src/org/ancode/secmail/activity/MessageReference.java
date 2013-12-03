@@ -1,10 +1,5 @@
 package org.ancode.secmail.activity;
 
-import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.Log;
-
 import java.util.StringTokenizer;
 
 import org.ancode.secmail.Account;
@@ -15,6 +10,11 @@ import org.ancode.secmail.mail.Flag;
 import org.ancode.secmail.mail.Folder;
 import org.ancode.secmail.mail.Message;
 import org.ancode.secmail.mail.MessagingException;
+
+import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
 
 public class MessageReference implements Parcelable {
     public String accountUuid;

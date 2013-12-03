@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
-import org.ancode.secmail.R;
 import org.ancode.secmail.Account.SortType;
 import org.ancode.secmail.activity.MessageCompose;
 import org.ancode.secmail.activity.UpgradeDatabases;
@@ -378,27 +377,27 @@ public class K9 extends Application {
     public static class Intents {
 
         public static class EmailReceived {
-            public static final String ACTION_EMAIL_RECEIVED    = "com.fsck.k9.intent.action.EMAIL_RECEIVED";
-            public static final String ACTION_EMAIL_DELETED     = "com.fsck.k9.intent.action.EMAIL_DELETED";
-            public static final String ACTION_REFRESH_OBSERVER  = "com.fsck.k9.intent.action.REFRESH_OBSERVER";
-            public static final String EXTRA_ACCOUNT            = "com.fsck.k9.intent.extra.ACCOUNT";
-            public static final String EXTRA_FOLDER             = "com.fsck.k9.intent.extra.FOLDER";
-            public static final String EXTRA_SENT_DATE          = "com.fsck.k9.intent.extra.SENT_DATE";
-            public static final String EXTRA_FROM               = "com.fsck.k9.intent.extra.FROM";
-            public static final String EXTRA_TO                 = "com.fsck.k9.intent.extra.TO";
-            public static final String EXTRA_CC                 = "com.fsck.k9.intent.extra.CC";
-            public static final String EXTRA_BCC                = "com.fsck.k9.intent.extra.BCC";
-            public static final String EXTRA_SUBJECT            = "com.fsck.k9.intent.extra.SUBJECT";
-            public static final String EXTRA_FROM_SELF          = "com.fsck.k9.intent.extra.FROM_SELF";
+            public static final String ACTION_EMAIL_RECEIVED    = "org.ancode.secmail.intent.action.EMAIL_RECEIVED";
+            public static final String ACTION_EMAIL_DELETED     = "org.ancode.secmail.intent.action.EMAIL_DELETED";
+            public static final String ACTION_REFRESH_OBSERVER  = "org.ancode.secmail.intent.action.REFRESH_OBSERVER";
+            public static final String EXTRA_ACCOUNT            = "org.ancode.secmail.intent.extra.ACCOUNT";
+            public static final String EXTRA_FOLDER             = "org.ancode.secmail.intent.extra.FOLDER";
+            public static final String EXTRA_SENT_DATE          = "org.ancode.secmail.intent.extra.SENT_DATE";
+            public static final String EXTRA_FROM               = "org.ancode.secmail.intent.extra.FROM";
+            public static final String EXTRA_TO                 = "org.ancode.secmail.intent.extra.TO";
+            public static final String EXTRA_CC                 = "org.ancode.secmail.intent.extra.CC";
+            public static final String EXTRA_BCC                = "org.ancode.secmail.intent.extra.BCC";
+            public static final String EXTRA_SUBJECT            = "org.ancode.secmail.intent.extra.SUBJECT";
+            public static final String EXTRA_FROM_SELF          = "org.ancode.secmail.intent.extra.FROM_SELF";
         }
 
         public static class Share {
             /*
-             * We don't want to use EmailReceived.EXTRA_FROM ("com.fsck.k9.intent.extra.FROM")
+             * We don't want to use EmailReceived.EXTRA_FROM ("org.ancode.secmail.intent.extra.FROM")
              * because of different semantics (String array vs. string with comma separated
              * email addresses)
              */
-            public static final String EXTRA_FROM               = "com.fsck.k9.intent.extra.SENDER";
+            public static final String EXTRA_FROM               = "org.ancode.secmail.intent.extra.SENDER";
         }
     }
 

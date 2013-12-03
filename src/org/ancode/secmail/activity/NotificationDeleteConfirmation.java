@@ -2,6 +2,12 @@ package org.ancode.secmail.activity;
 
 import java.util.ArrayList;
 
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.service.NotificationActionService;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -9,12 +15,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-import org.ancode.secmail.service.NotificationActionService;
 
 public class NotificationDeleteConfirmation extends Activity {
     private final static String EXTRA_ACCOUNT = "account";

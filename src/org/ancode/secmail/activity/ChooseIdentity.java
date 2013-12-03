@@ -1,6 +1,13 @@
 
 package org.ancode.secmail.activity;
 
+import java.util.List;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.Identity;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,19 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.ancode.secmail.Account;
-import org.ancode.secmail.Identity;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-
-import java.util.List;
-
 public class ChooseIdentity extends K9ListActivity {
     Account mAccount;
     ArrayAdapter<String> adapter;
 
-    public static final String EXTRA_ACCOUNT = "com.fsck.k9.ChooseIdentity_account";
-    public static final String EXTRA_IDENTITY = "com.fsck.k9.ChooseIdentity_identity";
+    public static final String EXTRA_ACCOUNT = "org.ancode.secmail.ChooseIdentity_account";
+    public static final String EXTRA_IDENTITY = "org.ancode.secmail.ChooseIdentity_identity";
 
     protected List<Identity> identities = null;
 

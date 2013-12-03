@@ -1,6 +1,14 @@
 
 package org.ancode.secmail.activity.setup;
 
+import java.net.URI;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.Preferences;
+import org.ancode.secmail.R;
+import org.ancode.secmail.activity.K9Activity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,14 +17,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
-
-import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.Preferences;
-import org.ancode.secmail.R;
-import org.ancode.secmail.activity.K9Activity;
-
-import java.net.URI;
 
 /**
  * Prompts the user to select an account type. The account type, along with the
@@ -92,17 +92,14 @@ public class AccountSetupAccountType extends K9Activity implements OnClickListen
     }
 
     public void onClick(View v) {
-        switch (v.getId()) {
-        case R.id.pop:
-            onPop();
-            break;
-        case R.id.imap:
-            onImap();
-            break;
-        case R.id.webdav:
-            onWebDav();
-            break;
-        }
+        int id = v.getId();
+		if (id == R.id.pop) {
+			onPop();
+		} else if (id == R.id.imap) {
+			onImap();
+		} else if (id == R.id.webdav) {
+			onWebDav();
+		}
     }
     private void failure(Exception use) {
         Log.e(K9.LOG_TAG, "Failure", use);

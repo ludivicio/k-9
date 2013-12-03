@@ -4,11 +4,11 @@ import org.ancode.secmail.K9;
 import org.ancode.secmail.activity.K9ActivityCommon.K9ActivityMagic;
 import org.ancode.secmail.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockListActivity;
 

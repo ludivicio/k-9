@@ -1,10 +1,10 @@
 package org.ancode.secmail.activity;
 
-import android.content.Context;
-
 import org.ancode.secmail.Account;
 import org.ancode.secmail.R;
 import org.ancode.secmail.mail.Folder;
+
+import android.content.Context;
 
 public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
     public String name;

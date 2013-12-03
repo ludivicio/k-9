@@ -1,15 +1,15 @@
 package org.ancode.secmail.activity;
 
+import org.ancode.secmail.BaseAccount;
+import org.ancode.secmail.R;
+import org.ancode.secmail.provider.UnreadWidgetProvider;
+
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-
-import org.ancode.secmail.BaseAccount;
-import org.ancode.secmail.R;
-import org.ancode.secmail.provider.UnreadWidgetProvider;
 
 
 /**
