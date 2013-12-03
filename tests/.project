@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>k9mail-tests</name>
+	<name>secmail-tests</name>
 	<comment></comment>
 	<projects>
 		<project>k9mail</project>

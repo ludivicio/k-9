@@ -2,7 +2,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:versionCode="19002"
-    android:versionName="4.701" package="com.fsck.k9"
+    android:versionName="4.701" package="org.ancode.secmail"
     >
     <uses-sdk
        android:minSdkVersion="8"
@@ -29,30 +29,30 @@
 
     <uses-permission android:name="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
 
-    <permission android:name="com.fsck.k9.permission.READ_ATTACHMENT"
+    <permission android:name="org.ancode.secmail.permission.READ_ATTACHMENT"
                 android:permissionGroup="android.permission-group.MESSAGES"
                 android:protectionLevel="dangerous"
                 android:label="@string/read_attachment_label"
                 android:description="@string/read_attachment_desc"/>
-    <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT"/>
-    <permission android:name="com.fsck.k9.permission.REMOTE_CONTROL"
+    <uses-permission android:name="org.ancode.secmail.permission.READ_ATTACHMENT"/>
+    <permission android:name="org.ancode.secmail.permission.REMOTE_CONTROL"
                  android:permissionGroup="android.permission-group.MESSAGES"
                  android:protectionLevel="dangerous"
                  android:label="@string/remote_control_label"
                  android:description="@string/remote_control_desc"/>
-    <uses-permission android:name="com.fsck.k9.permission.REMOTE_CONTROL"/>
-    <permission android:name="com.fsck.k9.permission.READ_MESSAGES"
+    <uses-permission android:name="org.ancode.secmail.permission.REMOTE_CONTROL"/>
+    <permission android:name="org.ancode.secmail.permission.READ_MESSAGES"
                 android:permissionGroup="android.permission-group.MESSAGES"
                 android:protectionLevel="dangerous"
                 android:label="@string/read_messages_label"
                 android:description="@string/read_messages_desc"/>
-    <uses-permission android:name="com.fsck.k9.permission.READ_MESSAGES"/>
-    <permission android:name="com.fsck.k9.permission.DELETE_MESSAGES"
+    <uses-permission android:name="org.ancode.secmail.permission.READ_MESSAGES"/>
+    <permission android:name="org.ancode.secmail.permission.DELETE_MESSAGES"
                 android:permissionGroup="android.permission-group.MESSAGES"
                 android:protectionLevel="dangerous"
                 android:label="@string/delete_messages_label"
                 android:description="@string/delete_messages_desc"/>
-    <uses-permission android:name="com.fsck.k9.permission.DELETE_MESSAGES"/>
+    <uses-permission android:name="org.ancode.secmail.permission.DELETE_MESSAGES"/>
     <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
     <application
         android:icon="@drawable/icon"
@@ -87,7 +87,7 @@
             android:name=".activity.setup.Prefs"
             android:label="@string/prefs_title"
             android:configChanges="locale"
-            android:taskAffinity="com.fsck.k9.activity.setup.Prefs"
+            android:taskAffinity="org.ancode.secmail.activity.setup.Prefs"
             android:excludeFromRecents="true"
             >
         </activity>
@@ -312,19 +312,19 @@
                 <action android:name="com.android.sync.SYNC_CONN_STATUS_CHANGED" />
             </intent-filter>
               <intent-filter>
-                <action android:name="com.fsck.k9.service.BroadcastReceiver.scheduleIntent"/>
+                <action android:name="org.ancode.secmail.service.BroadcastReceiver.scheduleIntent"/>
             </intent-filter>
         </receiver>
         <receiver android:name=".service.RemoteControlReceiver"
                android:enabled="true"
-               android:permission="com.fsck.k9.permission.REMOTE_CONTROL"
+               android:permission="org.ancode.secmail.permission.REMOTE_CONTROL"
                >
                <intent-filter>
-                 <action android:name="com.fsck.k9.K9RemoteControl.set"/>
+                 <action android:name="org.ancode.secmail.K9RemoteControl.set"/>
 
              </intent-filter>
              <intent-filter>
-                <action android:name="com.fsck.k9.K9RemoteControl.requestAccounts"/>
+                <action android:name="org.ancode.secmail.K9RemoteControl.requestAccounts"/>
 
              </intent-filter>
          </receiver>
@@ -332,7 +332,7 @@
               android:enabled="true"
               >
               <intent-filter>
-                <action android:name="com.fsck.k9.service.CoreReceiver.wakeLockRelease"/>
+                <action android:name="org.ancode.secmail.service.CoreReceiver.wakeLockRelease"/>
             </intent-filter>
         </receiver>
         <receiver android:name=".service.StorageReceiver"
@@ -381,7 +381,7 @@ otherwise it would make K-9 start at the wrong time
          <service
               android:name=".service.RemoteControlService"
               android:enabled="true"
-              android:permission="com.fsck.k9.permission.REMOTE_CONTROL"
+              android:permission="org.ancode.secmail.permission.REMOTE_CONTROL"
              >
           </service>
          <service
@@ -391,24 +391,24 @@ otherwise it would make K-9 start at the wrong time
          </service>
         <provider
             android:name=".provider.AttachmentProvider"
-            android:authorities="com.fsck.k9.attachmentprovider"
+            android:authorities="org.ancode.secmail.attachmentprovider"
             android:multiprocess="true"
             android:grantUriPermissions="true"
-            android:readPermission="com.fsck.k9.permission.READ_ATTACHMENT"
+            android:readPermission="org.ancode.secmail.permission.READ_ATTACHMENT"
             android:exported="true"
             />
         <provider
             android:name=".provider.MessageProvider"
-            android:authorities="com.fsck.k9.messageprovider"
+            android:authorities="org.ancode.secmail.messageprovider"
             android:multiprocess="true"
             android:grantUriPermissions="true"
-            android:readPermission="com.fsck.k9.permission.READ_MESSAGES"
-            android:writePermission="com.fsck.k9.permission.DELETE_MESSAGES"
+            android:readPermission="org.ancode.secmail.permission.READ_MESSAGES"
+            android:writePermission="org.ancode.secmail.permission.DELETE_MESSAGES"
             android:exported="true"
             />
         <provider
             android:name=".provider.EmailProvider"
-            android:authorities="com.fsck.k9.provider.email"
+            android:authorities="org.ancode.secmail.provider.email"
             android:exported="false"
             />
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.fsck.k9.view.MessageHeader
+<org.ancode.secmail.view.MessageHeader
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/header_container"
     android:layout_width="match_parent"
@@ -252,4 +252,4 @@
 
     <include layout="@layout/message_view_crypto_layout" />
 
-</com.fsck.k9.view.MessageHeader>
+</org.ancode.secmail.view.MessageHeader>
