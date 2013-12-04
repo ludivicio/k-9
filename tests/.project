@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>secmail-tests</name>
+	<name>secmail-test</name>
 	<comment></comment>
 	<projects>
-		<project>k9mail</project>
+		<project>secmail</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
