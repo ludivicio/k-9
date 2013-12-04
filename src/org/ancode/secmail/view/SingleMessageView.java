@@ -748,12 +748,12 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
 			view.setCallback(attachmentCallback);
 			String aesKey = null;
 			boolean isSentMsg = false;
-			if(part.getBody() instanceof LocalAttachmentBody 
+			if (part.getBody() instanceof LocalAttachmentBody 
 					&& ((LocalAttachmentBody)part.getBody()).getAeskey() != null 
 					&& message.getFrom()[0].getAddress().equalsIgnoreCase(account.getEmail())
-					&& ((LocalAttachmentBody)part.getBody()).getContentUri() != null){
+					&& ((LocalAttachmentBody)part.getBody()).getContentUri() != null) {
 				isSentMsg = true;
-			}else{
+			} else {
 				aesKey = aesKeyList != null ? aesKeyList.get(j) : null;
 			}
 			try {

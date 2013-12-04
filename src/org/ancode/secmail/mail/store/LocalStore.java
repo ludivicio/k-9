@@ -321,9 +321,12 @@ public class LocalStore extends Store implements Serializable {
                             "END");
 
                     db.execSQL("DROP TABLE IF EXISTS attachments");
+                    
+                    // modified by lxc at 2013-12-04
+                    // Save aeskey to database.
                     db.execSQL("CREATE TABLE attachments (id INTEGER PRIMARY KEY, message_id INTEGER,"
                                + "store_data TEXT, content_uri TEXT, size INTEGER, name TEXT,"
-                               + "mime_type TEXT, content_id TEXT, content_disposition TEXT)");
+                               + "mime_type TEXT, content_id TEXT, content_disposition TEXT, aeskey TEXT)");
 
                     db.execSQL("DROP TABLE IF EXISTS pending_commands");
                     db.execSQL("CREATE TABLE pending_commands " +
@@ -1937,6 +1940,7 @@ public class LocalStore extends Store implements Serializable {
                                     }
 
                                     try {
+                                    	// modified by lxc at 2013-12-04
                                         cursor = db.query(
                                                      "attachments",
                                                      new String[] {
@@ -1947,7 +1951,8 @@ public class LocalStore extends Store implements Serializable {
                                                          "store_data",
                                                          "content_uri",
                                                          "content_id",
-                                                         "content_disposition"
+                                                         "content_disposition",
+                                                         "aeskey"
                                                      },
                                                      "message_id = ?",
                                                      new String[] { Long.toString(localMessage.mId) },
@@ -1964,6 +1969,10 @@ public class LocalStore extends Store implements Serializable {
                                             String contentUri = cursor.getString(5);
                                             String contentId = cursor.getString(6);
                                             String contentDisposition = cursor.getString(7);
+                                            
+                                            // modified by lxc at 2013-12-04
+                                            String aeskey = cursor.getString(8);
+                                            
                                             String encoding = MimeUtility.getEncodingforType(type);
                                             Body body = null;
 
@@ -1979,7 +1988,7 @@ public class LocalStore extends Store implements Serializable {
                                                 } else {
                                                     body = new LocalAttachmentBody(
                                                             Uri.parse(contentUri),
-                                                            mApplication);
+                                                            mApplication, aeskey);
                                                 }
                                             }
 
@@ -2797,6 +2806,10 @@ public class LocalStore extends Store implements Serializable {
                         try {
                             long attachmentId = -1;
                             Uri contentUri = null;
+                            
+                            // modified by lxc at 2013-12-04
+                            String aeskey = null;
+                            
                             int size = -1;
                             File tempAttachmentFile = null;
 
@@ -2809,6 +2822,10 @@ public class LocalStore extends Store implements Serializable {
                                 Body body = attachment.getBody();
                                 if (body instanceof LocalAttachmentBody) {
                                     contentUri = ((LocalAttachmentBody) body).getContentUri();
+                                    
+                                    // modified by lxc at 2013-12-04
+                                    aeskey = ((LocalAttachmentBody) body).getAeskey();
+                                    
                                 } else if (body instanceof Message) {
                                     // It's a message, so use Message.writeTo() to output the
                                     // message including all children.
@@ -2891,7 +2908,10 @@ public class LocalStore extends Store implements Serializable {
                                 cv.put("mime_type", attachment.getMimeType());
                                 cv.put("content_id", contentId);
                                 cv.put("content_disposition", dispositionType);
-
+                                
+                                // modified by lxc at 2013-12-04
+                                cv.put("aeskey", aeskey);
+                                
                                 attachmentId = db.insert("attachments", "message_id", cv);
                             } else {
                                 ContentValues cv = new ContentValues();

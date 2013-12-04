@@ -418,8 +418,8 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
 	}
 	public String getMailBody() {
 		String msg = "";
-		if(isMailBody){
-			if(isSentMsg){
+		if (isMailBody) {
+			if(isSentMsg) {
 				try {
 					InputStream in = mContext.getContentResolver().openInputStream(((LocalAttachmentBody)part.getBody()).getContentUri());
 					msg = IOUtils.toString(in);
@@ -427,7 +427,7 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
 				} catch (IOException e) {
 					e.printStackTrace();
 				}	
-			}else if (aeskey != null) {
+			} else if (aeskey != null) {
 				try {
 					Uri uri = AttachmentProvider.getAttachmentUri(mAccount, part.getAttachmentId());
 					InputStream in = mContext.getContentResolver().openInputStream(uri);
@@ -449,5 +449,4 @@ public class AttachmentView extends FrameLayout implements OnClickListener, OnLo
 		}
 		return msg;
 	}
-
 }

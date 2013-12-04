@@ -817,7 +817,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
         mInitialized = true;
         
-        Log.i("lxc","MessageListFragment --> onCreate");
     }
 
     @Override
@@ -832,7 +831,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
         initializeLayout();
         mListView.setVerticalFadingEdgeEnabled(false);
-        Log.i("lxc","MessageListFragment --> onCreateView");
         return view;
     }
 
@@ -858,7 +856,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             mCursorValid[i] = false;
         }
         
-        Log.i("lxc","MessageListFragment --> onActivityCreated");
     }
     
 
@@ -918,8 +915,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         }
 
         updateTitle();
-        
-        Log.i("lxc","MessageListFragment --> onResume");
         
     }
     

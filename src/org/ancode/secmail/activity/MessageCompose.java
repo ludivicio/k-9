@@ -57,7 +57,6 @@ import org.ancode.secmail.mail.Part;
 import org.ancode.secmail.mail.crypto.v2.AESKeyGenerator;
 import org.ancode.secmail.mail.crypto.v2.AESKeyObject;
 import org.ancode.secmail.mail.crypto.v2.AesCryptor;
-import org.ancode.secmail.mail.crypto.v2.AsyncHttpTools;
 import org.ancode.secmail.mail.crypto.v2.CryptorException;
 import org.ancode.secmail.mail.crypto.v2.HttpPostUtil;
 import org.ancode.secmail.mail.crypto.v2.InvalidKeyCryptorException;
@@ -643,12 +642,10 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         // modified by lxc at 2013-11-22
         mCryptStatus = (TextView) findViewById(R.id.crypt_status);
 		if (mAccount.hasReg()) {
-			Log.i("lxc","当前处于加密邮件状态");
 			mCryptStatus.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_lock));
 			encryptEnabled = true;
 			mCryptStatus.setOnClickListener(new CryptStatusClickListener());
 		} else {
-			Log.i("lxc","当前处于普通邮件状态");
 			mCryptStatus.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_unlock));
 			encryptEnabled = false;
 		}
@@ -1383,7 +1380,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
      * @return {@link TextBody} instance that contains the entered text and possibly the quoted
      *         original message.
      */
-    private TextBody buildText(boolean isDraft, SimpleMessageFormat messageFormat, String aeskey,
+    private TextBody buildText(boolean isDraft, SimpleMessageFormat messageFormat, String aesKey,
 			List<BodyAttachment> attList, File file) {
         // The length of the formatted version of the user-supplied text/reply
         int composedMessageLength;
@@ -1509,12 +1506,12 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         
         // modified by lxc at 2013-11-24
-        if (encryptEnabled && !isDraft && aeskey != null) {
+        if (encryptEnabled && !isDraft && aesKey != null) {
 			if (attList.isEmpty()) {
 				try {
 					Uri msgUri = getMessageTextBodyUri(text, file);
 					Attachment att = this.buildAttachement(msgUri, null);
-					attList.add(new BodyAttachment(aeskey, att));
+					attList.add(new BodyAttachment(aesKey, att));
 				} catch (CryptorException e) {
 					e.printStackTrace();
 				}
@@ -1615,8 +1612,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         // text/plain part when mMessageFormat == MessageFormat.HTML
         TextBody bodyPlain = null;
-
-//        final boolean hasAttachments = mAttachments.getChildCount() > 0;
         
         final boolean hasAttachments = mAttachments.getChildCount() > 0 || bodyAttList.size() > 0;
        
@@ -2073,6 +2068,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             }
             return;
         }
+        
         if (mPgpData.hasEncryptionKeys() || mPgpData.hasSignatureKey()) {
             if (mPgpData.getEncryptedData() == null) {
             	
@@ -2086,35 +2082,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
                 return;
             }
         }
-        
-        // modified by lxc at 2013-11-01
- 		// Send encrypted email process.
- 		if (encryptEnabled) {
- 			final List<AESKeyObject> aesKeys = genernateAESKeys(mAttachments.getChildCount() + 1);
- 			
- 			Address[] toAdd = getRecipientAddresses();
- 			final String to = Address.toAddressString(toAdd);
- 			
- 			// modified by lxc at 2013-11-11
- 			// Send the post request.
-			AsyncHttpTools.execute(new AsyncHttpTools.TaskListener() {
-
-				@Override
-				public PostResultV2 executeTask() {
-					return HttpPostUtil.postSendEmail(mAccount, mIdentity.getEmail(), to, aesKeys);
-				}
-
-				@Override
-				public void callBack(PostResultV2 result) {
-					if (result == null || !result.isSuccess()) {
-		 				mailEncryFailed();
-		 				return;
-		 			}
-				}
-			});
- 			
- 		}
-        
         
         sendMessage();
 

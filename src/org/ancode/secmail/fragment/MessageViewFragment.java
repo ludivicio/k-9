@@ -603,15 +603,6 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
                 	
                 	// modified by lxc at 2013-11-27
                 	loadCryptMessage((LocalMessage) message, account, mPgpData);
-                	
-//                    try {
-//                    	mMessage = message;
-//                        mMessageView.setMessage(account, (LocalMessage) message, mPgpData,
-//                                mController, mListener);
-//                        mFragmentListener.updateMenu();
-//                    } catch (MessagingException e) {
-//                        Log.v(K9.LOG_TAG, "loadMessageForViewBodyAvailable", e);
-//                    }
                 }
             });
         }
@@ -758,6 +749,7 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
     private void loadCryptMessage(final LocalMessage message, final Account account, final PgpData pgpData) {
     	
         final List<String> uuidList = getUuids(message, account);
+        
         final Account mAccount = account;
 		
         // modified by lxc at 2013-11-11
@@ -822,15 +814,6 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
         
         // modified by lxc at 2013-11-27
         loadCryptMessage(message, account, pgpData);
-        
-//        MessagingController controller = mController;
-//        Listener listener = mListener;
-//        try {
-//            mMessageView.setMessage(account, message, pgpData, controller, listener);
-//        } catch (MessagingException e) {
-//            Log.e(K9.LOG_TAG, "displayMessageBody failed", e);
-//        }
-        
     }
 
     private void showDialog(int dialogId) {
