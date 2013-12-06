@@ -18,6 +18,9 @@ public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
     public Folder folder;
     public boolean pushActive;
 
+    // modified by lxc at 2013-12-06
+    public int folderIcon;
+    
     @Override
     public boolean equals(Object o) {
         return this.name.equals(((FolderInfoHolder)o).name);
@@ -79,6 +82,9 @@ public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
         this.status = truncateStatus(folder.getStatus());
 
         this.displayName = getDisplayName(context, account, name);
+        
+        // modified by lxc at 2013-12-06
+        this.folderIcon = getFolderIcon(context, account, name);
     }
 
     /**
@@ -126,4 +132,38 @@ public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
 
         return displayName;
     }
+    
+    
+    // modified by lxc at 2013-12-06
+    // Set the folder icon.
+	public static int getFolderIcon(Context context, Account account,
+			String name) {
+		int iconId = 0;
+		if (name.equals(account.getSpamFolderName())) {
+			// 垃圾邮件
+			iconId = R.drawable.mailbox_name_spam;
+		} else if (name.equals(account.getArchiveFolderName())) {
+			// 归档
+			// iconId = R.drawable.mailbox_name_archive;
+		} else if (name.equals(account.getSentFolderName())) {
+			// 已发送
+			iconId = R.drawable.mailbox_name_sent;
+		} else if (name.equals(account.getTrashFolderName())) {
+			// 垃圾箱
+			iconId = R.drawable.mailbox_name_trash;
+		} else if (name.equals(account.getDraftsFolderName())) {
+			// 草稿箱
+			iconId = R.drawable.mailbox_name_drafts;
+		} else if (name.equals(account.getOutboxFolderName())) {
+			// 发件箱
+			iconId = R.drawable.mailbox_name_outbox;
+		} else if (name.equalsIgnoreCase(account.getInboxFolderName())) {
+			// 收件箱
+			iconId = R.drawable.mailbox_name_inbox;
+		} else {
+			// 其他文件夹
+			iconId = R.drawable.mailbox_name_folder;
+		}
+		return iconId;
+	}
 }

@@ -193,7 +193,8 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	private boolean mSlidingMenuWasClosed = true;
 	
 	private ViewSwitcher mViewSwitcher;
-
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -218,16 +219,24 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 					this, R.anim.slide_out_left));
 			mViewSwitcher.setOnSwitchCompleteListener(this);
 		}
-
+		
+		
 		initializeActionBar();
-		setBehindContentView(R.layout.left_menu);
-		initializeMenuFragment();
+		setBehindContentView(R.layout.slide_menu);
 		initializeSlidingMenu();
 		
 		if (!decodeExtras(getIntent())) {
 			return;
 		}
-
+		
+		String name = mSearch.getName();
+		if(!isSearchAccount(name)) {
+			initializeMenuFragment();
+		} else {
+			SlidingMenu mSlidingMenu = getSlidingMenu();
+			mSlidingMenu.setSlidingEnabled(false);
+		}
+		
 		findFragments();
 		initializeDisplayMode(savedInstanceState);
 		initializeLayout();
@@ -240,7 +249,17 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			cl.getLogDialog().show();
 		}
 	}
-
+	
+	// modified by lxc at 2013-12-05
+	private boolean isSearchAccount(String name) {
+		String mAllMessagesTitle = getString(R.string.search_all_messages_title);
+		String mUnifiedInboxTitle = getString(R.string.integrated_inbox_title);
+		if(mAllMessagesTitle.equals(name) || mUnifiedInboxTitle.equals(name)) {
+			return true;
+		}		
+		return false;
+	}
+	
 	private Handler mHandler = new Handler() {
 		
 		public void handleMessage(android.os.Message msg) {

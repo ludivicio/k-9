@@ -6,6 +6,7 @@ import org.ancode.secmail.search.SearchSpecification.Attribute;
 import org.ancode.secmail.search.SearchSpecification.Searchfield;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * This class is basically a wrapper around a LocalSearch. It allows to expose it as
@@ -22,7 +23,6 @@ public class SearchAccount implements BaseAccount {
 
         LocalSearch tmpSearch = new LocalSearch(name);
         tmpSearch.and(Searchfield.SEARCHABLE, "1", Attribute.EQUALS);
-
         return new SearchAccount(ALL_MESSAGES, tmpSearch, name,
                 context.getString(R.string.search_all_messages_detail));
     }

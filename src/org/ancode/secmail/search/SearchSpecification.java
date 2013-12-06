@@ -85,7 +85,6 @@ public interface SearchSpecification extends Parcelable {
         SEARCHABLE
     }
 
-
     ///////////////////////////////////////////////////////////////
     // SearchCondition class
     ///////////////////////////////////////////////////////////////
@@ -102,7 +101,7 @@ public interface SearchSpecification extends Parcelable {
         public final String value;
         public final Attribute attribute;
         public final Searchfield field;
-
+        
         public SearchCondition(Searchfield field, Attribute attribute, String value) {
             this.value = value;
             this.attribute = attribute;
