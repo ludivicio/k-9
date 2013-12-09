@@ -170,10 +170,9 @@ public class MenuFragment extends SherlockFragment {
 		mListView = (ListView) v.findViewById(R.id.menu_listview);
 
 		mUserEmail = (TextView) v.findViewById(R.id.tv_user_email);
-		if(mAccount != null && TextUtils.isEmpty(mAccount.getEmail())) {
+		if(mAccount != null && !TextUtils.isEmpty(mAccount.getEmail())) {
 			mUserEmail.setText(mAccount.getEmail());
 		} 
-		
 		mAccountSetting = (ImageButton) v.findViewById(R.id.ib_account_setting);
 		mAccountSetting.setOnClickListener(new OnClickListener() {
 			

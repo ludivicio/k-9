@@ -196,6 +196,10 @@ public class HttpPostUtil {
 
 		PostResultV2 pr = HttpPostServiceV2.postReceiveEmail(owner, verify, deviceUuid, uuidList);
 		
+		if( pr == null ) {
+			return null;
+		}
+		
 		if( pr.isInvalidKey() ) {
 			throw new InvalidKeyCryptorException("");
 		}

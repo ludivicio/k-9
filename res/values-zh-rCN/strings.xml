@@ -121,6 +121,7 @@
     <string name="compose_action">新邮件</string>
     <string name="search_action">搜索</string>
     <string name="search_results">搜索结果</string>
+    <string name="choose_message_item">选择</string>
     <string name="preferences_action">设置</string>
     <string name="account_settings_action">账户设置</string>
     <string name="folder_settings_action">文件夹设置</string>
@@ -722,7 +723,8 @@
     <string name="background_ops_auto_sync">当“后台数据”&amp;“自动同步”被选中</string>
     <!-- NEW: <string name="background_ops_auto_sync_only">When \'Auto-sync\' is checked</string> -->
 
-    <string name="batch_select_all">选择全部</string>
+    <string name="batch_select_all">全选</string>
+    <string name="batch_unselect_all">反选</string>
     <string name="account_setup_push_limit_label">推送时最多检查文件夹数量</string>
     <string name="account_setup_push_limit_10">十个文件夹</string>
     <string name="account_setup_push_limit_25">二十五个文件夹</string>

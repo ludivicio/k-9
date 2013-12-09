@@ -127,6 +127,7 @@ http://k9mail.googlecode.com/</string>
     <string name="compose_action">Compose</string>
     <string name="search_action">Search</string>
     <string name="search_results">Search results</string>
+    <string name="choose_message_item">Choose</string>
     <string name="preferences_action">Settings</string>
     <string name="account_settings_action">Account settings</string>
     <string name="folder_settings_action">Folder settings</string>
@@ -706,6 +707,7 @@ http://k9mail.googlecode.com/</string>
     <string name="background_ops_auto_sync">When \'Background data\' &amp; \'Auto-sync\' are checked</string>
     <string name="background_ops_auto_sync_only">When \'Auto-sync\' is checked</string>
     <string name="batch_select_all">Select all</string>
+    <string name="batch_unselect_all">Unselect all</string>
     <string name="account_setup_push_limit_label">Max folders to check with push</string>
     <string name="account_setup_push_limit_10">10 folders</string>
     <string name="account_setup_push_limit_25">25 folders</string>

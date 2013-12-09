@@ -9,6 +9,8 @@
     The comments are for informational purposes only. Please make sure to adjust the code in
     MessageList.configureMenu() if you make any changes to this file.
     -->
+    
+	
 
     <!-- MessageView -->
     <item
@@ -40,7 +42,15 @@
         android:showAsAction="always"
         android:title="@string/action_remote_search"
         android:visible="false"/>
-
+	
+	<!-- MessageView -->
+	<item
+        android:id="@+id/choose_message_item"
+        android:title="@string/choose_message_item"
+        android:icon="@drawable/choose_message_item"
+        android:showAsAction="always"
+    />
+	
     <!-- MessageList -->
     <item
         android:id="@+id/check_mail"
@@ -130,6 +140,7 @@
                 android:title="@string/copy_action"/>
         </menu>
     </item>
+    
     <!-- MessageView -->
     <item
         android:id="@+id/toggle_unread"

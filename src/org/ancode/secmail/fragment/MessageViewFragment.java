@@ -750,6 +750,11 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
     	
         final List<String> uuidList = getUuids(message, account);
         
+        if(uuidList.size() == 0) {
+        	setMessage(message, account, pgpData, null);
+        	return;
+        }
+        
         final Account mAccount = account;
 		
         // modified by lxc at 2013-11-11
@@ -779,18 +784,7 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
 				
 				Object obj = result.getExtraData();
 				
-				if(obj instanceof ArrayList) {
-					
-					try {
-						mMessageView.setMessage(account, message, pgpData,
-						        mController, mListener, (ArrayList<String>) obj);
-					} catch (MessagingException e) {
-						e.printStackTrace();
-					}
-					
-                    mFragmentListener.updateMenu();
-                    
-				} else if(obj instanceof InvalidKeyCryptorException) {
+				if(obj instanceof InvalidKeyCryptorException) {
 					Toast toast = Toast.makeText(getActivity(), getActivity().getString(R.string.encrypt_mail_invalid_key),
 							Toast.LENGTH_LONG);
 					toast.setGravity(Gravity.TOP, 0, 0);
@@ -800,11 +794,22 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
 					mAccount.setAesKey(null);
 					mAccount.setDeviceUuid(null);
 					mAccount.save(Preferences.getPreferences(getActivity()));
+				} else {
+					setMessage(message, account, pgpData, (ArrayList<String>) obj);
 				}
 			}
 		});
     }
     
+    private void setMessage(final LocalMessage message, final Account account, final PgpData pgpData, ArrayList<String> aesKeys) {
+    	try {
+			mMessageView.setMessage(account, message, pgpData,
+			        mController, mListener, aesKeys);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+        mFragmentListener.updateMenu();
+    }
     
     // This REALLY should be in MessageCryptoView
     @Override

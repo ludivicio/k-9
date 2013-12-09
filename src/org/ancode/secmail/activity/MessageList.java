@@ -908,29 +908,34 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		} else if (itemId == R.id.check_mail) {
 			mMessageListFragment.checkMail();
 			return true;
-		} else if (itemId == R.id.set_sort_date) {
-			mMessageListFragment.changeSort(SortType.SORT_DATE);
-			return true;
-		} else if (itemId == R.id.set_sort_arrival) {
-			mMessageListFragment.changeSort(SortType.SORT_ARRIVAL);
-			return true;
-		} else if (itemId == R.id.set_sort_subject) {
-			mMessageListFragment.changeSort(SortType.SORT_SUBJECT);
-			return true;
-		} else if (itemId == R.id.set_sort_sender) {
-			mMessageListFragment.changeSort(SortType.SORT_SENDER);
-			return true;
-		} else if (itemId == R.id.set_sort_flag) {
-			mMessageListFragment.changeSort(SortType.SORT_FLAGGED);
-			return true;
-		} else if (itemId == R.id.set_sort_unread) {
-			mMessageListFragment.changeSort(SortType.SORT_UNREAD);
-			return true;
-		} else if (itemId == R.id.set_sort_attach) {
-			mMessageListFragment.changeSort(SortType.SORT_ATTACHMENT);
-			return true;
-		} else if (itemId == R.id.select_all) {
+		} 
+//		else if (itemId == R.id.set_sort_date) {
+//			mMessageListFragment.changeSort(SortType.SORT_DATE);
+//			return true;
+//		} else if (itemId == R.id.set_sort_arrival) {
+//			mMessageListFragment.changeSort(SortType.SORT_ARRIVAL);
+//			return true;
+//		} else if (itemId == R.id.set_sort_subject) {
+//			mMessageListFragment.changeSort(SortType.SORT_SUBJECT);
+//			return true;
+//		} else if (itemId == R.id.set_sort_sender) {
+//			mMessageListFragment.changeSort(SortType.SORT_SENDER);
+//			return true;
+//		} else if (itemId == R.id.set_sort_flag) {
+//			mMessageListFragment.changeSort(SortType.SORT_FLAGGED);
+//			return true;
+//		} else if (itemId == R.id.set_sort_unread) {
+//			mMessageListFragment.changeSort(SortType.SORT_UNREAD);
+//			return true;
+//		} else if (itemId == R.id.set_sort_attach) {
+//			mMessageListFragment.changeSort(SortType.SORT_ATTACHMENT);
+//			return true;
+//		} 
+		else if (itemId == R.id.select_all) {
 			mMessageListFragment.selectAll();
+			return true;
+		} else if (itemId == R.id.choose_message_item) {
+			mMessageListFragment.manualSelectMessage();
 			return true;
 		} else if (itemId == R.id.app_settings) {
 			onEditPrefs();
@@ -1051,7 +1056,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		if (menu == null) {
 			return;
 		}
-
+		
 		// Set visibility of account/folder settings menu items
 		if (mMessageListFragment == null) {
 			menu.findItem(R.id.account_settings).setVisible(false);
@@ -1206,13 +1211,15 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			menu.findItem(R.id.check_mail).setVisible(false);
 			menu.findItem(R.id.set_sort).setVisible(false);
 			menu.findItem(R.id.select_all).setVisible(false);
+			menu.findItem(R.id.choose_message_item).setVisible(false);
 			menu.findItem(R.id.send_messages).setVisible(false);
 			menu.findItem(R.id.expunge).setVisible(false);
 			menu.findItem(R.id.mark_all_as_read).setVisible(false);
 			menu.findItem(R.id.show_folder_list).setVisible(false);
 		} else {
-			menu.findItem(R.id.set_sort).setVisible(true);
+			menu.findItem(R.id.set_sort).setVisible(false);
 			menu.findItem(R.id.select_all).setVisible(true);
+			menu.findItem(R.id.choose_message_item).setVisible(true);
 			menu.findItem(R.id.mark_all_as_read).setVisible(
 					mMessageListFragment.isMarkAllAsReadSupported());
 

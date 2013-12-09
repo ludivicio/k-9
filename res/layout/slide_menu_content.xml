@@ -34,7 +34,7 @@
             android:layout_height="35dip"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10.0dip"
+            android:layout_marginRight="10dip"
             android:background="@drawable/ib_account_setting"
             android:contentDescription="@null" />
     </RelativeLayout>
