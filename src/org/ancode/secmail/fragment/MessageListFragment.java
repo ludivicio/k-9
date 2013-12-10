@@ -79,7 +79,6 @@ import android.text.format.DateUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -804,8 +803,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         mPreviewLines = K9.messageListPreviewLines();
         mCheckboxes = K9.messageListCheckboxes();
         
-        Log.i("lxc", "mCheckboxes = " + mCheckboxes);
-       
         if (K9.showContactPicture()) {
             mContactsPictureLoader = ContactPicture.getContactPictureLoader(getActivity());
         }
@@ -1421,31 +1418,28 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         
-//        if (itemId == R.id.set_sort_date) {
-//			changeSort(SortType.SORT_DATE);
-//			return true;
-//		} else if (itemId == R.id.set_sort_arrival) {
-//			changeSort(SortType.SORT_ARRIVAL);
-//			return true;
-//		} else if (itemId == R.id.set_sort_subject) {
-//			changeSort(SortType.SORT_SUBJECT);
-//			return true;
-//		} else if (itemId == R.id.set_sort_sender) {
-//			changeSort(SortType.SORT_SENDER);
-//			return true;
-//		} else if (itemId == R.id.set_sort_flag) {
-//			changeSort(SortType.SORT_FLAGGED);
-//			return true;
-//		} else if (itemId == R.id.set_sort_unread) {
-//			changeSort(SortType.SORT_UNREAD);
-//			return true;
-//		} else if (itemId == R.id.set_sort_attach) {
-//			changeSort(SortType.SORT_ATTACHMENT);
-//			return true;
-//		} else if (itemId == R.id.select_all) {
-//			selectAll();
-//			return true;
-//		}
+        if (itemId == R.id.set_sort_date) {
+			changeSort(SortType.SORT_DATE);
+			return true;
+		} else if (itemId == R.id.set_sort_arrival) {
+			changeSort(SortType.SORT_ARRIVAL);
+			return true;
+		} else if (itemId == R.id.set_sort_subject) {
+			changeSort(SortType.SORT_SUBJECT);
+			return true;
+		} else if (itemId == R.id.set_sort_sender) {
+			changeSort(SortType.SORT_SENDER);
+			return true;
+		} else if (itemId == R.id.set_sort_unread) {
+			changeSort(SortType.SORT_UNREAD);
+			return true;
+		} else if (itemId == R.id.set_sort_attach) {
+			changeSort(SortType.SORT_ATTACHMENT);
+			return true;
+		} else if (itemId == R.id.select_all) {
+			selectAll();
+			return true;
+		}
         
         if (itemId == R.id.select_all) {
 			selectAll();
@@ -1515,13 +1509,7 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 			setFlag(adapterPosition, Flag.SEEN, true);
 		} else if (itemId == R.id.mark_as_unread) {
 			setFlag(adapterPosition, Flag.SEEN, false);
-		} 
-//		else if (itemId == R.id.flag) {
-//			setFlag(adapterPosition, Flag.FLAGGED, true);
-//		} else if (itemId == R.id.unflag) {
-//			setFlag(adapterPosition, Flag.FLAGGED, false);
-//		} 
-		else if (itemId == R.id.archive) {
+		} else if (itemId == R.id.archive) {
 			Message message = getMessageAtPosition(adapterPosition);
 			onArchive(message);
 		} else if (itemId == R.id.spam) {
@@ -1564,7 +1552,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
         String subject = cursor.getString(SUBJECT_COLUMN);
         boolean read = (cursor.getInt(READ_COLUMN) == 1);
-        boolean flagged = (cursor.getInt(FLAGGED_COLUMN) == 1);
 
         menu.setHeaderTitle(subject);
 
@@ -1578,12 +1565,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             menu.findItem(R.id.mark_as_read).setVisible(false);
         } else {
             menu.findItem(R.id.mark_as_unread).setVisible(false);
-        }
-
-        if (flagged) {
-            menu.findItem(R.id.flag).setVisible(false);
-        } else {
-            menu.findItem(R.id.unflag).setVisible(false);
         }
 
         if (!mController.isCopyCapable(account)) {
@@ -1816,23 +1797,11 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             Address[] toAddrs = Address.unpack(toList);
             Address[] ccAddrs = Address.unpack(ccList);
 
-            boolean fromMe = mMessageHelper.toMe(account, fromAddrs);
             boolean toMe = mMessageHelper.toMe(account, toAddrs);
             boolean ccMe = mMessageHelper.toMe(account, ccAddrs);
 
             CharSequence displayName = mMessageHelper.getDisplayName(account, fromAddrs, toAddrs);
             CharSequence displayDate = DateUtils.getRelativeTimeSpanString(context, cursor.getLong(DATE_COLUMN));
-
-            Address counterpartyAddress = null;
-            if (fromMe) {
-                if (toAddrs.length > 0) {
-                    counterpartyAddress = toAddrs[0];
-                } else if (ccAddrs.length > 0) {
-                    counterpartyAddress = ccAddrs[0];
-                }
-            } else if (fromAddrs.length > 0) {
-                counterpartyAddress = fromAddrs[0];
-            }
 
             int threadCount = (mThreadedList) ? cursor.getInt(THREAD_COUNT_COLUMN) : 0;
 
@@ -1849,8 +1818,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             boolean forwarded = (cursor.getInt(FORWARDED_COLUMN) == 1);
             boolean hasAttachments = (cursor.getInt(ATTACHMENT_COUNT_COLUMN) > 0);
             
-            // boolean flagged = (cursor.getInt(FLAGGED_COLUMN) == 1);
-            
             MessageViewHolder holder = (MessageViewHolder) view.getTag();
 
             int maybeBoldTypeface = (read) ? Typeface.NORMAL : Typeface.BOLD;
@@ -1865,39 +1832,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             }
             
             holder.position = cursor.getPosition();
-
-            // Background color
-            if (selected || K9.useBackgroundAsUnreadIndicator()) {
-                int res;
-                if (selected) {
-                    res = R.attr.messageListSelectedBackgroundColor;
-                } else if (read) {
-                    res = R.attr.messageListReadItemBackgroundColor;
-                } else {
-                    res = R.attr.messageListUnreadItemBackgroundColor;
-                }
-
-//                TypedValue outValue = new TypedValue();
-//                getActivity().getTheme().resolveAttribute(res, outValue, true);
-//                view.setBackgroundColor(outValue.data);
-            } else {
-                view.setBackgroundColor(Color.TRANSPARENT);
-            }
-
-            if (mActiveMessage != null) {
-                String uid = cursor.getString(UID_COLUMN);
-                String folderName = cursor.getString(FOLDER_NAME_COLUMN);
-
-                if (account.getUuid().equals(mActiveMessage.accountUuid) &&
-                        folderName.equals(mActiveMessage.folderName) &&
-                        uid.equals(mActiveMessage.uid)) {
-                    int res = R.attr.messageListActiveItemBackgroundColor;
-
-//                    TypedValue outValue = new TypedValue();
-//                    getActivity().getTheme().resolveAttribute(res, outValue, true);
-//                    view.setBackgroundColor(outValue.data);
-                }
-            }
 
             // Thread count
             if (threadCount > 1) {
@@ -2253,7 +2187,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         }
 
         mActionModeCallback.showMarkAsRead(isBatchRead);
-//        mActionModeCallback.showFlag(isBatchFlag);
     }
 
     private void setFlag(int adapterPosition, final Flag flag, final boolean newState) {
@@ -2625,8 +2558,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
         private MenuItem mSelectNothing;
         private MenuItem mMarkAsRead;
         private MenuItem mMarkAsUnread;
-//        private MenuItem mFlag;
-//        private MenuItem mUnflag;
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
@@ -2634,8 +2565,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             mSelectNothing = menu.findItem(R.id.select_nothing);
             mMarkAsRead = menu.findItem(R.id.mark_as_read);
             mMarkAsUnread = menu.findItem(R.id.mark_as_unread);
-//            mFlag = menu.findItem(R.id.flag);
-//            mUnflag = menu.findItem(R.id.unflag);
 
             // we don't support cross account actions atm
             if (!mSingleAccountMode) {
@@ -2689,13 +2618,10 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             mSelectNothing = null;
             mMarkAsRead = null;
             mMarkAsUnread = null;
-//            mFlag = null;
-//            mUnflag = null;
             
             mCheckboxes = false;
             
             finishActionMode();
-//            setSelectionState(false);
         }
 
         @Override
@@ -2764,13 +2690,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             }
         }
 
-//        public void showFlag(boolean show) {
-//            if (mActionMode != null) {
-//                mFlag.setVisible(show);
-//                mUnflag.setVisible(!show);
-//            }
-//        }
-
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             int itemId = item.getItemId();
@@ -2784,13 +2703,7 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 			} else if (itemId == R.id.mark_as_unread) {
 				setFlagForSelected(Flag.SEEN, false);
 				return true;
-			} 
-//			else if (itemId == R.id.flag) {
-//				setFlagForSelected(Flag.FLAGGED, true);
-//			} else if (itemId == R.id.unflag) {
-//				setFlagForSelected(Flag.FLAGGED, false);
-//			} 
-			else if (itemId == R.id.select_all) {
+			} else if (itemId == R.id.select_all) {
 				selectAll();
 			} else if (itemId == R.id.select_nothing) {
 				selectNothing();

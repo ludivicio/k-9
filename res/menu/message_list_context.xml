@@ -35,18 +35,6 @@
         android:title="@string/copy_action"
         android:icon="?attr/iconActionCopy"
     />
-<!--     <item -->
-<!--         android:id="@+id/flag" -->
-<!--         android:title="@string/flag_action" -->
-<!--         android:showAsAction="ifRoom" -->
-<!--         android:icon="?attr/iconActionFlag" -->
-<!--     /> -->
-<!--     <item -->
-<!--         android:id="@+id/unflag" -->
-<!--         android:title="@string/unflag_action" -->
-<!--         android:showAsAction="ifRoom" -->
-<!--         android:icon="?attr/iconActionUnflag" -->
-<!--     /> -->
     <item
         android:id="@+id/spam"
         android:title="@string/spam_action"

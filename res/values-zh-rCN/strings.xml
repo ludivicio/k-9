@@ -941,6 +941,7 @@
     <string name="image_saved_as">保存图片到文件 \"<xliff:g id="filename">%s</xliff:g>\"</string>
     <string name="image_saving_failed">保存图片失败</string>
 
+    <string name="mark_all_as_read">标记为已读</string>
     
     <!-- 鸽子密邮  -->
     <string name="image_saved_as">保存图片到文件 \"<xliff:g id="filename">%s</xliff:g>\"</string>

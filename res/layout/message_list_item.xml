@@ -5,59 +5,28 @@
     android:layout_gravity="center_vertical"
     android:orientation="horizontal" >
 
-<!--     <View -->
-<!--         android:id="@+id/chip" -->
-<!--         android:layout_width="8dip" -->
-<!--         android:layout_height="match_parent" -->
-<!--         android:layout_marginRight="4dp" -->
-<!--         android:adjustViewBounds="false" /> -->
-
-<!--     <LinearLayout -->
-<!--         android:id="@+id/selected_checkbox_wrapper" -->
-<!--         android:layout_width="wrap_content" -->
-<!--         android:layout_height="match_parent" -->
-<!--         android:layout_gravity="center" -->
-<!--         android:baselineAligned="false" -->
-<!--         android:orientation="vertical" -->
-<!--         android:textColor="?android:attr/textColorPrimary" -->
-<!--         android:visibility="visible" > -->
-
-        <CheckBox
-            android:id="@+id/selected_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:clickable="false"
-            android:focusable="false"
-            android:gravity="center"
-            android:paddingLeft="4dp"
-            android:paddingRight="0dp"
-            android:visibility="visible" />
-<!--     </LinearLayout> -->
-
-<!--     <QuickContactBadge -->
-<!--         android:id="@+id/contact_badge" -->
-<!--         style="?android:attr/quickContactBadgeStyleWindowLarge" -->
-<!--         android:layout_width="40dip" -->
-<!--         android:layout_height="40dip" -->
-<!--         android:layout_gravity="center_vertical" -->
-<!--         android:layout_marginBottom="3dip" -->
-<!--         android:layout_marginLeft="4dp" -->
-<!--         android:layout_marginRight="8dip" -->
-<!--         android:layout_marginTop="4dip" -->
-<!--         android:background="@android:color/transparent" -->
-<!--         android:src="@drawable/ic_contact_picture" /> -->
+    <CheckBox
+        android:id="@+id/selected_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:paddingLeft="4dp"
+        android:paddingRight="0dp"
+        android:visibility="visible" />
 
     <RelativeLayout
         android:id="@+id/list_item_inner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dip"
         android:clickable="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:paddingBottom="6dp"
-        android:paddingTop="5dip"
-        android:layout_marginLeft="5dip" >
+        android:paddingTop="5dip" >
 
         <TextView
             android:id="@+id/preview"
@@ -65,11 +34,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/encrypt_status"
             android:layout_alignWithParentIfMissing="false"
             android:layout_below="@+id/subject_wrapper"
             android:layout_marginLeft="1dip"
             android:layout_marginRight="3dip"
+            android:layout_toLeftOf="@+id/encrypt_status"
             android:bufferType="spannable"
             android:gravity="top"
             android:longClickable="false"
@@ -109,8 +78,8 @@
                 android:layout_weight="0.7"
                 android:ellipsize="marquee"
                 android:singleLine="true"
-                android:textSize="15sp"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/thread_count"
@@ -143,10 +112,10 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/subject_wrapper"
             android:layout_alignWithParentIfMissing="true"
             android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
             android:paddingLeft="3dip"
             android:paddingRight="8dip"
             android:singleLine="true"
@@ -156,45 +125,33 @@
         <CheckBox
             android:id="@+id/flagged_bottom_right"
             style="?android:attr/starStyle"
-            android:layout_alignWithParentIfMissing="true"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_toLeftOf="@+id/encrypt_status"
+            android:layout_alignWithParentIfMissing="true"
             android:layout_below="@+id/date"
+            android:layout_toLeftOf="@+id/encrypt_status"
             android:focusable="false"
             android:gravity="center_vertical"
             android:paddingLeft="2dip"
             android:paddingRight="4dip"
             android:paddingTop="5dip"
             android:visibility="gone" />
-       
-<!--         <LinearLayout  -->
-<!--             android:id="@+id/ll_encrypt_status" -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="match_parent" -->
-<!--             android:layout_alignParentRight="true" -->
-<!--             android:layout_centerInParent="true" -->
-<!--             android:layout_below="@+id/date" > -->
-            
-	        <TextView
-	            android:id="@+id/encrypt_status"
-	            android:layout_width="25dip"
-	            android:layout_height="25dip"
-	            android:background="@drawable/ic_lock"
-	            android:layout_gravity="center_vertical"
-	            android:gravity="center_vertical"
-	            android:paddingLeft="2dip"
-	            android:paddingRight="2dip"
-	            android:layout_marginRight="5dip"
-	            android:layout_alignParentRight="true"
-            	android:layout_centerInParent="true"
-	            android:layout_below="@+id/date"
-	            android:singleLine="true"
-	            android:textColor="?android:attr/textColorSecondary" />
-            
-<!--         </LinearLayout> -->
-       
 
+        <TextView
+            android:id="@+id/encrypt_status"
+            android:layout_width="25dip"
+            android:layout_height="25dip"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/date"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="5dip"
+            android:background="@drawable/ic_lock"
+            android:gravity="center_vertical"
+            android:paddingLeft="2dip"
+            android:paddingRight="2dip"
+            android:singleLine="true"
+            android:textColor="?android:attr/textColorSecondary" />
     </RelativeLayout>
 
 </LinearLayout>
