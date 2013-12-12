@@ -289,7 +289,16 @@ public class Address {
             }
         }
 
-        return (!StringUtils.isNullOrEmpty(mPersonal)) ? mPersonal : mAddress;
+        String result  = "";
+        if(StringUtils.isNullOrEmpty(mPersonal)) {
+        	result = mAddress;
+        } else {
+        	result = mPersonal + " <" + mAddress + ">";
+        }
+        return result;
+        
+//        return (!StringUtils.isNullOrEmpty(mPersonal)) ? mPersonal : mAddress;
+        
     }
 
     public static CharSequence toFriendly(Address[] addresses) {

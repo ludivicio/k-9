@@ -235,6 +235,7 @@
     <string name="message_compose_description_delete_quoted_text">删除引用文本</string>
     <string name="message_compose_description_edit_quoted_text">编辑引用文本</string>
     <string name="message_view_from_format">发件人：<xliff:g id="name">%s</xliff:g> &lt;<xliff:g id="email">%s</xliff:g>&gt;</string>
+    <string name="message_from_label">发件人：</string>
     <string name="message_to_label">收件人：</string>
     <string name="message_view_cc_label">抄送：</string>
     <string name="message_view_attachment_view_action">打开</string>
@@ -320,6 +321,7 @@
     <string name="quiet_time_starts">安静时间开始</string>
     <string name="quiet_time_ends">安静时间结束</string>
     <string name="account_setup_basics_title">设置新账户</string>
+    <string name="account_setup_selection_title">添加账户</string>
     <string name="account_setup_basics_email_hint">电子邮件地址</string>
     <string name="account_setup_basics_password_hint">密码</string>
     <string name="account_setup_basics_manual_setup_action">手工设置</string>
@@ -425,7 +427,8 @@
     <string name="idle_refresh_period_60min">六十分钟一次</string>
     <string name="account_setup_options_notify_label">有新邮件时通知我</string>
     <string name="account_setup_options_notify_sync_label">检查新邮件时通知我</string>
-
+	<string name="account_setup_options_sync_now_label">同步此账户中的邮件</string>
+    
     <!-- Number of displayed messages, also used in account_settings_* -->
     <string name="account_setup_options_mail_display_count_label">邮件显示数量</string>
     <string name="account_setup_options_mail_display_count_10">10封</string>

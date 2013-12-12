@@ -432,19 +432,6 @@ public class MenuFragment extends SherlockFragment {
 
 			}
 
-			// modified by lxc at 2013-12-06
-			
-//			if (K9.messageListStars() && folder.flaggedMessageCount > 0) {
-//				holder.flaggedMessageCount.setText(Integer.toString(folder.flaggedMessageCount));
-//				holder.flaggedMessageCountWrapper.setOnClickListener(createFlaggedSearch(mAccount, folder));
-//				holder.flaggedMessageCountWrapper.setVisibility(View.VISIBLE);
-//				holder.flaggedMessageCountIcon.setBackgroundDrawable(mAccount
-//						.generateColorChip(false, false, false, false, true)
-//						.drawable());
-//			} else {
-//				holder.flaggedMessageCountWrapper.setVisibility(View.GONE);
-//			}
-			
 			// Hide the layout.
 			holder.flaggedMessageCountWrapper.setVisibility(View.GONE);
 			
@@ -456,10 +443,7 @@ public class MenuFragment extends SherlockFragment {
 				}
 			});
 
-			// modified by lxc at 2013-12-06
-//			holder.folderIcon.setBackgroundResource(folder.folderIcon);
 			holder.folderIcon.setImageResource(folder.folderIcon);
-//			holder.folderIcon.setImageDrawable(getResources().getDrawable(folder.folderIcon));
 			
 			mFontSizes.setViewTextSize(holder.folderName, mFontSizes.getFolderName());
 
@@ -476,22 +460,6 @@ public class MenuFragment extends SherlockFragment {
 			return view;
 		}
 		
-//		private OnClickListener createFlaggedSearch(Account account, FolderInfoHolder folder) {
-//			String searchTitle = getString(
-//					R.string.search_title,
-//					getString(R.string.message_list_title,
-//							account.getDescription(), folder.displayName),
-//					getString(R.string.flagged_modifier));
-//
-//			LocalSearch search = new LocalSearch(searchTitle);
-//			search.and(Searchfield.FLAGGED, "1", Attribute.EQUALS);
-//
-//			search.addAllowedFolder(folder.name);
-//			search.addAccountUuid(account.getUuid());
-//
-//			return new FolderClickListener(search);
-//		}
-
 		private OnClickListener createUnreadSearch(Account account, FolderInfoHolder folder) {
 			String searchTitle = getString(
 					R.string.search_title,

@@ -41,7 +41,8 @@ public class WelcomeMessage extends K9Activity implements OnClickListener{
     public void onClick(View view) {
         int id = view.getId();
 		if (id == R.id.next) {
-			AccountSetupBasics.actionNewAccount(this);
+			AccountSetupSelection.actionChooseEmailProvider(this);
+//			AccountSetupBasics.actionNewAccount(this);
 			finish();
 		} else if (id == R.id.import_settings) {
 			Accounts.importSettings(this);

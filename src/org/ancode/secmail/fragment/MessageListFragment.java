@@ -1931,7 +1931,7 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             	if( encryStatus != null && "Y".equalsIgnoreCase(encryStatus)){
 					holder.encrypt_status.setVisibility(View.VISIBLE);
 					holder.encrypt_status.setBackgroundDrawable(getResources()
-							.getDrawable(R.drawable.ic_lock));
+							.getDrawable(R.drawable.ic_email_lock));
 				} else {
 					holder.encrypt_status.setVisibility(View.GONE);
 				}

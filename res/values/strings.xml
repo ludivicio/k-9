@@ -236,6 +236,7 @@ http://k9mail.googlecode.com/</string>
     <string name="message_compose_description_delete_quoted_text">Remove quoted text</string>
     <string name="message_compose_description_edit_quoted_text">Edit quoted text</string>
     <string name="message_view_from_format">From: <xliff:g id="name">%s</xliff:g> &lt;<xliff:g id="email">%s</xliff:g>&gt;</string>
+    <string name="message_from_label">From:</string>
     <string name="message_to_label">To:</string>
     <string name="message_view_cc_label">Cc:</string>
     <string name="message_view_attachment_view_action">Open</string>
@@ -311,6 +312,7 @@ http://k9mail.googlecode.com/</string>
     <string name="quiet_time_starts">Quiet Time starts</string>
     <string name="quiet_time_ends">Quiet Time ends</string>
     <string name="account_setup_basics_title">Set up a new account</string>
+    <string name="account_setup_selection_title">Add a new account</string>
     <string name="account_setup_basics_email_hint">Email address</string>
     <string name="account_setup_basics_password_hint">Password</string>
     <string name="account_setup_basics_manual_setup_action">Manual setup</string>
@@ -416,6 +418,7 @@ http://k9mail.googlecode.com/</string>
     <string name="idle_refresh_period_60min">Every 60 minutes</string>
     <string name="account_setup_options_notify_label">Notify me when mail arrives</string>
     <string name="account_setup_options_notify_sync_label">Notify me while mail is being checked</string>
+    <string name="account_setup_options_sync_now_label">Synchronizing the mail in the account</string>
 
     <!-- Number of displayed messages, also used in account_settings_* -->
     <string name="account_setup_options_mail_display_count_label">Number of messages to display</string>

@@ -740,4 +740,15 @@
         <item>@string/account_cryptoguard_type_email</item>
         <item>@string/account_cryptoguard_type_mobile</item>
     </string-array>
+    
+    <string-array name="account_email_providers">
+        <item>email_provider_163</item>
+        <item>email_provider_126</item>
+        <item>email_provider_sina</item>
+        <item>email_provider_qq</item>
+        <item>email_provider_gmail</item>
+        <item>email_provider_hotmail</item>
+        <item>email_provider_outlook</item>
+        <item>email_provider_other</item>
+    </string-array>
 </resources>

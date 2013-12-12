@@ -577,12 +577,13 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
                     } else {
                         displayMessageSubject(clonedMessage.getSubject());
                     }
-                    mMessageView.setOnFlagListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            onToggleFlagged();
-                        }
-                    });
+                    
+//                    mMessageView.setOnFlagListener(new OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            onToggleFlagged();
+//                        }
+//                    });
                 }
             });
         }

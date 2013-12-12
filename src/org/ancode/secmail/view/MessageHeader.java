@@ -10,10 +10,7 @@ import org.ancode.secmail.Account;
 import org.ancode.secmail.FontSizes;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.R;
-import org.ancode.secmail.activity.misc.ContactPictureLoader;
-import org.ancode.secmail.helper.ContactPicture;
 import org.ancode.secmail.helper.Contacts;
-import org.ancode.secmail.helper.MessageHelper;
 import org.ancode.secmail.helper.StringUtils;
 import org.ancode.secmail.mail.Address;
 import org.ancode.secmail.mail.Flag;
@@ -36,8 +33,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.CheckBox;
-import android.widget.QuickContactBadge;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,9 +47,6 @@ public class MessageHeader extends ScrollView implements OnClickListener {
     private TextView mCcLabel;
     private TextView mSubjectView;
 
-    private View mChip;
-    private CheckBox mFlagged;
-    private int defaultSubjectColor;
     private TextView mAdditionalHeadersView;
     private View mAnsweredIcon;
     private View mForwardedIcon;
@@ -67,10 +59,6 @@ public class MessageHeader extends ScrollView implements OnClickListener {
     // modified by lxc at 2013-11-24
     private View mcryptStatusIcon;
     
-    private MessageHelper mMessageHelper;
-    private ContactPictureLoader mContactsPictureLoader;
-    private QuickContactBadge mContactBadge;
-
     private OnLayoutChangedListener mOnLayoutChangedListener;
 
     /**
@@ -105,16 +93,11 @@ public class MessageHeader extends ScrollView implements OnClickListener {
         
         // modified by lxc at 2013-11-24
         mcryptStatusIcon = findViewById(R.id.cryptStatus);
-        
-        mContactBadge = (QuickContactBadge) findViewById(R.id.contact_badge);
 
         mSubjectView = (TextView) findViewById(R.id.subject);
         mAdditionalHeadersView = (TextView) findViewById(R.id.additional_headers_view);
-        mChip = findViewById(R.id.chip);
         mDateView = (TextView) findViewById(R.id.date);
-        mFlagged = (CheckBox) findViewById(R.id.flagged);
 
-        defaultSubjectColor = mSubjectView.getCurrentTextColor();
         mFontSizes.setViewTextSize(mSubjectView, mFontSizes.getMessageViewSubject());
         mFontSizes.setViewTextSize(mDateView, mFontSizes.getMessageViewDate());
         mFontSizes.setViewTextSize(mAdditionalHeadersView, mFontSizes.getMessageViewAdditionalHeaders());
@@ -128,8 +111,6 @@ public class MessageHeader extends ScrollView implements OnClickListener {
         mFromView.setOnClickListener(this);
         mToView.setOnClickListener(this);
         mCcView.setOnClickListener(this);
-
-        mMessageHelper = MessageHelper.getInstance(mContext);
 
         mSubjectView.setVisibility(VISIBLE);
         hideAdditionalHeaders();
@@ -157,13 +138,6 @@ public class MessageHeader extends ScrollView implements OnClickListener {
             }
         }
     }
-
-    public void setOnFlagListener(OnClickListener listener) {
-        if (mFlagged == null)
-            return;
-        mFlagged.setOnClickListener(listener);
-    }
-
 
     public boolean additionalHeadersVisible() {
         return (mAdditionalHeadersView != null &&
@@ -227,22 +201,6 @@ public class MessageHeader extends ScrollView implements OnClickListener {
         final CharSequence to = Address.toFriendly(message.getRecipients(Message.RecipientType.TO), contacts);
         final CharSequence cc = Address.toFriendly(message.getRecipients(Message.RecipientType.CC), contacts);
 
-        Address[] fromAddrs = message.getFrom();
-        Address[] toAddrs = message.getRecipients(Message.RecipientType.TO);
-        Address[] ccAddrs = message.getRecipients(Message.RecipientType.CC);
-        boolean fromMe = mMessageHelper.toMe(account, fromAddrs);
-
-        Address counterpartyAddress = null;
-        if (fromMe) {
-            if (toAddrs.length > 0) {
-                counterpartyAddress = toAddrs[0];
-            } else if (ccAddrs.length > 0) {
-                counterpartyAddress = ccAddrs[0];
-            }
-        } else if (fromAddrs.length > 0) {
-            counterpartyAddress = fromAddrs[0];
-        }
-
         /*
          * Only reset visibility of the subject if populate() was called because a new
          * message is shown. If it is the same, do not force the subject visible, because
@@ -257,20 +215,13 @@ public class MessageHeader extends ScrollView implements OnClickListener {
         mMessage = message;
         mAccount = account;
 
-        if (K9.showContactPicture()) {
-            mContactBadge.setVisibility(View.VISIBLE);
-            mContactsPictureLoader = ContactPicture.getContactPictureLoader(mContext);
-        }  else {
-            mContactBadge.setVisibility(View.GONE);
-        }
-
         final String subject = message.getSubject();
         if (StringUtils.isNullOrEmpty(subject)) {
             mSubjectView.setText(mContext.getText(R.string.general_no_subject));
         } else {
             mSubjectView.setText(subject);
         }
-        mSubjectView.setTextColor(0xff000000 | defaultSubjectColor);
+        mSubjectView.setTextColor(0xff000000);
 
         String dateTime = DateUtils.formatDateTime(mContext,
                 message.getSentDate().getTime(),
@@ -280,24 +231,19 @@ public class MessageHeader extends ScrollView implements OnClickListener {
                 | DateUtils.FORMAT_SHOW_YEAR);
         mDateView.setText(dateTime);
 
-        if (K9.showContactPicture()) {
-            if (counterpartyAddress != null) {
-                mContactBadge.assignContactFromEmail(counterpartyAddress.getAddress(), true);
-                mContactsPictureLoader.loadContactPicture(counterpartyAddress, mContactBadge);
-            } else {
-                mContactBadge.setImageResource(R.drawable.ic_contact_picture);
-            }
+        Address[] froms = message.getFrom();
+        for(int i = 0; i < froms.length; i ++ ) {
+        	Log.i("lxc", "address: " + froms[i].getAddress());
         }
-
+        Log.i("lxc", "from: " + from);
+        
+        
         mFromView.setText(from);
 
         updateAddressField(mToView, to, mToLabel);
         updateAddressField(mCcView, cc, mCcLabel);
         mAnsweredIcon.setVisibility(message.isSet(Flag.ANSWERED) ? View.VISIBLE : View.GONE);
         mForwardedIcon.setVisibility(message.isSet(Flag.FORWARDED) ? View.VISIBLE : View.GONE);
-        mFlagged.setChecked(message.isSet(Flag.FLAGGED));
-
-        mChip.setBackgroundColor(mAccount.getChipColor());
 
         // modified by lxc at 2013-11-24
         if (mMessage instanceof LocalMessage) {

@@ -30,8 +30,8 @@
 
         <ImageButton
             android:id="@+id/ib_account_setting"
-            android:layout_width="35dip"
-            android:layout_height="35dip"
+            android:layout_width="30dip"
+            android:layout_height="30dip"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dip"

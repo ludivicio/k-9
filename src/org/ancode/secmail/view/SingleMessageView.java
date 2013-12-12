@@ -574,9 +574,9 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
 		}
 	}
 
-	public void setOnFlagListener(OnClickListener listener) {
-		mHeaderContainer.setOnFlagListener(listener);
-	}
+//	public void setOnFlagListener(OnClickListener listener) {
+//		mHeaderContainer.setOnFlagListener(listener);
+//	}
 
 	public void showAllHeaders() {
 		mHeaderContainer.onShowAdditionalHeaders();

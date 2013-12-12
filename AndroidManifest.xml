@@ -105,6 +105,12 @@
             >
         </activity>
         <activity
+            android:name=".activity.setup.AccountSetupSelection"
+            android:label="@string/account_setup_selection_title"
+            android:configChanges="locale"
+            >
+        </activity>
+        <activity
             android:name=".activity.setup.AccountSetupBasics"
             android:label="@string/account_setup_basics_title"
             android:configChanges="locale"

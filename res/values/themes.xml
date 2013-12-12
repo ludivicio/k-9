@@ -149,10 +149,10 @@
     </style>
     
     <style name="Theme.k9.ActionBar" parent="Widget.Sherlock.Light.ActionBar">     
-        <item name="background">#1791d2</item>  
+        <item name="background">@drawable/actionbar_bg</item>  
         <item name="backgroundStacked">#1791d2</item>  
         <item name="backgroundSplit">#1791d2</item>  
-        <item name="divider">?attr/dividerVertical</item>
+<!--         <item name="divider">?attr/dividerVertical</item> -->
     </style>  
     
 </resources>

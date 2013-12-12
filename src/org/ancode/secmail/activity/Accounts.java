@@ -24,7 +24,7 @@ import org.ancode.secmail.R;
 import org.ancode.secmail.activity.misc.ExtendedAsyncTask;
 import org.ancode.secmail.activity.misc.NonConfigurationInstance;
 import org.ancode.secmail.activity.setup.AccountSettings;
-import org.ancode.secmail.activity.setup.AccountSetupBasics;
+import org.ancode.secmail.activity.setup.AccountSetupSelection;
 import org.ancode.secmail.activity.setup.Prefs;
 import org.ancode.secmail.activity.setup.WelcomeMessage;
 import org.ancode.secmail.controller.MessagingController;
@@ -53,7 +53,6 @@ import org.ancode.secmail.search.SearchSpecification.Searchfield;
 import org.ancode.secmail.update.AppUpdate;
 import org.ancode.secmail.update.AppUpdateService;
 import org.ancode.secmail.update.internal.SimpleJSONParser;
-import org.ancode.secmail.view.ColorChip;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -73,6 +72,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -91,10 +91,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -648,7 +646,8 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     }
 
     private void onAddNewAccount() {
-        AccountSetupBasics.actionNewAccount(this);
+//        AccountSetupBasics.actionNewAccount(this);
+        AccountSetupSelection.actionChooseEmailProvider(this);
     }
 
     private void onEditPrefs() {
@@ -1799,16 +1798,10 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 holder = new AccountViewHolder();
                 holder.description = (TextView) view.findViewById(R.id.description);
                 holder.email = (TextView) view.findViewById(R.id.email);
+                holder.size = (TextView) view.findViewById(R.id.size);
                 holder.newMessageCount = (TextView) view.findViewById(R.id.new_message_count);
-                holder.flaggedMessageCount = (TextView) view.findViewById(R.id.flagged_message_count);
-                holder.newMessageCountWrapper = (View) view.findViewById(R.id.new_message_count_wrapper);
-                holder.flaggedMessageCountWrapper = (View) view.findViewById(R.id.flagged_message_count_wrapper);
-                holder.newMessageCountIcon = (View) view.findViewById(R.id.new_message_count_icon);
-                holder.flaggedMessageCountIcon = (View) view.findViewById(R.id.flagged_message_count_icon);
-                holder.activeIcons = (RelativeLayout) view.findViewById(R.id.active_icons);
+                holder.activeIcons = (LinearLayout) view.findViewById(R.id.active_icons);
 
-                holder.chip = view.findViewById(R.id.chip);
-                holder.folders = (ImageButton) view.findViewById(R.id.folders);
                 holder.accountsItemLayout = (LinearLayout)view.findViewById(R.id.accounts_item_layout);
 
                 // modified by lxc at 2013-11-22
@@ -1819,62 +1812,54 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             AccountStats stats = accountStats.get(account.getUuid());
 
             if (stats != null && account instanceof Account && stats.size >= 0) {
-                holder.email.setText(SizeFormatter.formatSize(Accounts.this, stats.size));
-                holder.email.setVisibility(View.VISIBLE);
+                holder.size.setText(SizeFormatter.formatSize(Accounts.this, stats.size));
+                holder.size.setVisibility(View.VISIBLE);
             } else {
-                if (account.getEmail().equals(account.getDescription())) {
-                    holder.email.setVisibility(View.GONE);
-                } else {
-                    holder.email.setVisibility(View.VISIBLE);
-                    holder.email.setText(account.getEmail());
-                }
+            	holder.size.setVisibility(View.GONE);
             }
 
+            String email = account.getEmail();
+            if (TextUtils.isEmpty(email)) {
+            	holder.email.setVisibility(View.GONE);
+            }
+
+            holder.email.setText(email);
+            
             String description = account.getDescription();
-            if (description == null || description.length() == 0) {
+            if (TextUtils.isEmpty(description)) {
                 description = account.getEmail();
+                holder.email.setVisibility(View.GONE);
+            } else {
+            	if(description.equals(email)) {
+            		holder.email.setVisibility(View.GONE);
+            	}
             }
-
+            
             holder.description.setText(description);
 
             Integer unreadMessageCount = null;
             if (stats != null) {
                 unreadMessageCount = stats.unreadMessageCount;
-                holder.newMessageCount.setText(Integer.toString(unreadMessageCount));
-                holder.newMessageCountWrapper.setVisibility(unreadMessageCount > 0 ? View.VISIBLE : View.GONE);
-
-                holder.flaggedMessageCount.setText(Integer.toString(stats.flaggedMessageCount));
-                holder.flaggedMessageCountWrapper.setVisibility(K9.messageListStars() && stats.flaggedMessageCount > 0 ? View.VISIBLE : View.GONE);
-
-                holder.flaggedMessageCountWrapper.setOnClickListener(createFlaggedSearchListener(account));
-                holder.newMessageCountWrapper.setOnClickListener(createUnreadSearchListener(account));
+                
+                String unreadMessageText = "";
+				if(unreadMessageCount < 100) {
+					unreadMessageText = unreadMessageCount + "";
+				} else {
+					unreadMessageText = "99+";
+				}
+				
+				holder.newMessageCount.setText(unreadMessageText);
+                holder.newMessageCount.setVisibility(unreadMessageCount > 0 ? View.VISIBLE : View.GONE);
+                holder.newMessageCount.setOnClickListener(createUnreadSearchListener(account));
 
                 holder.activeIcons.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
                         Toast toast = Toast.makeText(getApplication(), getString(R.string.tap_hint), Toast.LENGTH_SHORT);
                         toast.show();
                     }
-                }
-                                                     );
+                });
 
-            } else {
-                holder.newMessageCountWrapper.setVisibility(View.GONE);
-                holder.flaggedMessageCountWrapper.setVisibility(View.GONE);
             }
-            if (account instanceof Account) {
-                Account realAccount = (Account)account;
-
-                holder.chip.setBackgroundColor(realAccount.getChipColor());
-
-                holder.flaggedMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false,true).drawable() );
-                holder.newMessageCountIcon.setBackgroundDrawable( realAccount.generateColorChip(false, false, false, false, false).drawable() );
-
-            } else {
-                holder.chip.setBackgroundColor(0xff999999);
-                holder.newMessageCountIcon.setBackgroundDrawable( new ColorChip(0xff999999, false, ColorChip.CIRCULAR).drawable() );
-                holder.flaggedMessageCountIcon.setBackgroundDrawable(new ColorChip(0xff999999, false, ColorChip.STAR).drawable());
-            }
-
 
             mFontSizes.setViewTextSize(holder.description, mFontSizes.getAccountName());
             mFontSizes.setViewTextSize(holder.email, mFontSizes.getAccountDescription());
@@ -1882,8 +1867,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             if (account instanceof SearchAccount) {
             	
             	// modified by lxc at 2013-11-22
-            	holder.encryStatus.setVisibility(View.GONE);
-                holder.folders.setVisibility(View.GONE);
+            	holder.activeIcons.setVisibility(View.GONE);
             } else {
             	
             	// modified by lxc at 2013-11-22
@@ -1891,24 +1875,13 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 				if (_account.getRegCode() == null || _account.getRegCode().trim().equals("")) {
 					holder.encryStatus.setVisibility(View.VISIBLE);
 					holder.encryStatus.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_unlock));
-					// holder.encryStatus.setText(getString(R.string.apply_reg_encrypt));
 					holder.encryStatus.setOnClickListener(new RegEncryptClickListener((Account) account,
 							getApplicationContext()));
 				} else {
 					holder.encryStatus.setVisibility(View.VISIBLE);
 					holder.encryStatus.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_lock));
-					// holder.encryStatus.setText(getString(R.string.applied_reg_encrypt));
 					holder.encryStatus.setOnClickListener(new RegDecryptClickListener((Account) account));
 				}
-				
-            	
-                holder.folders.setVisibility(View.VISIBLE);
-                holder.folders.setOnClickListener(new OnClickListener() {
-                    public void onClick(View v) {
-                        FolderList.actionHandleAccount(Accounts.this, (Account)account);
-
-                    }
-                });
             }
 
             return view;
@@ -1945,15 +1918,16 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         class AccountViewHolder {
             public TextView description;
             public TextView email;
+            public TextView size;
             public TextView newMessageCount;
-            public TextView flaggedMessageCount;
-            public View newMessageCountIcon;
-            public View flaggedMessageCountIcon;
-            public View newMessageCountWrapper;
-            public View flaggedMessageCountWrapper;
-            public RelativeLayout activeIcons;
-            public View chip;
-            public ImageButton folders;
+//            public TextView flaggedMessageCount;
+//            public View newMessageCountIcon;
+//            public View flaggedMessageCountIcon;
+//            public View newMessageCountWrapper;
+//            public View flaggedMessageCountWrapper;
+            public LinearLayout activeIcons;
+//            public View chip;
+//            public ImageButton folders;
             public LinearLayout accountsItemLayout;
             // modified by lxc at 2013-11-22
             public TextView encryStatus;

@@ -5,7 +5,9 @@ import org.ancode.secmail.Account;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.Preferences;
 import org.ancode.secmail.R;
+import org.ancode.secmail.activity.Accounts;
 import org.ancode.secmail.activity.K9Activity;
+import org.ancode.secmail.controller.MessagingController;
 import org.ancode.secmail.mail.Store;
 
 import android.content.Context;
@@ -31,6 +33,7 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
     private CheckBox mNotifyView;
     private CheckBox mNotifySyncView;
     private CheckBox mPushEnable;
+    private CheckBox mSyncNowView;
 
     private Account mAccount;
 
@@ -50,6 +53,7 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
         mDisplayCountView = (Spinner)findViewById(R.id.account_display_count);
         mNotifyView = (CheckBox)findViewById(R.id.account_notify);
         mNotifySyncView = (CheckBox)findViewById(R.id.account_notify_sync);
+        mSyncNowView = (CheckBox)findViewById(R.id.account_sync_now);
         mPushEnable = (CheckBox)findViewById(R.id.account_enable_push);
 
         findViewById(R.id.next).setOnClickListener(this);
@@ -108,11 +112,12 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
 
         mNotifyView.setChecked(mAccount.isNotifyNewMail());
         mNotifySyncView.setChecked(mAccount.isShowOngoing());
+        mSyncNowView.setChecked(true);
+        
         SpinnerOption.setSpinnerOptionValue(mCheckFrequencyView, mAccount
                                             .getAutomaticCheckIntervalMinutes());
         SpinnerOption.setSpinnerOptionValue(mDisplayCountView, mAccount
                                             .getDisplayCount());
-
 
         boolean isPushCapable = false;
         try {
@@ -122,13 +127,11 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
             Log.e(K9.LOG_TAG, "Could not get remote store", e);
         }
 
-
         if (!isPushCapable) {
             mPushEnable.setVisibility(View.GONE);
         } else {
             mPushEnable.setChecked(true);
         }
-
 
     }
 
@@ -153,10 +156,26 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
             Preferences.getPreferences(this).setDefaultAccount(mAccount);
         }
         K9.setServicesEnabled(this);
-        AccountSetupNames.actionSetNames(this, mAccount);
+        
+        Accounts.listAccounts(this);
+        
+        if(mSyncNowView.isChecked()) {
+        	syncMail();
+        }
+        
         finish();
     }
 
+    private void syncMail() {
+    	new Thread(new Runnable() {
+			@Override
+			public void run() {
+				MessagingController.getInstance(getApplication()).listFoldersSynchronous(mAccount, true, null);
+		        MessagingController.getInstance(getApplication()).synchronizeMailbox(mAccount, mAccount.getInboxFolderName(), null, null);
+			}
+        }).start();
+    }
+    
     public void onClick(View v) {
         int id = v.getId();
 		if (id == R.id.next) {
