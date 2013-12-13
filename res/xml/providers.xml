@@ -527,4 +527,14 @@
         <incoming uri="imap+ssl://imap.bestpractical.com"  username="$user" />
         <outgoing uri="smtp+tls://smtp.bestpractical.com:2525" />
     </provider>
+    
+    <!-- China -->
+    <provider id="163" label="163" domain="163.com">
+        <incoming uri="pop3+ssl+://pop.163.com" username="$user" />
+        <outgoing uri="smtp+ssl+://smtp.163.com" username="$user" />
+    </provider>
+	<provider id="qq" label="qq" domain="qq.com">
+		<incoming uri="pop3+ssl+://pop.qq.com" username="$user" />
+		<outgoing uri="smtp+ssl+://smtp.qq.com" username="$user" />
+	</provider>
 </providers>

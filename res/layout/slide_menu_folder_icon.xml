@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/active_icons"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:gravity="center_vertical"
+    android:paddingLeft="2dip"
+    android:paddingRight="2dip" >
+
+    <LinearLayout
+        android:id="@+id/flagged_message_count_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="4dip"
+        android:paddingRight="4dip" >
+
+        <View
+            android:id="@+id/flagged_message_count_icon"
+            android:layout_width="35dip"
+            android:layout_height="35dip"
+            android:layout_marginLeft="10dip"
+            android:background="@drawable/message_starmark" />
+
+        <TextView
+            android:id="@+id/flagged_message_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/new_message_count_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/flagged_message_count_wrapper"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="4dip"
+        android:paddingRight="4dip" >
+
+        <TextView
+            android:id="@+id/new_message_count"
+            android:layout_width="30dip"
+            android:layout_height="20dip"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/message_count_icon"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textSize="14sp"
+            android:textColor="#000000" />
+    </LinearLayout>
+
+</RelativeLayout>

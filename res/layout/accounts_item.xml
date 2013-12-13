@@ -1,81 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        android:id="@+id/accounts_item_layout"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:orientation="horizontal"
-        android:descendantFocusability="blocksDescendants"
-        android:gravity="center_vertical">
-
-    <View
-            android:id="@+id/chip"
-            android:layout_height="match_parent"
-            android:layout_width="8dip"
-            android:background="#ff336699"
-            android:layout_marginRight="8dip"
-            />
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/accounts_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center_vertical"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal" >
 
     <LinearLayout
-            android:layout_width="wrap_content"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="10dip" >
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center_vertical"
-            android:paddingLeft="1dip">
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <TextView
-                android:id="@+id/description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <TextView
-                android:id="@+id/email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
-
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary" />
     </LinearLayout>
 
-    <include layout="@layout/accounts_folders_icons"/>
+    <TextView
+        android:id="@+id/size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dip"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?android:attr/textColorSecondary" />
+
+    <TextView
+        android:id="@+id/new_message_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#999999" />
 
     <LinearLayout
-            android:id="@+id/folder_button_wrapper"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
+        android:id="@+id/active_icons"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
 
         <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="2dip"
-                android:layout_marginRight="4dip"
-                android:background="?attr/compatDividerVertical"
-                android:layout_alignParentTop="true"/>
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="7dip"
+            android:layout_marginLeft="2dip"
+            android:layout_marginTop="7dip"
+            android:background="?attr/compatDividerVertical" />
 
-        <ImageButton
-                android:id="@+id/folders"
-                android:gravity="center_vertical"
-                android:focusable="false"
-                android:layout_marginRight="3dip"
-                android:src="?attr/iconFolder"
-                android:background="?attr/compatSelectableItemBackground"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:padding="8dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                />
-
+        <TextView
+            android:id="@+id/encrypt_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            android:background="@drawable/ic_button_lock"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#000000" />
     </LinearLayout>
+
 </LinearLayout>

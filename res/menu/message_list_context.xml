@@ -3,19 +3,19 @@
     <item
         android:id="@+id/delete"
         android:title="@string/delete_action"
-        android:showAsAction="always"
+        android:showAsAction="always|withText"
         android:icon="?attr/iconActionDelete"
     />
     <item
         android:id="@+id/mark_as_read"
         android:title="@string/mark_as_read_action"
-        android:showAsAction="always"
+        android:showAsAction="always|withText"
         android:icon="?attr/iconActionMarkAsRead"
     />
     <item
         android:id="@+id/mark_as_unread"
         android:title="@string/mark_as_unread_action"
-        android:showAsAction="always"
+        android:showAsAction="always|withText"
         android:icon="?attr/iconActionMarkAsUnread"
     />
     <item
@@ -36,18 +36,6 @@
         android:icon="?attr/iconActionCopy"
     />
     <item
-        android:id="@+id/flag"
-        android:title="@string/flag_action"
-        android:showAsAction="ifRoom"
-        android:icon="?attr/iconActionFlag"
-    />
-    <item
-        android:id="@+id/unflag"
-        android:title="@string/unflag_action"
-        android:showAsAction="ifRoom"
-        android:icon="?attr/iconActionUnflag"
-    />
-    <item
         android:id="@+id/spam"
         android:title="@string/spam_action"
         android:showAsAction="ifRoom"
@@ -56,7 +44,13 @@
     <item
         android:id="@+id/select_all"
         android:icon="?attr/iconActionSelectAll"
-        android:showAsAction="never"
+        android:showAsAction="always|withText"
         android:title="@string/batch_select_all"
+    />
+    <item
+        android:id="@+id/select_nothing"
+        android:icon="?attr/iconActionSelectAll"
+        android:showAsAction="always|withText"
+        android:title="@string/batch_unselect_all"
     />
 </menu>

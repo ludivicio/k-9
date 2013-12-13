@@ -1,255 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.fsck.k9.view.MessageHeader
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<org.ancode.secmail.view.MessageHeader xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/header_container"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <!-- Color chip -->
-        <View
-            android:id="@+id/chip"
-            android:layout_width="8dip"
-            android:layout_height="match_parent" />
+        android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/subject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="3"
                 android:ellipsize="end"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:maxLines="3"
+                android:padding="8dp"
                 android:text="@string/general_no_subject"
-                android:padding="8dp" />
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="18sp"
+                android:textStyle="normal" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="vertical" >
 
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="horizontal" >
 
-                    <QuickContactBadge
-                        android:id="@+id/contact_badge"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginLeft="8dp" />
+                    <RelativeLayout
+                        android:layout_width="0dip"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="2dp"
+                        android:layout_weight="1"
+                        android:padding="5dip" >
 
-                    <!-- State icons -->
+                        <!-- From -->
+                        <TextView
+                            android:id="@+id/from_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBaseline="@+id/from"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:paddingRight="4dp"
+                            android:paddingTop="2dp"
+                            android:text="@string/message_from_label"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:textSize="15sp"
+                            android:textStyle="normal" />
+
+                        <TextView
+                            android:id="@+id/from"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@id/from_label"
+                            android:ellipsize="end"
+                            android:paddingRight="6dip"
+                            android:singleLine="true"
+                            android:text="@string/general_no_sender"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:textSize="15sp"
+                            android:textStyle="normal" />
+
+                        <!-- To -->
+                        <TextView
+                            android:id="@+id/to_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBaseline="@+id/to"
+                            android:layout_alignLeft="@+id/from_label"
+                            android:paddingRight="4dp"
+                            android:paddingTop="2dp"
+                            android:text="@string/message_to_label"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:textSize="15sp"
+                            android:textStyle="normal" />
+
+                        <TextView
+                            android:id="@+id/to"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/from"
+                            android:layout_toRightOf="@+id/to_label"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:paddingTop="2dp"
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:textSize="15sp" />
+
+                        <!-- CC -->
+                        <TextView
+                            android:id="@+id/cc_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBaseline="@+id/cc"
+                            android:layout_alignLeft="@+id/to_label"
+                            android:layout_below="@+id/to_label"
+                            android:paddingRight="4dp"
+                            android:paddingTop="2dp"
+                            android:text="@string/message_view_cc_label"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:textSize="15sp"
+                            android:textStyle="normal" />
+
+                        <TextView
+                            android:id="@+id/cc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/to"
+                            android:layout_toRightOf="@+id/cc_label"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:paddingTop="2dp"
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:textSize="15sp" />
+                    </RelativeLayout>
+
+                    <View
+                        android:id="@+id/cryptStatus"
+                        android:layout_width="22sp"
+                        android:layout_height="22sp"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_marginRight="5dip"
+                        android:background="@drawable/ic_email_unlock" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
                     <LinearLayout
                         android:id="@+id/icon_container"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dip"
-                        android:layout_marginBottom="2dip"
-                        android:layout_below="@+id/contact_badge"
-                        android:layout_centerHorizontal="true"
-                        android:orientation="vertical" >
+                        android:orientation="horizontal"
+                        android:padding="5dip" >
 
                         <View
                             android:id="@+id/answered"
-                            android:layout_width="32sp"
-                            android:layout_height="32sp"
-                            android:paddingRight="2dip"
-                            android:background="@drawable/ic_email_answered_small" />
+                            android:layout_width="22sp"
+                            android:layout_height="22sp"
+                            android:background="@drawable/ic_email_answered_small"
+                            android:paddingRight="2dip" />
 
                         <View
                             android:id="@+id/forwarded"
                             android:layout_width="22sp"
                             android:layout_height="22sp"
-                            android:paddingRight="4dip"
-                            android:background="@drawable/ic_email_forwarded_small" />
-
+                            android:background="@drawable/ic_email_forwarded_small"
+                            android:paddingRight="4dip" />
                     </LinearLayout>
 
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="6dip"
-                    android:layout_marginLeft="2dp" >
-
-                    <!-- From -->
-                    <TextView
-                        android:id="@+id/from"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_toLeftOf="@+id/flagged"
-                        android:paddingTop="0dp"
-                        android:paddingRight="6dip"
-                        android:singleLine="true"
-                        android:ellipsize="end"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textStyle="bold"
-                        android:text="@string/general_no_sender" />
-                    
-                    <!-- To -->
-                    <TextView
-                        android:id="@+id/to_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/from"
-                        android:layout_alignBaseline="@+id/to"
-                        android:paddingTop="2dp"
-                        android:paddingRight="4dp"
-                        android:text="@string/message_to_label"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textAppearance="@android:style/TextAppearance.Medium"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/to"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/to_label"
-                        android:layout_below="@+id/from"
-                        android:layout_toLeftOf="@+id/flagged"
-                        android:maxLines="2"
-                        android:ellipsize="end"
-                        android:paddingTop="2dp"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:textAppearance="@android:style/TextAppearance.Medium" />
-                    
-                    <!-- CC -->
-                    <TextView
-                        android:id="@+id/cc_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/to_label"
-                        android:layout_alignLeft="@+id/to_label"
-                        android:layout_alignBaseline="@+id/cc"
-                        android:paddingTop="2dp"
-                        android:paddingRight="4dp"
-                        android:text="@string/message_view_cc_label"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textStyle="bold"
-                        android:textAppearance="@android:style/TextAppearance.Medium" />
-                    
-                    <TextView
-                        android:id="@+id/cc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/cc_label"
-                        android:layout_below="@+id/to"
-                        android:layout_toLeftOf="@+id/flagged"
-                        android:maxLines="2"
-                        android:ellipsize="end"
-                        android:paddingTop="2dp"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:textAppearance="@android:style/TextAppearance.Medium" />
-                    
                     <!-- Date -->
                     <TextView
                         android:id="@+id/date"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/cc"
-                        android:layout_alignParentRight="true"
-                        android:paddingTop="8dp"
-                        android:singleLine="true"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_marginRight="2dip"
+                        android:layout_weight="1"
                         android:ellipsize="none"
+                        android:gravity="right"
+                        android:padding="5dip"
+                        android:singleLine="true"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary" />
-
-                    <CheckBox
-                        android:id="@+id/flagged"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignTop="@id/from"
-                        android:focusable="false"
-                        style="?android:attr/starStyle"
-                        android:checked="false" />
-
-                </RelativeLayout>
-
+                </LinearLayout>
             </LinearLayout>
 
             <TextView
                 android:id="@+id/additional_headers_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dip"
                 android:layout_margin="8dp"
                 android:layout_marginRight="6dip"
-                android:singleLine="false"
+                android:layout_weight="1"
                 android:ellipsize="none"
-                android:textColor="?android:attr/textColorSecondary"
+                android:singleLine="false"
                 android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textIsSelectable="true" />
+        </LinearLayout>
+        <!-- </LinearLayout> -->
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="@drawable/divider_horizontal_email" />
+
+        <!-- Button area -->
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:gravity="right"
+            android:paddingLeft="6dip"
+            android:paddingRight="6dip"
+            android:paddingTop="4dip" >
+
+            <Button
+                android:id="@+id/show_pictures"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:layout_marginLeft="6dip"
+                android:text="@string/message_view_show_pictures_action"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/show_attachments"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:layout_marginLeft="6dip"
+                android:text="@string/message_view_show_attachments_action"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/show_message"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dip"
+                android:layout_marginLeft="6dip"
+                android:text="@string/message_view_show_message_action"
+                android:visibility="gone" />
         </LinearLayout>
 
+        <include layout="@layout/message_view_crypto_layout" />
     </LinearLayout>
 
-    <View
-        android:layout_height="1dip"
-        android:layout_width="match_parent"
-        android:layout_alignParentLeft="true"
-        android:background="@drawable/divider_horizontal_email" />
-
-    <!-- Button area -->
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="right"
-        android:paddingLeft="6dip"
-        android:paddingRight="6dip"
-        android:paddingTop="4dip"
-        android:baselineAligned="false" >
-        
-        <Button
-            android:id="@+id/show_pictures"
-            android:layout_width="wrap_content"
-            android:visibility="gone"
-            android:layout_marginLeft="6dip"
-            android:layout_marginBottom="4dip"
-            android:layout_height="wrap_content"
-            android:text="@string/message_view_show_pictures_action"
-            style="?android:attr/buttonStyleSmall" />
-        
-        <Button
-            android:id="@+id/show_attachments"
-            android:visibility="gone"
-            android:layout_marginLeft="6dip"
-            android:layout_marginBottom="4dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/message_view_show_attachments_action"
-            style="?android:attr/buttonStyleSmall" />
-
-        <Button
-            android:id="@+id/show_message"
-            android:visibility="gone"
-            android:layout_marginLeft="6dip"
-            android:layout_marginBottom="4dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/message_view_show_message_action"
-            style="?android:attr/buttonStyleSmall" />
-
-    </LinearLayout>
-
-    <include layout="@layout/message_view_crypto_layout" />
-
-</com.fsck.k9.view.MessageHeader>
+</org.ancode.secmail.view.MessageHeader>

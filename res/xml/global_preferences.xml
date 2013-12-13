@@ -17,7 +17,7 @@
 <!--
   Make sure to add android:persistent="false" to all preferences to disable saving
   the preference values to SharedPreferences. We use our own storage mechanism for
-  the preferences. See com.fsck.k9.preferences.Storage.
+  the preferences. See org.ancode.secmail.preferences.Storage.
 
   Also note that every sub-PreferenceScreen needs an "android:key" parameter so the correct screen
   can be displayed after the device has been rotated.
@@ -227,7 +227,7 @@
                 android:title="@string/global_settings_messageview_fixedwidth_label"
                 android:summary="@string/global_settings_messageview_fixedwidth_summary" />
 
-            <com.fsck.k9.preferences.CheckBoxListPreference
+            <org.ancode.secmail.preferences.CheckBoxListPreference
                 android:persistent="false"
                 android:key="messageview_visible_refile_actions"
                 android:title="@string/global_settings_messageview_visible_refile_actions_title"
@@ -268,7 +268,7 @@
             android:title="@string/gestures_title"
             android:summary="@string/gestures_summary" />
 
-        <com.fsck.k9.preferences.CheckBoxListPreference
+        <org.ancode.secmail.preferences.CheckBoxListPreference
             android:persistent="false"
             android:key="volumeNavigation"
             android:title="@string/volume_navigation_title"
@@ -288,7 +288,7 @@
             android:title="@string/global_settings_messageview_show_next_label"
             android:summary="@string/global_settings_messageview_show_next_summary" />
 
-        <com.fsck.k9.preferences.CheckBoxListPreference
+        <org.ancode.secmail.preferences.CheckBoxListPreference
             android:persistent="false"
             android:key="confirm_actions"
             android:title="@string/global_settings_confirm_actions_title"
@@ -309,14 +309,14 @@
             android:title="@string/quiet_time"
             android:summary="@string/quiet_time_description"
             />
-        <com.fsck.k9.preferences.TimePickerPreference
+        <org.ancode.secmail.preferences.TimePickerPreference
             android:key="quiet_time_starts"
             android:persistent="false"
             android:dependency="quiet_time_enabled"
             android:dialogTitle="@string/quiet_time_starts"
             android:title="@string/quiet_time_starts"
             />
-        <com.fsck.k9.preferences.TimePickerPreference
+        <org.ancode.secmail.preferences.TimePickerPreference
             android:key="quiet_time_ends"
             android:dependency="quiet_time_enabled"
             android:persistent="false"
