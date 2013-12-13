@@ -3,7 +3,11 @@ package org.ancode.secmail.activity.setup;
 import java.util.ArrayList;
 
 import org.ancode.secmail.R;
+import org.ancode.secmail.activity.Accounts;
 import org.ancode.secmail.activity.K9Activity;
+
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +24,7 @@ public class AccountSetupSelection extends K9Activity implements OnItemClickList
 
 	private static final String PACKAGE_NAME = "org.ancode.secmail";
 	private ListView mListView;
+	private MenuItem importSettings;
 	private EmailProviderAdapter adapter;
 	private String[] emailTypes = null;
 
@@ -44,6 +49,14 @@ public class AccountSetupSelection extends K9Activity implements OnItemClickList
 		mListView.setAdapter(adapter);
 		mListView.setOnItemClickListener(this);
 		
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+        getSupportMenuInflater().inflate(R.menu.accounts_setup_selection_option, menu);
+        importSettings = menu.findItem(R.id.import_settings);
+        return true;
 	}
 
 	class EmailProviderAdapter extends BaseAdapter {
@@ -97,5 +110,16 @@ public class AccountSetupSelection extends K9Activity implements OnItemClickList
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		AccountSetupBasics.actionNewAccount(this, emailTypes[position]);
+	}
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+		if(item.getItemId() == R.id.import_settings) {
+			Accounts.importSettings(this);
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
+		return false;
+	
 	}
 }

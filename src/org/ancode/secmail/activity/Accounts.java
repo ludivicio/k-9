@@ -442,7 +442,8 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         if (ACTION_IMPORT_SETTINGS.equals(intent.getAction())) {
             onImport();
         } else if (accounts.length < 1) {
-            WelcomeMessage.showWelcomeMessage(this);
+        	AccountSetupSelection.actionChooseEmailProvider(this);
+//            WelcomeMessage.showWelcomeMessage(this);
             finish();
             return;
         }
