@@ -26,7 +26,6 @@ import org.ancode.secmail.activity.misc.NonConfigurationInstance;
 import org.ancode.secmail.activity.setup.AccountSettings;
 import org.ancode.secmail.activity.setup.AccountSetupSelection;
 import org.ancode.secmail.activity.setup.Prefs;
-import org.ancode.secmail.activity.setup.WelcomeMessage;
 import org.ancode.secmail.controller.MessagingController;
 import org.ancode.secmail.helper.SizeFormatter;
 import org.ancode.secmail.mail.ServerSettings;
@@ -269,7 +268,11 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 		public void handleMessage(Message msg) {
 			
 			if( msg.what == 0x001 ) {
-				CryptoguardUiHelper.openProtectDialog(Accounts.this);
+				Account account = null;
+				if(msg.obj instanceof Account) {
+					account = (Account)msg.obj;
+				}
+				CryptoguardUiHelper.openProtectDialog(Accounts.this, account);
 			}
 			
 			super.handleMessage(msg);

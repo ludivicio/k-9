@@ -997,6 +997,8 @@
     <string name="account_cryptoguard_nexttime">下次吧</string>
     <string name="account_cryptoguard_apply_success">申请成功</string>
     <string name="account_cryptoguard_activate_tip">密码保护功能申请成功，您需要到填写的邮箱或短信中激活该功能！</string>
+    <string name="account_cryptoguard_apply_failed">申请失败</string>
+    <string name="account_cryptoguard_failed_tip">申请失败，您可以在设置选项中重新进行申请。</string>
     <string name="account_cryptoguard_apply">申请</string>
     <string name="account_cryptoguard_ok">确定</string>
     <string name="account_cryptoguard_cancel">取消</string>

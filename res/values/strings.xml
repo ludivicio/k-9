@@ -1023,8 +1023,10 @@ http://k9mail.googlecode.com/</string>
     <string name="account_cryptoguard_openup_tip">Normal use E-mail encryption, whether to open the password protection function now?</string>
     <string name="account_cryptoguard_open_now">Open now</string>
     <string name="account_cryptoguard_nexttime">Next time</string>
-    <string name="account_cryptoguard_apply_success">Applied Successfully.</string>
+    <string name="account_cryptoguard_apply_success">Apply Successfully.</string>
     <string name="account_cryptoguard_activate_tip">Cryptoguard function is successful, you need to activate the feature in the fill email or sms message.</string>
+    <string name="account_cryptoguard_apply_failed">Apply Failed.</string>
+    <string name="account_cryptoguard_failed_tip">Apply failed, you can re-apply it in the setting option.</string>
     <string name="account_cryptoguard_apply">Apply</string>
     <string name="account_cryptoguard_ok">OK</string>
     <string name="account_cryptoguard_cancel">Cancel</string>

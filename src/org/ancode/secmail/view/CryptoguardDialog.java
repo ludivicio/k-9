@@ -9,6 +9,7 @@ import org.ancode.secmail.mail.crypto.v2.AsyncHttpTools;
 import org.ancode.secmail.mail.crypto.v2.HttpPostUtil;
 import org.ancode.secmail.mail.crypto.v2.PostResultV2;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -163,6 +164,8 @@ public class CryptoguardDialog extends Dialog implements OnClickListener,
 				@Override
 				public void callBack(PostResultV2 result) {
 					
+					CryptoguardDialog.this.dismiss();
+					
 					if (result == null) {
 						Toast.makeText(
 								context,
@@ -173,19 +176,29 @@ public class CryptoguardDialog extends Dialog implements OnClickListener,
 					
 					if (result.isSuccess()) {
 						account.setVerification(protect);
+						AlertDialog.Builder builder = new AlertDialog.Builder(context);
+						builder.setTitle(getString(context,
+								R.string.account_cryptoguard_apply_success));
+						builder.setMessage(getString(context,
+								R.string.account_cryptoguard_activate_tip));
+						builder.setPositiveButton(
+								getString(context, R.string.account_cryptoguard_ok), null);
+						builder.create().show();
+					} else {
+						AlertDialog.Builder builder = new AlertDialog.Builder(context);
+						builder.setTitle(getString(context,
+								R.string.account_cryptoguard_apply_failed));
+						builder.setMessage(getString(context,
+								R.string.account_cryptoguard_failed_tip));
+						builder.setPositiveButton(
+								getString(context, R.string.account_cryptoguard_ok), null);
+						builder.create().show();
 					}
+					
+					
 				}
 			});
 			
-//			PostResultV2 pr = HttpPostUtil.postProtectRequest(account, type,
-//					protect);
-//
-//			setPostResult(pr);
-//
-//			if (pr.isSuccess()) {
-//				account.setVerification(protect);
-//			}
-
 		} else if (v.getId() == btnCancel.getId()) {
 
 			CryptoguardDialog.this.dismiss();
@@ -193,6 +206,13 @@ public class CryptoguardDialog extends Dialog implements OnClickListener,
 		}
 	}
 
+	private static String getString(Context context, int id) {
+		if (context != null) {
+			return context.getString(id);
+		}
+		return null;
+	}
+	
 	public static boolean verifyPhone(String phoneNumber) {
 		Pattern p = Pattern
 				.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
@@ -201,7 +221,7 @@ public class CryptoguardDialog extends Dialog implements OnClickListener,
 	}
 
 	public static boolean verifyEmail(String email) {
-		String str = "^([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)*@([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+[\\.][A-Za-z]{2,3}([\\.][A-Za-z]{2})?$";
+		String str = "^([a-zA-Z0-9]*[\\.-_]?[a-zA-Z0-9]+)*@([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+[\\.][A-Za-z]{2,3}([\\.][A-Za-z]{2})?$";
 		Pattern p = Pattern.compile(str);
 		Matcher m = p.matcher(email);
 		return m.matches();

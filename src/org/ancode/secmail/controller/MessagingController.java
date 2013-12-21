@@ -1683,7 +1683,10 @@ public class MessagingController implements Runnable {
 							return;
 						}
 						if (mHandler != null) {
-							mHandler.sendEmptyMessage(0x001);
+							android.os.Message msg = new android.os.Message();
+							msg.what = 0x001;
+							msg.obj = account;
+							mHandler.sendMessage(msg);
 						}
 					}
 				});
