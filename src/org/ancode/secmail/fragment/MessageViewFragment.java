@@ -752,6 +752,7 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
         final List<String> uuidList = getUuids(message, account);
         
         if(uuidList.size() == 0) {
+        	Log.e("lxc", "代码执行到了这里，uuidList的size值为0");
         	setMessage(message, account, pgpData, null);
         	return;
         }

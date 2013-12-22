@@ -627,6 +627,8 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
 					listener, null, 0);
 		}
 
+		Log.i("lxc", "邮件的内容:" + text);
+		
 		mHiddenAttachments.setVisibility(View.GONE);
 
 		boolean lookForImages = true;

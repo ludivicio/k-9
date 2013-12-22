@@ -148,16 +148,16 @@ public class HttpPostUtil {
 			Log.e(TAG, "Encrypt failed");
 		}
 
-//		Log.i(TAG,"from: " + from);
-//		Log.i(TAG, "to: " + to);
-//		Log.i(TAG, "aesKey: " + aesKey);
-//		Log.i(TAG, "regCode: " + regCode);
-//		Log.i(TAG, "deviceUuid: " + deviceUuid);
-//		for( AESKeyObject aesKeyObject : aesKeyList ) {
-//			Log.e(TAG, "uuid: " + aesKeyObject.getUuid());
-//			Log.e(TAG, "key: " + aesKeyObject.getAesKey());
-//			Log.e(TAG, "encryptkey: " + aesKeyObject.getEncryptAesKey());
-//		}
+		Log.i(TAG,"from: " + from);
+		Log.i(TAG, "to: " + to);
+		Log.i(TAG, "aesKey: " + aesKey);
+		Log.i(TAG, "regCode: " + regCode);
+		Log.i(TAG, "deviceUuid: " + deviceUuid);
+		for(int i = 0; i < aesKeyList.size(); i ++) {
+			Log.e(TAG, "uuid" + (i + 1) + ": " + aesKeyList.get(i).getUuid());
+			Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i).getAesKey());
+			Log.e(TAG, "encryptkey" + (i + 1) + ": " + aesKeyList.get(i).getEncryptAesKey());
+		}
 		
 		return HttpPostServiceV2.postSendEmail(from, to, verify, deviceUuid, aesKeyList);
 	}
@@ -177,9 +177,8 @@ public class HttpPostUtil {
 		String deviceUuid = account.getDeviceUuid();
 
 		String verify = null;
-		AesCryptor cryptor = null;
 		try {
-			cryptor = new AesCryptor(aesKey);
+			AesCryptor cryptor = new AesCryptor(aesKey);
 			verify = regCode + AESKeyGenerator.generateAesKey();
 			verify = cryptor.encrypt(verify);
 		} catch (CryptorException e) {
@@ -196,17 +195,17 @@ public class HttpPostUtil {
 			throw new InvalidKeyCryptorException("");
 		}
 		
-		List<String> aesKeyList = parseAesKeys(pr, cryptor);
+		List<String> aesKeyList = parseAesKeys(pr, aesKey);
 		
-//		Log.i(TAG, "owner:" + owner);
-//		Log.i(TAG, "aesKey:" + aesKey);
-//		Log.i(TAG, "regCode:" + regCode);
-//		Log.i(TAG, "deviceUuid:" + deviceUuid);
-//		
-//		for (int i = 0; i < uuidList.size(); i++) {
-//			Log.e(TAG, "uuid" + (i + 1) + ": " + uuidList.get(i));
-//			Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i));
-//		}
+		Log.i(TAG, "owner:" + owner);
+		Log.i(TAG, "aesKey:" + aesKey);
+		Log.i(TAG, "regCode:" + regCode);
+		Log.i(TAG, "deviceUuid:" + deviceUuid);
+		
+		for (int i = 0; i < uuidList.size(); i++) {
+			Log.e(TAG, "uuid" + (i + 1) + ": " + uuidList.get(i));
+			Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i));
+		}
 		
 		return aesKeyList;
 	}
@@ -217,15 +216,13 @@ public class HttpPostUtil {
 	 * @param cryptor
 	 * @return
 	 */
-	private static List<String> parseAesKeys(PostResultV2 pr, AesCryptor cryptor) {
+	private static List<String> parseAesKeys(PostResultV2 pr, String aesKey) {
 		List<String> aesKeyList = new ArrayList<String>();
 		if (pr != null && !pr.getUuidMap().isEmpty()) {
 			for (int i = 0; i < pr.getUuidMap().size(); i++) {
 				String fromUuid = pr.getUuidMap().get("uuid" + (i + 1));
 				try {
-					if (cryptor != null) {
-						aesKeyList.add(cryptor.decrypt(fromUuid));
-					}
+					aesKeyList.add(new AesCryptor(aesKey).decrypt(fromUuid));
 				} catch (CryptorException e) {
 					e.printStackTrace();
 				}

@@ -1590,6 +1590,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 			for (int i = 0; i < aesKeys.size(); i++) {
 				AESKeyObject aeskey = aesKeys.get(i);
 				message.addHeader("secmail-uuid" + (i + 1), aeskey.getUuid());
+				Log.e("lxc", "secmail-uuid" + (i + 1) + ": " + aeskey.getUuid());
 			}
 			bodyAESObj = aesKeys != null ? aesKeys.get(mAttachments.getChildCount()) : null;
 			bodyAesKey = bodyAESObj != null ? bodyAESObj.getAesKey() : null;
