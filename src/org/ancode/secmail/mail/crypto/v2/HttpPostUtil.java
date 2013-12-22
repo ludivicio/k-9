@@ -11,6 +11,8 @@ import android.util.Log;
 
 public class HttpPostUtil {
 
+	public static final String TAG = "HttpPostUtil";
+	
 	/**
 	 * 
 	 * @param account
@@ -32,7 +34,7 @@ public class HttpPostUtil {
 			key = RSACryptor.getInstance(context).encrypt(aesKey);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.e("lxc", "encrypt aeskey failed!");
+			Log.e(TAG, "encrypt aeskey failed!");
 		}
 
 		// 3. Post the request to server.
@@ -58,21 +60,19 @@ public class HttpPostUtil {
 
 		String key = null;
 		try {
-			AesCryptor aesCryptor = new AesCryptor(aesKey);
-			regCode = aesCryptor.decrypt(regCode);
-			
+			AesCryptor cryptor = new AesCryptor(aesKey);
+			regCode = cryptor.decrypt(regCode);
 			account.setRegCode(regCode);
-			
 			String mergeKey = regCode + deviceUuid;
-			byte[] encryptData = aesCryptor.encrypt(mergeKey.getBytes());
+			byte[] encryptData = cryptor.encrypt(mergeKey.getBytes());
 			key = AesCryptor.byteToHex(encryptData);
 		} catch (CryptorException e) {
-			Log.e("lxc", "get the encrypted key failed!");
+			Log.e(TAG, "get the encrypted key failed!");
 		}
 
-//		Log.i("lxc", "aesKey: " + aesKey);
-//		Log.i("lxc", "regCode: " + regCode);
-//		Log.i("lxc", "deviceUuid: " + deviceUuid);
+//		Log.i(TAG, "aesKey: " + aesKey);
+//		Log.i(TAG, "regCode: " + regCode);
+//		Log.i(TAG, "deviceUuid: " + deviceUuid);
 
 		return HttpPostServiceV2.postRegConfirm(account.getEmail(), key,
 				deviceUuid);
@@ -104,22 +104,20 @@ public class HttpPostUtil {
 			return null;
 		}
 		
-//		Log.i("lxc", "email: " + email);
-//		Log.i("lxc", "aesKey: " + aesKey);
-//		Log.i("lxc", "regCode: " + regCode);
-//		Log.i("lxc", "deviceUuid: " + deviceUuid);
-//		Log.i("lxc", "protect: " + protect);
-		
 		try {
-			AesCryptor cryptor = new AesCryptor(aesKey);
 			verify = regCode + AESKeyGenerator.generateAesKey();
-			verify = cryptor.encrypt(verify);
-			protect = cryptor.encrypt(verification);
+			verify = new AesCryptor(aesKey).encrypt(verify);
+			protect = new AesCryptor(aesKey).encrypt(verification);
 		} catch (CryptorException e) {
-			Log.e("lxc", "get the encrypted key failed!");
+			Log.e(TAG, "get the encrypted key failed!");
 		}
-
-		Log.i("lxc", "verify: " + verify);
+		
+//		Log.i(TAG, "email: " + email);
+//		Log.i(TAG, "aesKey: " + aesKey);
+//		Log.i(TAG, "regCode: " + regCode);
+//		Log.i(TAG, "deviceUuid: " + deviceUuid);
+//		Log.i(TAG, "protect: " + protect);
+//		Log.i(TAG, "verify: " + verify);
 		
 		return HttpPostServiceV2.postProtectRequest(email, type, protect, verify, deviceUuid);
 	}
@@ -138,36 +136,30 @@ public class HttpPostUtil {
 		String regCode = account.getRegCode();
 		String deviceUuid = account.getDeviceUuid();
 
-		int size = aesKeyList.size();
-		String[] uuids = new String[size];
-		String[] keys = new String[size];
-
 		String verify = null;
 
 		try {
-			AesCryptor cryptor = new AesCryptor(aesKey);
 			verify = regCode + AESKeyGenerator.generateAesKey();
-			verify = cryptor.encrypt(verify);
-			for (int i = 0; i < size; i++) {
-				AESKeyObject aesKeyOjbect = aesKeyList.get(i);
-				uuids[i] = aesKeyOjbect.getUuid();
-				keys[i] = cryptor.encrypt(aesKeyOjbect.getAesKey());
+			verify = new AesCryptor(aesKey).encrypt(verify);
+			for (AESKeyObject aesKeyObject : aesKeyList) {
+				aesKeyObject.setEncryptAesKey(new AesCryptor(aesKey).encrypt(aesKeyObject.getAesKey()));
 			}
 		} catch (CryptorException e) {
-			Log.e("lxc", "Encrypt failed");
+			Log.e(TAG, "Encrypt failed");
 		}
 
-//		Log.i("lxc","from: " + from);
-//		Log.i("lxc", "to: " + to);
-//		Log.i("lxc", "aesKey: " + aesKey);
-//		Log.i("lxc", "regCode: " + regCode);
-//		Log.i("lxc", "deviceUuid: " + deviceUuid);
-//		for( int i = 0; i < size; i ++) {
-//			Log.i("lxc", "uuid" + (i + 1) + ": " + uuids[i]);
-//			Log.i("lxc", "key:" + (i + 1) + ": " + keys[i]);
+//		Log.i(TAG,"from: " + from);
+//		Log.i(TAG, "to: " + to);
+//		Log.i(TAG, "aesKey: " + aesKey);
+//		Log.i(TAG, "regCode: " + regCode);
+//		Log.i(TAG, "deviceUuid: " + deviceUuid);
+//		for( AESKeyObject aesKeyObject : aesKeyList ) {
+//			Log.e(TAG, "uuid: " + aesKeyObject.getUuid());
+//			Log.e(TAG, "key: " + aesKeyObject.getAesKey());
+//			Log.e(TAG, "encryptkey: " + aesKeyObject.getEncryptAesKey());
 //		}
 		
-		return HttpPostServiceV2.postSendEmail(from, to, verify, deviceUuid, uuids, keys);
+		return HttpPostServiceV2.postSendEmail(from, to, verify, deviceUuid, aesKeyList);
 	}
 
 	/**
@@ -191,7 +183,7 @@ public class HttpPostUtil {
 			verify = regCode + AESKeyGenerator.generateAesKey();
 			verify = cryptor.encrypt(verify);
 		} catch (CryptorException e) {
-			Log.e("lxc", "Encrypt failed");
+			Log.e(TAG, "Encrypt failed");
 		}
 
 		PostResultV2 pr = HttpPostServiceV2.postReceiveEmail(owner, verify, deviceUuid, uuidList);
@@ -204,7 +196,19 @@ public class HttpPostUtil {
 			throw new InvalidKeyCryptorException("");
 		}
 		
-		return parseAesKeys(pr, cryptor);
+		List<String> aesKeyList = parseAesKeys(pr, cryptor);
+		
+//		Log.i(TAG, "owner:" + owner);
+//		Log.i(TAG, "aesKey:" + aesKey);
+//		Log.i(TAG, "regCode:" + regCode);
+//		Log.i(TAG, "deviceUuid:" + deviceUuid);
+//		
+//		for (int i = 0; i < uuidList.size(); i++) {
+//			Log.e(TAG, "uuid" + (i + 1) + ": " + uuidList.get(i));
+//			Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i));
+//		}
+		
+		return aesKeyList;
 	}
 
 	/**
@@ -230,5 +234,4 @@ public class HttpPostUtil {
 
 		return aesKeyList;
 	}
-
 }

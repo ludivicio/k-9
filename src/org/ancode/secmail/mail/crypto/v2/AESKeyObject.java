@@ -2,8 +2,9 @@ package org.ancode.secmail.mail.crypto.v2;
 
 public class AESKeyObject {
 	
-	private String aesKey;
 	private String uuid;
+	private String aesKey;
+	private String encryptAesKey;
 	
 	public AESKeyObject(String aesKey, String uuid){
 		this.aesKey = aesKey;
@@ -21,6 +22,14 @@ public class AESKeyObject {
 	}
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getEncryptAesKey() {
+		return encryptAesKey;
+	}
+
+	public void setEncryptAesKey(String encryptAesKey) {
+		this.encryptAesKey = encryptAesKey;
 	}
 	
 }

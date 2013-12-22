@@ -34,6 +34,8 @@ import android.util.Xml;
 
 public class HttpPostServiceV2 {
 	
+	public static final String TAG = "HttpPostServiceV2";
+	
 	private static HttpClient httpClient;
 	
 	private static final String REG_REQUEST = "https://www.han2011.com/secmail/v2/reg_request";
@@ -91,7 +93,7 @@ public class HttpPostServiceV2 {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.e("lxc", "post the request failed");
+			Log.e(TAG, "post the request failed");
 		}
 		return null;
 	}
@@ -307,14 +309,14 @@ public class HttpPostServiceV2 {
 	 * @return
 	 */
 	public static PostResultV2 postSendEmail(String from, String to,
-			String verify, String deviceUuid, String[] uuids, String[] keys) {
+			String verify, String deviceUuid, List<AESKeyObject> keyList) {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("from", from));
 		params.add(new BasicNameValuePair("to", to));
 		params.add(new BasicNameValuePair("verify", verify));
-		for (int i = 0; i < uuids.length; i++) {
-			params.add(new BasicNameValuePair("uuid" + (i + 1), uuids[i]));
-			params.add(new BasicNameValuePair("key" + (i + 1), keys[i]));
+		for (int i = 0; i < keyList.size(); i++) {
+			params.add(new BasicNameValuePair("uuid" + (i + 1), keyList.get(i).getUuid()));
+			params.add(new BasicNameValuePair("key" + (i + 1), keyList.get(i).getEncryptAesKey()));
 		}
 		params.add(new BasicNameValuePair("device", deviceUuid));
 		InputStream is = post(SEND_EMAIL, params);
@@ -351,7 +353,7 @@ public class HttpPostServiceV2 {
 			AesCryptor cryptor = new AesCryptor(aesKey);
 			String verify = regCode + AESKeyGenerator.generateAesKey();
 			verify = cryptor.encrypt(verify);
-			Log.i("lxc", "verify:" + verify);
+			Log.i(TAG, "verify:" + verify);
 			params.add(new BasicNameValuePair("verify", verify));
 			for (int i = 0; i < uuidList.size(); i++) {
 				params.add(new BasicNameValuePair("uuid" + (i + 1), uuidList
@@ -415,7 +417,7 @@ public class HttpPostServiceV2 {
 				outStream.write(data, 0, count);
 		} catch (IOException e) {
 			e.printStackTrace();
-			Log.e("lxc", "Convert failed!");
+			Log.e(TAG, "Convert failed!");
 		}
 		return new String(outStream.toByteArray());
 	}
