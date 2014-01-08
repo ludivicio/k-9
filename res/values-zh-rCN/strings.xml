@@ -45,7 +45,7 @@
     ]]></string>
     
     <!-- Default signature -->
-    <string name="default_signature">-- \n抱歉暂时无法详细说明。这份邮件是使用安装有鸽子密邮的Android移动设备发送的。</string>
+    <string name="default_signature">-- \n本邮件来自鸽子密邮Android客户端。</string>
 
     <!-- General strings that include the app name -->
     <string name="account_delete_dlg_instructions_fmt">账户“<xliff:g id="account">%s</xliff:g>”将从鸽子密邮中删除。</string>
