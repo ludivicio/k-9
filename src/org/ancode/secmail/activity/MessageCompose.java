@@ -71,7 +71,9 @@ import org.ancode.secmail.mail.store.LocalStore;
 import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBody;
 import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBodyPart;
 import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
+import org.ancode.secmail.mail.store.UnavailableStorageException;
 import org.ancode.secmail.provider.AttachmentProvider;
+import org.ancode.secmail.view.AttachmentView;
 import org.ancode.secmail.view.MessageWebView;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.codec.EncoderUtil;
@@ -1590,7 +1592,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 			for (int i = 0; i < aesKeys.size(); i++) {
 				AESKeyObject aeskey = aesKeys.get(i);
 				message.addHeader("secmail-uuid" + (i + 1), aeskey.getUuid());
-				Log.e("lxc", "secmail-uuid" + (i + 1) + ": " + aeskey.getUuid());
+				Log.i("lxc", "secmail-uuid" + (i + 1) + ": " + aeskey.getUuid());
 			}
 			bodyAESObj = aesKeys != null ? aesKeys.get(mAttachments.getChildCount()) : null;
 			bodyAesKey = bodyAESObj != null ? bodyAESObj.getAesKey() : null;
@@ -1677,9 +1679,54 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             message.addHeader(K9.IDENTITY_HEADER, buildIdentityHeader(body, bodyPlain));
         }
 
+        try {
+			printMessageContent(message);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
         return message;
     }
 
+    private void printMessageContent(MimeMessage message) throws Exception {
+    	Log.i("lxc", "打印headers");
+    	for(String key : message.getHeaderNames()) {
+    		Log.i("lxc", key + " : " + message.getHeader(key));
+    	}
+    	
+    	Log.i("lxc", "打印address");
+    	Address[] address = message.getReplyTo();
+    	for(Address a : address) {
+    		Log.i("lxc", "address:" + a.getAddress());
+    	}
+
+    	MimeMultipart body = null;
+    	if(message.getBody() instanceof MimeMultipart) {
+    		body = (MimeMultipart) message.getBody();
+    		
+    		Log.i("lxc", "打印textbody");
+    		
+    		for(int i = 0; i < body.getCount(); i++) {
+    			MimeBodyPart bodyPart = (MimeBodyPart) body.getBodyPart(i);
+    			
+    			if(bodyPart instanceof LocalStore.LocalAttachmentBodyPart) {
+    				LocalStore.LocalAttachmentBodyPart part = (LocalStore.LocalAttachmentBodyPart) bodyPart;
+    			}
+    		}
+    	}
+    	
+    		
+    	Log.i("lxc", "打印uuid");
+    	for(String key : message.getCryptUUIDMap().keySet()) {
+    		Log.i("lxc", "key: " + key + " value: " + message.getCryptUUIDMap().get(key));
+    	}
+    	
+    	Log.i("lxc", "preview" + message.getPreview());
+    	
+    	Log.i("lxc", "subject: " + message.getSubject());
+    	
+    }
+    
     /**
 	 * Persist mail message in a temp file.
 	 * 
@@ -2200,9 +2247,19 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     private void addAttachment(Uri uri, String contentType) {
     	
+    	Log.i("lxc", "attachmentUri: " + uri.toString());
+    	Log.i("lxc", "contentType: " + contentType);
+    	
     	// modified by lxc at 2013-11-24
     	Attachment attachment = this.buildAttachement(uri, contentType);
         
+    	// modified by lxc at 2014-01-08
+		// 添加对附件大小的限制，先固定为10M，以后可以对大小进行设置
+		if(attachment.size > 10485760) {
+			Toast.makeText(this, "添加失败，附件应小于10M", Toast.LENGTH_LONG).show();
+			return;
+		}
+    	
     	attachment.state = Attachment.LoadingState.URI_ONLY;
         attachment.uri = uri;
         attachment.contentType = contentType;
@@ -2259,7 +2316,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 			Log.v(K9.LOG_TAG, "old attachment.size: " + size);
 		}
 		Log.v(K9.LOG_TAG, "new attachment.size: " + size);
-
+		
 		Attachment attachment = new Attachment();
 		attachment.uri = uri;
 		attachment.contentType = usableContentType;
