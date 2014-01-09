@@ -961,7 +961,7 @@
     <string name="reg_encrypt_confirm_mail_body">欢迎使用鸽子密邮加密邮件系统，您无需回复这封邮件，鸽子密邮会自动处理这封邮件.</string>
     <string name="reg_encrypt_confirm_dialog">正常阅读此邮件及其附件需要开启加密邮件功能，是否开启？</string>
     <string name="encrypt_mail_failed">发送前加密邮件失败，请重试！</string>
-    <string name="encrypt_mail_body_message">这是一封加密邮件，请使用鸽子密邮阅读这封邮件。</string>
+    <string name="encrypt_mail_body_message">这是一封来自鸽子密邮的加密邮件，请使用鸽子密邮打开阅读！如尚未安装，请移步此处（http://www.gezimail.com)下载鸽子密邮。</string>
     <string name="encrypt_mail_encrypted">邮件已经被加密。</string>
     <string name="encrypt_mail_invalid_key">本机的加密验证已经失效，可能是由于您的帐号在其他设备上进行了绑定。</string>
     
