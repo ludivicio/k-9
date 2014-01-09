@@ -170,7 +170,7 @@ public class AccountSettings extends K9PreferenceActivity {
     private CheckBoxPreference mPushPollOnConnect;
     private ListPreference mIdleRefreshPeriod;
     private ListPreference mMaxPushFolders;
-    private boolean mHasCrypto = false;
+//    private boolean mHasCrypto = false;
     private ListPreference mCryptoApp;
     private CheckBoxPreference mCryptoAutoSignature;
     private CheckBoxPreference mCryptoAutoEncrypt;
@@ -688,37 +688,37 @@ public class AccountSettings extends K9PreferenceActivity {
             }
         });
 
-        mHasCrypto = new Apg().isAvailable(this);
-        if (mHasCrypto) {
-            mCryptoApp = (ListPreference) findPreference(PREFERENCE_CRYPTO_APP);
-            mCryptoApp.setValue(String.valueOf(mAccount.getCryptoApp()));
-            mCryptoApp.setSummary(mCryptoApp.getEntry());
-            mCryptoApp.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String value = newValue.toString();
-                    int index = mCryptoApp.findIndexOfValue(value);
-                    mCryptoApp.setSummary(mCryptoApp.getEntries()[index]);
-                    mCryptoApp.setValue(value);
-                    handleCryptoAppDependencies();
-                    if (Apg.NAME.equals(value)) {
-                        Apg.createInstance(null).test(AccountSettings.this);
-                    }
-                    return false;
-                }
-            });
-
-            mCryptoAutoSignature = (CheckBoxPreference) findPreference(PREFERENCE_CRYPTO_AUTO_SIGNATURE);
-            mCryptoAutoSignature.setChecked(mAccount.getCryptoAutoSignature());
-
-            mCryptoAutoEncrypt = (CheckBoxPreference) findPreference(PREFERENCE_CRYPTO_AUTO_ENCRYPT);
-            mCryptoAutoEncrypt.setChecked(mAccount.isCryptoAutoEncrypt());
-
-            handleCryptoAppDependencies();
-        } else {
-            final Preference mCryptoMenu = findPreference(PREFERENCE_CRYPTO);
-            mCryptoMenu.setEnabled(false);
-            mCryptoMenu.setSummary(R.string.account_settings_crypto_apg_not_installed);
-        }
+//        mHasCrypto = new Apg().isAvailable(this);
+//        if (mHasCrypto) {
+//            mCryptoApp = (ListPreference) findPreference(PREFERENCE_CRYPTO_APP);
+//            mCryptoApp.setValue(String.valueOf(mAccount.getCryptoApp()));
+//            mCryptoApp.setSummary(mCryptoApp.getEntry());
+//            mCryptoApp.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+//                public boolean onPreferenceChange(Preference preference, Object newValue) {
+//                    String value = newValue.toString();
+//                    int index = mCryptoApp.findIndexOfValue(value);
+//                    mCryptoApp.setSummary(mCryptoApp.getEntries()[index]);
+//                    mCryptoApp.setValue(value);
+//                    handleCryptoAppDependencies();
+//                    if (Apg.NAME.equals(value)) {
+//                        Apg.createInstance(null).test(AccountSettings.this);
+//                    }
+//                    return false;
+//                }
+//            });
+//
+//            mCryptoAutoSignature = (CheckBoxPreference) findPreference(PREFERENCE_CRYPTO_AUTO_SIGNATURE);
+//            mCryptoAutoSignature.setChecked(mAccount.getCryptoAutoSignature());
+//
+//            mCryptoAutoEncrypt = (CheckBoxPreference) findPreference(PREFERENCE_CRYPTO_AUTO_ENCRYPT);
+//            mCryptoAutoEncrypt.setChecked(mAccount.isCryptoAutoEncrypt());
+//
+//            handleCryptoAppDependencies();
+//        } else {
+//            final Preference mCryptoMenu = findPreference(PREFERENCE_CRYPTO);
+//            mCryptoMenu.setEnabled(false);
+//            mCryptoMenu.setSummary(R.string.account_settings_crypto_apg_not_installed);
+//        }
     }
 
     private void removeListEntry(ListPreference listPreference, String remove) {
@@ -790,11 +790,12 @@ public class AccountSettings extends K9PreferenceActivity {
         mAccount.setReplyAfterQuote(mReplyAfterQuote.isChecked());
         mAccount.setStripSignature(mStripSignature.isChecked());
         mAccount.setLocalStorageProviderId(mLocalStorageProvider.getValue());
-        if (mHasCrypto) {
-            mAccount.setCryptoApp(mCryptoApp.getValue());
-            mAccount.setCryptoAutoSignature(mCryptoAutoSignature.isChecked());
-            mAccount.setCryptoAutoEncrypt(mCryptoAutoEncrypt.isChecked());
-        }
+        
+//        if (mHasCrypto) {
+//            mAccount.setCryptoApp(mCryptoApp.getValue());
+//            mAccount.setCryptoAutoSignature(mCryptoAutoSignature.isChecked());
+//            mAccount.setCryptoAutoEncrypt(mCryptoAutoEncrypt.isChecked());
+//        }
 
         // In webdav account we use the exact folder name also for inbox,
         // since it varies because of internationalization
