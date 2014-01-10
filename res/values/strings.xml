@@ -1031,4 +1031,21 @@ http://k9mail.googlecode.com/</string>
     <string name="account_cryptoguard_ok">OK</string>
     <string name="account_cryptoguard_cancel">Cancel</string>
     
+    <string name="account_attachment_size_failed_tip">Failed to add, attachments should be less than {0}M! For a change, go to "Account Settings -> Sending mail" to set.</string>
+    <string name="account_attachment_size_large_tip">Attachment is too large, the message sent will be relatively slow, please wait patiently.</string>
+    
+    <string name="account_settings_attachment_size_label">Fetch attachment up to</string>
+    <string name="account_settings_attachment_size_1">1M</string>
+    <string name="account_settings_attachment_size_2">2M</string>
+    <string name="account_settings_attachment_size_4">4M</string>
+    <string name="account_settings_attachment_size_8">8M</string>
+    <string name="account_settings_attachment_size_16">16M</string>
+    <string name="account_settings_attachment_size_32">32M</string>
+    <string name="account_settings_attachment_size_64">64M</string>
+    <string name="account_settings_attachment_size_128">128M</string>
+    <string name="account_settings_attachment_size_256">256M</string>
+    <string name="account_settings_attachment_size_512">512M</string>
+    <string name="account_settings_attachment_size_1024">1G</string>
+    <string name="account_settings_attachment_size_any">any size (no limit)</string>
+    
 </resources>

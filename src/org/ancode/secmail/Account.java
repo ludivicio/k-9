@@ -191,6 +191,11 @@ public class Account implements BaseAccount {
     private boolean subscribedFoldersOnly;
     private int maximumPolledMessageAge;
     private int maximumAutoDownloadMessageSize;
+    
+    // modified by lxc at 2014-01-10
+    // The max size of the attachment.
+    private int maximumAttachmentSize;
+    
     // Tracks if we have sent a notification for this account for
     // current set of fetched messages
     private boolean mRingNotified;
@@ -303,6 +308,11 @@ public class Account implements BaseAccount {
         subscribedFoldersOnly = false;
         maximumPolledMessageAge = -1;
         maximumAutoDownloadMessageSize = 32768;
+        
+        // modified by lxc at 2014-01-10
+        // Set default value, 8M
+        maximumAttachmentSize = 8;
+        
         mMessageFormat = DEFAULT_MESSAGE_FORMAT;
         mMessageFormatAuto = DEFAULT_MESSAGE_FORMAT_AUTO;
         mMessageReadReceipt = DEFAULT_MESSAGE_READ_RECEIPT;
@@ -419,6 +429,10 @@ public class Account implements BaseAccount {
         subscribedFoldersOnly = prefs.getBoolean(mUuid + ".subscribedFoldersOnly", false);
         maximumPolledMessageAge = prefs.getInt(mUuid + ".maximumPolledMessageAge", -1);
         maximumAutoDownloadMessageSize = prefs.getInt(mUuid + ".maximumAutoDownloadMessageSize", 32768);
+        
+        // modified by lxc at 2014-01-10
+        maximumAttachmentSize = prefs.getInt(mUuid + ".maximumAttachmentSize", 8);
+        
         mMessageFormat = MessageFormat.valueOf(prefs.getString(mUuid + ".messageFormat", DEFAULT_MESSAGE_FORMAT.name()));
         mMessageFormatAuto = prefs.getBoolean(mUuid + ".messageFormatAuto", DEFAULT_MESSAGE_FORMAT_AUTO);
         if (mMessageFormatAuto && mMessageFormat == MessageFormat.TEXT) {
@@ -590,6 +604,10 @@ public class Account implements BaseAccount {
         editor.remove(mUuid + ".subscribedFoldersOnly");
         editor.remove(mUuid + ".maximumPolledMessageAge");
         editor.remove(mUuid + ".maximumAutoDownloadMessageSize");
+        
+        // modified by lxc at 2014-01-10
+        editor.remove(mUuid + ".maximumAttachmentSize");
+        
         editor.remove(mUuid + ".messageFormatAuto");
         editor.remove(mUuid + ".quoteStyle");
         editor.remove(mUuid + ".quotePrefix");
@@ -754,6 +772,9 @@ public class Account implements BaseAccount {
         editor.putBoolean(mUuid + ".subscribedFoldersOnly", subscribedFoldersOnly);
         editor.putInt(mUuid + ".maximumPolledMessageAge", maximumPolledMessageAge);
         editor.putInt(mUuid + ".maximumAutoDownloadMessageSize", maximumAutoDownloadMessageSize);
+        
+        // modified by lxc at 2014-01-10
+        editor.putInt(mUuid + ".maximumAttachmentSize", maximumAttachmentSize);
         
         // modified by lxc at 2013-11-22
         // for secmail
@@ -1631,6 +1652,22 @@ public class Account implements BaseAccount {
 
     public synchronized void setMaximumAutoDownloadMessageSize(int maximumAutoDownloadMessageSize) {
         this.maximumAutoDownloadMessageSize = maximumAutoDownloadMessageSize;
+    }
+    
+    /**
+     * modified by lxc at 2014-01-10
+     * @param maximumAttachmentSize
+     */
+    public synchronized void setMaximumAttachmentSize(int  maximumAttachmentSize) {
+    	this.maximumAttachmentSize = maximumAttachmentSize;
+    }
+    
+    /**
+     * modified by lxc at 2014-01-10
+     * @return
+     */
+    public synchronized int getMaximumAttachmentSize() {
+    	return maximumAttachmentSize;
     }
 
     public Date getEarliestPollDate() {

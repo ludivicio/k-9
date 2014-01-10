@@ -293,10 +293,10 @@
     <!-- NEW: <string name="global_settings_confirm_action_delete_notif">Delete (from notification)</string> -->
 
 
-    <!-- NEW: <string name="global_settings_notification_hide_subject_title">Hide subject in notifications</string> -->
-    <!-- NEW: <string name="global_settings_notification_hide_subject_never">Never</string> -->
-    <!-- NEW: <string name="global_settings_notification_hide_subject_when_locked">When device is locked</string> -->
-    <!-- NEW: <string name="global_settings_notification_hide_subject_always">Always</string> -->
+    <string name="global_settings_notification_hide_subject_title">在通知栏上隐藏主题</string>
+    <string name="global_settings_notification_hide_subject_never">从不</string>
+    <string name="global_settings_notification_hide_subject_when_locked">当设备锁定时</string>
+    <string name="global_settings_notification_hide_subject_always">总是</string>
 
 
     <!-- NEW: <string name="global_settings_notification_quick_delete_title">Show \'Delete\' button</string> -->
@@ -694,9 +694,11 @@
     <string name="account_settings_signature__location_label">签名位置</string>
     <string name="account_settings_signature__location_before_quoted_text">在引用的文本之前</string>
     <string name="account_settings_signature__location_after_quoted_text">在引用的文本之后</string>
-    <!-- NEW: <string name="setting_theme_global">Use app theme</string> -->
-    <string name="setting_theme_dark">灰暗</string>
-    <string name="setting_theme_light">明亮</string>
+    
+    <!--     <string name="setting_theme_global">Use app theme</string> -->
+	<!--     <string name="setting_theme_dark">灰暗</string> -->
+	<!--     <string name="setting_theme_light">明亮</string> -->
+    
     <string name="display_preferences">显示</string>
     <string name="global_preferences">全局</string>
     <string name="debug_preferences">调试</string>
@@ -706,15 +708,17 @@
     <string name="accountlist_preferences">账户列表</string>
     <string name="messagelist_preferences">邮件列表</string>
     <string name="messageview_preferences">邮件</string>
-    <!-- NEW: <string name="folderlist_preferences">Folder lists</string> -->
-    <string name="settings_theme_label">主题</string>
-    <!-- NEW: <string name="settings_message_theme_label">Message view theme</string> -->
-    <!-- NEW: <string name="settings_compose_theme_label">Composer theme</string> -->
+    
+    <!--     <string name="folderlist_preferences">Folder lists</string> -->
+	<!--     <string name="settings_theme_label">主题</string> -->
+    <!--     <string name="settings_message_theme_label">Message view theme</string> -->
+    <!--     <string name="settings_compose_theme_label">Composer theme</string> -->
+   
     <string name="settings_language_label">语言</string>
 
-    <!-- NEW: <string name="settings_message_theme_selection_label">Fixed message theme</string> -->
-    <!-- NEW: <string name="settings_message_theme_selection_summary_off">Select the message view theme while viewing the message</string> -->
-    <!-- NEW: <string name="settings_message_theme_selection_summary_on">Use a fixed message view theme</string> -->
+    <!--    <string name="settings_message_theme_selection_label">Fixed message theme</string> -->
+    <!--    <string name="settings_message_theme_selection_summary_off">Select the message view theme while viewing the message</string> -->
+    <!--    <string name="settings_message_theme_selection_summary_on">Use a fixed message view theme</string> -->
 
     <string name="settings_messageview_mobile_layout_label">单列布局</string>
     <string name="settings_messageview_mobile_layout_summary">为小屏幕重新布局HTML邮件</string>
@@ -736,8 +740,10 @@
     <string name="account_setup_push_limit_250">二百五十个文件夹</string>
     <string name="account_setup_push_limit_500">五百个文件夹</string>
     <string name="account_setup_push_limit_1000">一千个文件夹</string>
-    <string name="animations_title">动画</string>
-    <string name="animations_summary">使用绚丽的视觉特效</string>
+    
+<!--     <string name="animations_title">动画</string> -->
+<!--     <string name="animations_summary">使用绚丽的视觉特效</string> -->
+
     <string name="gestures_title">手势</string>
     <string name="gestures_summary">接收手势控制</string>
     <string name="volume_navigation_title">音量键导航</string>
@@ -1002,4 +1008,22 @@
     <string name="account_cryptoguard_apply">申请</string>
     <string name="account_cryptoguard_ok">确定</string>
     <string name="account_cryptoguard_cancel">取消</string>
+    
+    <string name="account_attachment_size_failed_tip">添加失败，附件应小于{0}M！ 如需更改，请到“账户设置 -> 发送邮件设置”中进行设置</string>
+    <string name="account_attachment_size_large_tip">附件过大的话，邮件发送会比较慢，请您耐心等待。</string>
+    
+    <string name="account_settings_attachment_size_label">附件的最大尺寸为</string>
+    <string name="account_settings_attachment_size_1">1M</string>
+    <string name="account_settings_attachment_size_2">2M</string>
+    <string name="account_settings_attachment_size_4">4M</string>
+    <string name="account_settings_attachment_size_8">8M</string>
+    <string name="account_settings_attachment_size_16">16M</string>
+    <string name="account_settings_attachment_size_32">32M</string>
+    <string name="account_settings_attachment_size_64">64M</string>
+    <string name="account_settings_attachment_size_128">128M</string>
+    <string name="account_settings_attachment_size_256">256M</string>
+    <string name="account_settings_attachment_size_512">512M</string>
+    <string name="account_settings_attachment_size_1024">1G</string>
+    <string name="account_settings_attachment_size_any">任意（无限制）</string>
+    
 </resources>

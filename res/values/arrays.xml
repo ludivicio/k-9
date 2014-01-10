@@ -751,4 +751,34 @@
         <item>email_provider_outlook</item>
         <item>email_provider_other</item>
     </string-array>
+    
+    <string-array name="account_settings_attachment_size_entries">
+        <item>@string/account_settings_attachment_size_1</item>
+        <item>@string/account_settings_attachment_size_2</item>
+        <item>@string/account_settings_attachment_size_4</item>
+        <item>@string/account_settings_attachment_size_8</item>
+        <item>@string/account_settings_attachment_size_16</item>
+        <item>@string/account_settings_attachment_size_32</item>
+        <item>@string/account_settings_attachment_size_64</item>
+        <item>@string/account_settings_attachment_size_128</item>
+        <item>@string/account_settings_attachment_size_256</item>
+        <item>@string/account_settings_attachment_size_512</item>
+        <item>@string/account_settings_attachment_size_1024</item>
+        <item>@string/account_settings_attachment_size_any</item>
+    </string-array>
+
+    <string-array name="account_settings_attachment_size_values" translatable="false">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+        <item>16</item>
+        <item>32</item>
+        <item>64</item>
+        <item>128</item>
+        <item>256</item>
+        <item>512</item>
+        <item>1024</item>
+        <item>0</item>
+    </string-array>
 </resources>

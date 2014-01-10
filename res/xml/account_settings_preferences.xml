@@ -189,7 +189,16 @@
             android:key="composition"
             android:summary="@string/account_settings_composition_summary"
             android:title="@string/account_settings_composition_label" />
-
+        
+        <!-- Add the select settings of attachment size -->
+		<ListPreference
+            android:persistent="false"
+            android:key="account_attachment_size"
+            android:title="@string/account_settings_attachment_size_label"
+            android:entries="@array/account_settings_attachment_size_entries"
+            android:entryValues="@array/account_settings_attachment_size_values"
+            android:dialogTitle="@string/account_settings_attachment_size_label" />
+        
         <PreferenceScreen
             android:key="manage_identities"
             android:title="@string/account_settings_identities_label"

@@ -71,9 +71,7 @@ import org.ancode.secmail.mail.store.LocalStore;
 import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBody;
 import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBodyPart;
 import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
-import org.ancode.secmail.mail.store.UnavailableStorageException;
 import org.ancode.secmail.provider.AttachmentProvider;
-import org.ancode.secmail.view.AttachmentView;
 import org.ancode.secmail.view.MessageWebView;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.codec.EncoderUtil;
@@ -2247,19 +2245,31 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
     private void addAttachment(Uri uri, String contentType) {
     	
-    	Log.i("lxc", "attachmentUri: " + uri.toString());
-    	Log.i("lxc", "contentType: " + contentType);
-    	
     	// modified by lxc at 2013-11-24
     	Attachment attachment = this.buildAttachement(uri, contentType);
         
     	// modified by lxc at 2014-01-08
-		// 添加对附件大小的限制，先固定为10M，以后可以对大小进行设置
-		if(attachment.size > 10485760) {
-			Toast.makeText(this, "添加失败，附件应小于10M", Toast.LENGTH_LONG).show();
+		// 获得的附件最大值的单位为M, 需要换算成B
+    	int limitSize = mAccount.getMaximumAttachmentSize();
+
+    	if(limitSize < 0) {
+    		limitSize = 0;
+    	}
+    	
+		if(attachment.size > (limitSize * 1024 * 1024) && limitSize > 0) {
+			String tip = getString(R.string.account_attachment_size_failed_tip);
+			tip = tip.replace("{0}", limitSize + "");
+			Toast.makeText(this, tip, Toast.LENGTH_LONG).show();
 			return;
 		}
-    	
+		
+		// modified by lxc at 2014-01-10
+		// 如果附件大于10M的话，提示用户耐心等待
+		if(attachment.size > 10 * 1024 * 1024) {
+			String tip = getString(R.string.account_attachment_size_large_tip);
+			Toast.makeText(this, tip, Toast.LENGTH_LONG).show();
+		}
+		
     	attachment.state = Attachment.LoadingState.URI_ONLY;
         attachment.uri = uri;
         attachment.contentType = contentType;

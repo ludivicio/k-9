@@ -125,6 +125,14 @@ public class AccountSettings {
                 new V(1, new IntegerResourceSetting(32768,
                         R.array.account_settings_autodownload_message_size_values))
             ));
+        
+        // modified by lxc at 2014-01-10
+        // Set default value, 8M
+        s.put("maximumAttachmentSize", Settings.versions(
+                new V(1, new IntegerResourceSetting(8,
+                        R.array.account_settings_attachment_size_values))
+            ));
+        
         s.put("maximumPolledMessageAge", Settings.versions(
                 new V(1, new IntegerResourceSetting(-1,
                         R.array.account_settings_message_age_values))

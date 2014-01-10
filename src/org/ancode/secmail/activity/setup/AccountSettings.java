@@ -18,7 +18,6 @@ import org.ancode.secmail.activity.ChooseIdentity;
 import org.ancode.secmail.activity.ColorPickerDialog;
 import org.ancode.secmail.activity.K9PreferenceActivity;
 import org.ancode.secmail.activity.ManageIdentities;
-import org.ancode.secmail.crypto.Apg;
 import org.ancode.secmail.mail.Folder;
 import org.ancode.secmail.mail.Store;
 import org.ancode.secmail.mail.store.LocalStore.LocalFolder;
@@ -95,6 +94,10 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_NOTIFICATION_UNREAD_COUNT = "notification_unread_count";
     private static final String PREFERENCE_MESSAGE_AGE = "account_message_age";
     private static final String PREFERENCE_MESSAGE_SIZE = "account_autodownload_size";
+    
+    // modified by lxc at 2014-01-10
+    private static final String PREFERENCE_ATTACHMENT_SIZE = "account_attachment_size";
+    
     private static final String PREFERENCE_MESSAGE_FORMAT = "message_format";
     private static final String PREFERENCE_MESSAGE_READ_RECEIPT = "message_read_receipt";
     private static final String PREFERENCE_QUOTE_PREFIX = "account_quote_prefix";
@@ -103,13 +106,13 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_REPLY_AFTER_QUOTE = "reply_after_quote";
     private static final String PREFERENCE_STRIP_SIGNATURE = "strip_signature";
     private static final String PREFERENCE_SYNC_REMOTE_DELETIONS = "account_sync_remote_deletetions";
-    private static final String PREFERENCE_CRYPTO = "crypto";
-    private static final String PREFERENCE_CRYPTO_APP = "crypto_app";
-    private static final String PREFERENCE_CRYPTO_AUTO_SIGNATURE = "crypto_auto_signature";
-    private static final String PREFERENCE_CRYPTO_AUTO_ENCRYPT = "crypto_auto_encrypt";
+//    private static final String PREFERENCE_CRYPTO = "crypto";
+//    private static final String PREFERENCE_CRYPTO_APP = "crypto_app";
+//    private static final String PREFERENCE_CRYPTO_AUTO_SIGNATURE = "crypto_auto_signature";
+//    private static final String PREFERENCE_CRYPTO_AUTO_ENCRYPT = "crypto_auto_encrypt";
     private static final String PREFERENCE_CLOUD_SEARCH_ENABLED = "remote_search_enabled";
     private static final String PREFERENCE_REMOTE_SEARCH_NUM_RESULTS = "account_remote_search_num_results";
-    private static final String PREFERENCE_REMOTE_SEARCH_FULL_TEXT = "account_remote_search_full_text";
+//    private static final String PREFERENCE_REMOTE_SEARCH_FULL_TEXT = "account_remote_search_full_text";
 
     private static final String PREFERENCE_LOCAL_STORAGE_PROVIDER = "local_storage_provider";
     private static final String PREFERENCE_CATEGORY_FOLDERS = "folders";
@@ -136,6 +139,10 @@ public class AccountSettings extends K9PreferenceActivity {
     private ListPreference mDisplayCount;
     private ListPreference mMessageAge;
     private ListPreference mMessageSize;
+    
+    // modified by lxc at 2014-01-10
+    private ListPreference mAttachmentSize;
+    
     private CheckBoxPreference mAccountDefault;
     private CheckBoxPreference mAccountNotify;
     private CheckBoxPreference mAccountNotifySelf;
@@ -452,6 +459,22 @@ public class AccountSettings extends K9PreferenceActivity {
                 return false;
             }
         });
+        
+        // modified by lxc at 2014-01-10
+        // Set the attachment size.
+        mAttachmentSize = (ListPreference) findPreference(PREFERENCE_ATTACHMENT_SIZE);
+        mAttachmentSize.setValue(String.valueOf(mAccount.getMaximumAttachmentSize()));
+        mAttachmentSize.setSummary(mAttachmentSize.getEntry());
+        mAttachmentSize.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final String summary = newValue.toString();
+                int index = mAttachmentSize.findIndexOfValue(summary);
+                mAttachmentSize.setSummary(mAttachmentSize.getEntries()[index]);
+                mAttachmentSize.setValue(summary);
+                return false;
+            }
+        });
+        
 
         mAccountDefault = (CheckBoxPreference) findPreference(PREFERENCE_DEFAULT);
         mAccountDefault.setChecked(
@@ -763,6 +786,10 @@ public class AccountSettings extends K9PreferenceActivity {
         mAccount.setShowOngoing(mAccountNotifySync.isChecked());
         mAccount.setDisplayCount(Integer.parseInt(mDisplayCount.getValue()));
         mAccount.setMaximumAutoDownloadMessageSize(Integer.parseInt(mMessageSize.getValue()));
+        
+        // modified by lxc at 2014-01-10
+        mAccount.setMaximumAttachmentSize(Integer.parseInt(mAttachmentSize.getValue()));
+        
         if (mAccount.isSearchByDateCapable()) {
             mAccount.setMaximumPolledMessageAge(Integer.parseInt(mMessageAge.getValue()));
         }
