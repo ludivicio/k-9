@@ -243,7 +243,9 @@ public class K9 extends Application {
     private static boolean mStartIntegratedInbox = false;
     private static boolean mMeasureAccounts = true;
     private static boolean mCountSearchMessages = true;
-    private static boolean mHideSpecialAccounts = false;
+    // modified by lxc at 2014-01-10
+    // Hide the special accounts.
+    private static boolean mHideSpecialAccounts = true;
     private static boolean mMobileOptimizedLayout = false;
     private static boolean mAutofitWidth;
     private static boolean mQuietTimeEnabled = false;
