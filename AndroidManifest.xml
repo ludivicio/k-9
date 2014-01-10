@@ -2,7 +2,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:versionCode="19002"
-    android:versionName="4.701" package="org.ancode.secmail"
+    android:versionName="1.701" package="org.ancode.secmail"
     >
     <uses-sdk
        android:minSdkVersion="8"
