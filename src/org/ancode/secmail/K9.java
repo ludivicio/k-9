@@ -709,7 +709,11 @@ public class K9 extends Application {
         mStartIntegratedInbox = sprefs.getBoolean("startIntegratedInbox", false);
         mMeasureAccounts = sprefs.getBoolean("measureAccounts", true);
         mCountSearchMessages = sprefs.getBoolean("countSearchMessages", true);
-        mHideSpecialAccounts = sprefs.getBoolean("hideSpecialAccounts", false);
+       
+        // modified by lxc at 2014-01-11
+        // Set default value.
+        mHideSpecialAccounts = sprefs.getBoolean("hideSpecialAccounts", true);
+       
         mMessageListSenderAboveSubject = sprefs.getBoolean("messageListSenderAboveSubject", false);
         mMessageListCheckboxes = sprefs.getBoolean("messageListCheckboxes", false);
         mMessageListStars = sprefs.getBoolean("messageListStars", true);
