@@ -201,10 +201,11 @@ public class HttpPostUtil {
 		Log.i(TAG, "aesKey:" + aesKey);
 		Log.i(TAG, "regCode:" + regCode);
 		Log.i(TAG, "deviceUuid:" + deviceUuid);
-		
-		for (int i = 0; i < uuidList.size(); i++) {
-			Log.e(TAG, "uuid" + (i + 1) + ": " + uuidList.get(i));
-			Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i));
+		if(aesKeyList != null && aesKeyList.size() == uuidList.size()) {
+			for (int i = 0; i < uuidList.size(); i++) {
+				Log.e(TAG, "uuid" + (i + 1) + ": " + uuidList.get(i));
+				Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i));
+			}	
 		}
 		
 		return aesKeyList;

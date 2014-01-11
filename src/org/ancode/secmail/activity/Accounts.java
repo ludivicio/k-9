@@ -1856,13 +1856,6 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 holder.newMessageCount.setVisibility(unreadMessageCount > 0 ? View.VISIBLE : View.GONE);
                 holder.newMessageCount.setOnClickListener(createUnreadSearchListener(account));
 
-                holder.activeIcons.setOnClickListener(new OnClickListener() {
-                    public void onClick(View v) {
-                        Toast toast = Toast.makeText(getApplication(), getString(R.string.tap_hint), Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                });
-
             }
 
             mFontSizes.setViewTextSize(holder.description, mFontSizes.getAccountName());
