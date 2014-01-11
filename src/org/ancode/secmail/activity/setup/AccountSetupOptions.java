@@ -136,7 +136,7 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
     }
 
     private void onDone() {
-        mAccount.setDescription(mAccount.getEmail());
+        mAccount.setDescription(mAccount.getDescription());
         mAccount.setNotifyNewMail(mNotifyView.isChecked());
         mAccount.setShowOngoing(mNotifySyncView.isChecked());
         mAccount.setAutomaticCheckIntervalMinutes((Integer)((SpinnerOption)mCheckFrequencyView

@@ -609,7 +609,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 //            WelcomeMessage.showWelcomeMessage(this);
 //            finish();
 //        }
-
+        
         List<BaseAccount> newAccounts;
         if (!K9.isHideSpecialAccounts() && accounts.length > 0) {
             if (mUnifiedInboxAccount == null || mAllMessagesAccount == null) {
