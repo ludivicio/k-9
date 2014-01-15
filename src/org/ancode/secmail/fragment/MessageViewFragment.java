@@ -798,6 +798,8 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
 					mAccount.save(Preferences.getPreferences(getActivity()));
 				} else {
 					setMessage(message, account, pgpData, (ArrayList<String>) obj);
+					// Show the download button.
+					mMessageView.setShowDownloadButton(message);
 				}
 			}
 		});

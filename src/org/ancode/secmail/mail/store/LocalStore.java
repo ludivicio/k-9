@@ -2564,9 +2564,7 @@ public class LocalStore extends Store implements Serializable {
                                     html = container.html;
                                     attachments = container.attachments;
                                 } else {
-                                    ViewableContainer container =
-                                            MimeUtility.extractTextAndAttachments(mApplication, message);
-
+                                    ViewableContainer container = MimeUtility.extractTextAndAttachments(mApplication, message);
                                     attachments = container.attachments;
                                     text = container.text;
                                     html = HtmlConverter.convertEmoji2Img(container.html);

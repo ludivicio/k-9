@@ -1196,7 +1196,7 @@ public class MimeUtility {
         return tempBody;
     }
 
-
+   
     /**
      * Empty base class for the class hierarchy used by
      * {@link MimeUtility#extractTextAndAttachments(Context, Message)}.

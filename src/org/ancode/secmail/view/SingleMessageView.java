@@ -1,5 +1,38 @@
 package org.ancode.secmail.view;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.util.List;
+
+import org.ancode.secmail.Account;
+import org.ancode.secmail.K9;
+import org.ancode.secmail.R;
+import org.ancode.secmail.controller.MessagingController;
+import org.ancode.secmail.controller.MessagingListener;
+import org.ancode.secmail.crypto.CryptoProvider;
+import org.ancode.secmail.crypto.PgpData;
+import org.ancode.secmail.fragment.MessageViewFragment;
+import org.ancode.secmail.helper.ClipboardManager;
+import org.ancode.secmail.helper.Contacts;
+import org.ancode.secmail.helper.HtmlConverter;
+import org.ancode.secmail.helper.Utility;
+import org.ancode.secmail.mail.Address;
+import org.ancode.secmail.mail.Flag;
+import org.ancode.secmail.mail.Message;
+import org.ancode.secmail.mail.MessagingException;
+import org.ancode.secmail.mail.Multipart;
+import org.ancode.secmail.mail.Part;
+import org.ancode.secmail.mail.internet.MimeUtility;
+import org.ancode.secmail.mail.store.LocalStore;
+import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBody;
+import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
+import org.ancode.secmail.provider.AttachmentProvider.AttachmentProviderColumns;
+import org.apache.commons.io.IOUtils;
+
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -23,40 +56,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
-import android.view.View.*;
+import android.view.View.OnClickListener;
+import android.view.View.OnCreateContextMenuListener;
 import android.webkit.WebView;
 import android.webkit.WebView.HitTestResult;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import org.ancode.secmail.Account;
-import org.ancode.secmail.K9;
-import org.ancode.secmail.R;
-import org.ancode.secmail.controller.MessagingController;
-import org.ancode.secmail.controller.MessagingListener;
-import org.ancode.secmail.crypto.CryptoProvider;
-import org.ancode.secmail.crypto.PgpData;
-import org.ancode.secmail.fragment.MessageViewFragment;
-import org.ancode.secmail.helper.ClipboardManager;
-import org.ancode.secmail.helper.Contacts;
-import org.ancode.secmail.helper.HtmlConverter;
-import org.ancode.secmail.helper.Utility;
-import org.ancode.secmail.mail.*;
-import org.ancode.secmail.mail.internet.MimeUtility;
-import org.ancode.secmail.mail.store.LocalStore;
-import org.ancode.secmail.mail.store.LocalStore.LocalAttachmentBody;
-import org.ancode.secmail.mail.store.LocalStore.LocalMessage;
-import org.ancode.secmail.provider.AttachmentProvider.AttachmentProviderColumns;
-import org.apache.commons.io.IOUtils;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLDecoder;
-import java.util.List;
 
 public class SingleMessageView extends LinearLayout implements OnClickListener,
 		MessageHeader.OnLayoutChangedListener, OnCreateContextMenuListener {
@@ -627,8 +633,6 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
 					listener, null, 0);
 		}
 
-		Log.i("lxc", "邮件的内容:" + text);
-		
 		mHiddenAttachments.setVisibility(View.GONE);
 
 		boolean lookForImages = true;
@@ -775,7 +779,7 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
 		}
 		return text;
 	}
-
+	
 	public void addAttachment(View attachmentView) {
 		mAttachments.addView(attachmentView);
 	}

@@ -1677,53 +1677,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             message.addHeader(K9.IDENTITY_HEADER, buildIdentityHeader(body, bodyPlain));
         }
 
-        try {
-			printMessageContent(message);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-        
         return message;
     }
 
-    private void printMessageContent(MimeMessage message) throws Exception {
-    	Log.i("lxc", "打印headers");
-    	for(String key : message.getHeaderNames()) {
-    		Log.i("lxc", key + " : " + message.getHeader(key));
-    	}
-    	
-    	Log.i("lxc", "打印address");
-    	Address[] address = message.getReplyTo();
-    	for(Address a : address) {
-    		Log.i("lxc", "address:" + a.getAddress());
-    	}
-
-    	MimeMultipart body = null;
-    	if(message.getBody() instanceof MimeMultipart) {
-    		body = (MimeMultipart) message.getBody();
-    		
-    		Log.i("lxc", "打印textbody");
-    		
-    		for(int i = 0; i < body.getCount(); i++) {
-    			MimeBodyPart bodyPart = (MimeBodyPart) body.getBodyPart(i);
-    			
-    			if(bodyPart instanceof LocalStore.LocalAttachmentBodyPart) {
-    				LocalStore.LocalAttachmentBodyPart part = (LocalStore.LocalAttachmentBodyPart) bodyPart;
-    			}
-    		}
-    	}
-    	
-    		
-    	Log.i("lxc", "打印uuid");
-    	for(String key : message.getCryptUUIDMap().keySet()) {
-    		Log.i("lxc", "key: " + key + " value: " + message.getCryptUUIDMap().get(key));
-    	}
-    	
-    	Log.i("lxc", "preview" + message.getPreview());
-    	
-    	Log.i("lxc", "subject: " + message.getSubject());
-    	
-    }
     
     /**
 	 * Persist mail message in a temp file.
@@ -1780,8 +1736,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
 	private void addAttachementToMessage(final MimeMultipart mp, Attachment attachment, String aesKey)
 			throws MessagingException {
-		MimeBodyPart bp = new MimeBodyPart(new LocalStore.LocalAttachmentBody(attachment.uri, getApplication(), aesKey));
-
+		LocalStore.LocalAttachmentBody body = new LocalStore.LocalAttachmentBody(attachment.uri, getApplication(), aesKey);
+		MimeBodyPart bp = new MimeBodyPart(body);
+		
 		/*
 		 * Correctly encode the filename here. Otherwise the whole header value
 		 * (all parameters at once) will be encoded by MimeHeader.writeTo().

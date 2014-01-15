@@ -116,6 +116,7 @@ public class MimeMessage extends Message {
         if (recurse) {
             parser.setRecurse();
         }
+
         try {
             parser.parse(new EOLConvertingInputStream(in));
         } catch (MimeException me) {
@@ -465,6 +466,7 @@ public class MimeMessage extends Message {
             ((TextBody)mBody).setCharset(charset);
         }
     }
+    
 
     class MimeMessageBuilder implements ContentHandler {
         private final LinkedList<Object> stack = new LinkedList<Object>();
@@ -502,8 +504,6 @@ public class MimeMessage extends Message {
         public void startHeader() {
             expect(Part.class);
         }
-
-
 
 
         public void endHeader() {
