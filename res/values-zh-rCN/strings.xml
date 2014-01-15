@@ -135,8 +135,8 @@
     <string name="unflag_action">移除星标</string>
     <string name="copy_action">拷贝</string>
     <string name="select_text_action">选择文本</string>
-    <!-- NEW: <string name="show_headers_action">Show headers</string> -->
-    <!-- NEW: <string name="hide_headers_action">Hide headers</string> -->
+    <string name="show_headers_action">显示头信息</string>
+    <string name="hide_headers_action">隐藏头信息</string>
 
 
     <!-- NEW: <string name="message_view_theme_action_dark">Switch to dark theme</string> -->
