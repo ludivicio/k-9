@@ -11,10 +11,11 @@
     <release version="1.701" versioncode="19002" >
         <change>修复加密邮件乱码的问题</change>
         <change>添加对附件大小的限制</change>
+        <change>修复“下载完整邮件”按钮不显示的问题</change>
         <change>修改开通密码保护时密邮崩溃的问题</change>
         <change>修改一些图标</change>
         <change>简化密邮的设置项</change>
-        <change>添加对国内常用邮箱的的支持</change>
+        <change>添加对国内常用邮箱的支持</change>
         <change>实现侧滑菜单</change>
     </release> 
 </changelog>

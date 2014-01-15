@@ -307,7 +307,10 @@ public class Account implements BaseAccount {
         mNotificationShowsUnreadCount = true;
         subscribedFoldersOnly = false;
         maximumPolledMessageAge = -1;
-        maximumAutoDownloadMessageSize = 32768;
+        
+        // modified by lxc at 2014-01-15
+        // Set default value, 0
+        maximumAutoDownloadMessageSize = 0;
         
         // modified by lxc at 2014-01-10
         // Set default value, 8M
@@ -428,7 +431,9 @@ public class Account implements BaseAccount {
         mNotificationShowsUnreadCount = prefs.getBoolean(mUuid + ".notificationUnreadCount", true);
         subscribedFoldersOnly = prefs.getBoolean(mUuid + ".subscribedFoldersOnly", false);
         maximumPolledMessageAge = prefs.getInt(mUuid + ".maximumPolledMessageAge", -1);
-        maximumAutoDownloadMessageSize = prefs.getInt(mUuid + ".maximumAutoDownloadMessageSize", 32768);
+        
+        // modified by lxc at 2014-01-15
+        maximumAutoDownloadMessageSize = prefs.getInt(mUuid + ".maximumAutoDownloadMessageSize", 0);
         
         // modified by lxc at 2014-01-10
         maximumAttachmentSize = prefs.getInt(mUuid + ".maximumAttachmentSize", 8);
