@@ -251,7 +251,12 @@ public class K9 extends Application {
     private static boolean mQuietTimeEnabled = false;
     private static String mQuietTimeStarts = null;
     private static String mQuietTimeEnds = null;
-    private static String mAttachmentDefaultPath = "";
+    
+    // modified by lxc at 2014-01-13
+    // Set default path of attachment.
+    private static String ATTACHMENT_DEFAULT_PATH = Environment.getExternalStorageDirectory().toString() + "/Secmail/attachment/temp/";;
+    private static String mAttachmentDefaultPath = ATTACHMENT_DEFAULT_PATH;
+    
     private static boolean mWrapFolderNames = false;
 
     private static boolean useGalleryBugWorkaround = false;
@@ -772,8 +777,21 @@ public class K9 extends Application {
         if (splitViewMode != null) {
             sSplitViewMode = SplitViewMode.valueOf(splitViewMode);
         }
-
-        mAttachmentDefaultPath = sprefs.getString("attachmentdefaultpath",  Environment.getExternalStorageDirectory().toString());
+        
+        // modified by lxc at 2014-01-13
+        // Set default value.
+        mAttachmentDefaultPath = sprefs.getString("attachmentdefaultpath",  ATTACHMENT_DEFAULT_PATH);
+        // Create the directory if not exists.
+        try {
+        	File dir = new File(mAttachmentDefaultPath);
+        	if(!dir.exists()) {
+        		dir.mkdirs();
+        	}
+            
+        } catch (Exception e) {
+            
+        }
+        
         sUseBackgroundAsUnreadIndicator = sprefs.getBoolean("useBackgroundAsUnreadIndicator", true);
         sThreadedViewEnabled = sprefs.getBoolean("threadedView", true);
         fontSizes.load(sprefs);
