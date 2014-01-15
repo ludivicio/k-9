@@ -55,7 +55,7 @@ public class MenuFragment extends SherlockFragment {
 
 	private ListView mListView;
 	private TextView mUserEmail;
-	private ImageButton mAccountSetting;
+	private TextView mAccountSetting;
 	private MessageList mActivity;
 	private Account mAccount;
 	private FolderListAdapter mAdapter;
@@ -173,7 +173,7 @@ public class MenuFragment extends SherlockFragment {
 		if(mAccount != null && !TextUtils.isEmpty(mAccount.getEmail())) {
 			mUserEmail.setText(mAccount.getEmail());
 		} 
-		mAccountSetting = (ImageButton) v.findViewById(R.id.ib_account_setting);
+		mAccountSetting = (TextView) v.findViewById(R.id.tv_account_setting);
 		mAccountSetting.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -437,9 +437,9 @@ public class MenuFragment extends SherlockFragment {
 			
 			holder.activeIcons.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					Toast toast = Toast.makeText(getApplication(),
-							getString(R.string.tap_hint), Toast.LENGTH_SHORT);
-					toast.show();
+//					Toast toast = Toast.makeText(getApplication(),
+//							getString(R.string.tap_hint), Toast.LENGTH_SHORT);
+//					toast.show();
 				}
 			});
 

@@ -26,17 +26,17 @@
             android:layout_marginLeft="10.0dip"
             android:layout_toRightOf="@id/iv_app_logo"
             android:textColor="#c1c1c1"
-            android:textSize="15.0dip" />
+            android:textSize="16.0dip" />
 
-        <ImageButton
-            android:id="@+id/ib_account_setting"
-            android:layout_width="30dip"
-            android:layout_height="30dip"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dip"
-            android:background="@drawable/ib_account_setting"
-            android:contentDescription="@null" />
+<!--         <ImageButton -->
+<!--             android:id="@+id/ib_account_setting" -->
+<!--             android:layout_width="30dip" -->
+<!--             android:layout_height="30dip" -->
+<!--             android:layout_alignParentRight="true" -->
+<!--             android:layout_centerVertical="true" -->
+<!--             android:layout_marginRight="10dip" -->
+<!--             android:background="@drawable/ib_account_setting" -->
+<!--             android:contentDescription="@null" /> -->
     </RelativeLayout>
 
     
@@ -48,5 +48,17 @@
         android:background="#535353"
         android:divider="#404040"
         android:dividerHeight="1dp" />
+    
+    <TextView
+            android:id="@+id/tv_account_setting"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="3dip"
+            android:paddingBottom="3dip"
+            android:text="@string/account_change_label"
+            android:background="@drawable/button_blue"
+            android:textColor="#c1c1c1"
+            android:textSize="20.0dip" />
 
 </LinearLayout>

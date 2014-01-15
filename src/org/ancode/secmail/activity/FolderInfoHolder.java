@@ -106,21 +106,19 @@ public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
      */
     public static String getDisplayName(Context context, Account account, String name) {
         final String displayName;
+        
+        // modified by lxc at 2014-01-15
+        // Show the fixed name
         if (name.equals(account.getSpamFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_spam_fmt), name);
+            displayName = context.getString(R.string.special_mailbox_name_spam_fmt);
         } else if (name.equals(account.getArchiveFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_archive_fmt), name);
+            displayName = context.getString(R.string.special_mailbox_name_archive_fmt);
         } else if (name.equals(account.getSentFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_sent_fmt), name);
+            displayName = context.getString(R.string.special_mailbox_name_sent_fmt);
         } else if (name.equals(account.getTrashFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_trash_fmt), name);
+            displayName = context.getString(R.string.special_mailbox_name_trash_fmt);
         } else if (name.equals(account.getDraftsFolderName())) {
-            displayName = String.format(
-                    context.getString(R.string.special_mailbox_name_drafts_fmt), name);
+            displayName = context.getString(R.string.special_mailbox_name_drafts_fmt);
         } else if (name.equals(account.getOutboxFolderName())) {
             displayName = context.getString(R.string.special_mailbox_name_outbox);
         // FIXME: We really shouldn't do a case-insensitive comparison here

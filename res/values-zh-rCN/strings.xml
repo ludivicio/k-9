@@ -199,11 +199,11 @@
     <string name="special_mailbox_name_spam">垃圾邮件</string>
     <!-- Mailbox names displayed to user -->
 
-    <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g>（草稿箱）</string>
-    <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g>（垃圾箱）</string>
-    <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g>（已发送）</string>
-    <string name="special_mailbox_name_archive_fmt"><xliff:g id="folder">%s</xliff:g>（归档）</string>
-    <string name="special_mailbox_name_spam_fmt"><xliff:g id="folder">%s</xliff:g>（垃圾邮件）</string>
+    <string name="special_mailbox_name_drafts_fmt">草稿箱</string>
+    <string name="special_mailbox_name_trash_fmt">垃圾箱</string>
+    <string name="special_mailbox_name_sent_fmt">已发送</string>
+    <string name="special_mailbox_name_archive_fmt">归档</string>
+    <string name="special_mailbox_name_spam_fmt">垃圾邮件</string>
     <string name="send_failure_subject">一些邮件没有成功发送</string>
     <string name="debug_version_fmt">版本：<xliff:g id="version">%s</xliff:g></string>
     <string name="debug_enable_debug_logging_title">启用调试日志</string>
@@ -987,6 +987,7 @@
     <string name="update_info">检查是否有更新</string>
     <string name="update_now">检查更新并下载</string>
     
+    <string name="account_change_label">切换账户</string>
     <string name="account_cryptoguard_type">请选择密保方式：</string>
     <string name="account_cryptoguard_type_email">邮箱</string>
     <string name="account_cryptoguard_type_mobile">手机</string>
