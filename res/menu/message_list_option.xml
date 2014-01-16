@@ -66,31 +66,21 @@
         android:icon="?attr/iconActionDelete"
         android:showAsAction="always"
         android:title="@string/delete_action"/>
-    <!-- MessageView -->
-    <item
-        android:id="@+id/archive"
-        android:icon="?attr/iconActionArchive"
-        android:showAsAction="ifRoom"
-        android:title="@string/archive_action"/>
+    
     <!-- MessageView -->
     <item
         android:id="@+id/spam"
         android:icon="?attr/iconActionSpam"
         android:showAsAction="ifRoom"
         android:title="@string/spam_action"/>
+    
     <!-- MessageView -->
     <item
         android:id="@+id/move"
         android:icon="?attr/iconActionMove"
         android:showAsAction="ifRoom"
         android:title="@string/move_action"/>
-    <!-- MessageView -->
-    <item
-        android:id="@+id/copy"
-        android:icon="?attr/iconActionCopy"
-        android:showAsAction="ifRoom"
-        android:title="@string/copy_action"/>
-
+    
     <!-- MessageView -->
     <item
         android:id="@+id/single_message_options"
@@ -107,9 +97,6 @@
             <item
                 android:id="@+id/forward"
                 android:title="@string/forward_action"/>
-            <item
-                android:id="@+id/share"
-                android:title="@string/send_alternate_action"/>
         </menu>
     </item>
 
@@ -120,9 +107,6 @@
         android:showAsAction="never"
         android:title="@string/refile_action">
         <menu>
-            <item
-                android:id="@+id/archive"
-                android:title="@string/archive_action"/>
 
             <!-- MessageView -->
             <item
@@ -134,10 +118,6 @@
                 android:id="@+id/move"
                 android:title="@string/move_action"/>
 
-            <!-- MessageView -->
-            <item
-                android:id="@+id/copy"
-                android:title="@string/copy_action"/>
         </menu>
     </item>
     

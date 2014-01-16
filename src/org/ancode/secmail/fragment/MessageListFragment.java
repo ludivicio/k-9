@@ -1509,19 +1509,22 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 			setFlag(adapterPosition, Flag.SEEN, true);
 		} else if (itemId == R.id.mark_as_unread) {
 			setFlag(adapterPosition, Flag.SEEN, false);
-		} else if (itemId == R.id.archive) {
-			Message message = getMessageAtPosition(adapterPosition);
-			onArchive(message);
-		} else if (itemId == R.id.spam) {
+		} 
+//		else if (itemId == R.id.archive) {
+//			Message message = getMessageAtPosition(adapterPosition);
+//			onArchive(message);
+//		} 
+		else if (itemId == R.id.spam) {
 			Message message = getMessageAtPosition(adapterPosition);
 			onSpam(message);
 		} else if (itemId == R.id.move) {
 			Message message = getMessageAtPosition(adapterPosition);
 			onMove(message);
-		} else if (itemId == R.id.copy) {
-			Message message = getMessageAtPosition(adapterPosition);
-			onCopy(message);
-		}
+		} 
+//		else if (itemId == R.id.copy) {
+//			Message message = getMessageAtPosition(adapterPosition);
+//			onCopy(message);
+//		}
 
         mContextMenuUniqueId = 0;
         return true;
@@ -1567,18 +1570,9 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             menu.findItem(R.id.mark_as_unread).setVisible(false);
         }
 
-        if (!mController.isCopyCapable(account)) {
-            menu.findItem(R.id.copy).setVisible(false);
-        }
-
         if (!mController.isMoveCapable(account)) {
             menu.findItem(R.id.move).setVisible(false);
-            menu.findItem(R.id.archive).setVisible(false);
             menu.findItem(R.id.spam).setVisible(false);
-        }
-
-        if (!account.hasArchiveFolder()) {
-            menu.findItem(R.id.archive).setVisible(false);
         }
 
         if (!account.hasSpamFolder()) {
@@ -2212,7 +2206,7 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
     private void setFlagForSelected(final Flag flag, final boolean newState) {
         if (mSelected.size() == 0) {
-            Toast.makeText(getActivity(), "请选择邮件", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.choose_mail), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -2570,9 +2564,7 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             if (!mSingleAccountMode) {
                 // show all
                 menu.findItem(R.id.move).setVisible(true);
-                menu.findItem(R.id.archive).setVisible(true);
                 menu.findItem(R.id.spam).setVisible(true);
-                menu.findItem(R.id.copy).setVisible(true);
 
                 Set<String> accountUuids = getAccountUuidsForSelected();
 
@@ -2647,27 +2639,17 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             if (!mSingleAccountMode) {
                 // We don't support cross-account copy/move operations right now
                 menu.findItem(R.id.move).setVisible(false);
-                menu.findItem(R.id.copy).setVisible(false);
 
                 //TODO: we could support the archive and spam operations if all selected messages
                 // belong to non-POP3 accounts
-                menu.findItem(R.id.archive).setVisible(false);
                 menu.findItem(R.id.spam).setVisible(false);
 
             } else {
                 // hide unsupported
-                if (!mController.isCopyCapable(account)) {
-                    menu.findItem(R.id.copy).setVisible(false);
-                }
 
                 if (!mController.isMoveCapable(account)) {
                     menu.findItem(R.id.move).setVisible(false);
-                    menu.findItem(R.id.archive).setVisible(false);
                     menu.findItem(R.id.spam).setVisible(false);
-                }
-
-                if (!account.hasArchiveFolder()) {
-                    menu.findItem(R.id.archive).setVisible(false);
                 }
 
                 if (!account.hasSpamFolder()) {
@@ -2708,10 +2690,6 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 			} else if (itemId == R.id.select_nothing) {
 				selectNothing();
 				return true;
-			} else if (itemId == R.id.archive) {
-				List<Message> messages = getCheckedMessages();
-				onArchive(messages);
-				mSelectedCount = 0;
 			} else if (itemId == R.id.spam) {
 				List<Message> messages = getCheckedMessages();
 				onSpam(messages);
@@ -2720,11 +2698,8 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 				List<Message> messages = getCheckedMessages();
 				onMove(messages);
 				mSelectedCount = 0;
-			} else if (itemId == R.id.copy) {
-				List<Message> messages = getCheckedMessages();
-				onCopy(messages);
-				mSelectedCount = 0;
-			}
+			} 
+			
             if (mSelectedCount == 0) {
             	mActionMode.finish();
             }

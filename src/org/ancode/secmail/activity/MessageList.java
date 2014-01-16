@@ -34,7 +34,6 @@ import org.ancode.secmail.view.ViewSwitcher.OnSwitchCompleteListener;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
@@ -901,9 +900,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		} else if (itemId == R.id.compose) {
 			mMessageListFragment.onCompose();
 			return true;
-		} else if (itemId == R.id.toggle_message_view_theme) {
-			onToggleTheme();
-			return true;
 		} else if (itemId == R.id.check_mail) {
 			mMessageListFragment.checkMail();
 			return true;
@@ -958,23 +954,14 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		} else if (itemId == R.id.forward) {
 			mMessageViewFragment.onForward();
 			return true;
-		} else if (itemId == R.id.share) {
-			mMessageViewFragment.onSendAlternate();
-			return true;
 		} else if (itemId == R.id.toggle_unread) {
 			mMessageViewFragment.onToggleRead();
-			return true;
-		} else if (itemId == R.id.archive) {
-			mMessageViewFragment.onArchive();
 			return true;
 		} else if (itemId == R.id.spam) {
 			mMessageViewFragment.onSpam();
 			return true;
 		} else if (itemId == R.id.move) {
 			mMessageViewFragment.onMove();
-			return true;
-		} else if (itemId == R.id.copy) {
-			mMessageViewFragment.onCopy();
 			return true;
 		} else if (itemId == R.id.select_text) {
 			mMessageViewFragment.onSelectText();
@@ -1064,9 +1051,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			menu.findItem(R.id.previous_message).setVisible(false);
 			menu.findItem(R.id.single_message_options).setVisible(false);
 			menu.findItem(R.id.delete).setVisible(false);
-			menu.findItem(R.id.archive).setVisible(false);
 			menu.findItem(R.id.move).setVisible(false);
-			menu.findItem(R.id.copy).setVisible(false);
 			menu.findItem(R.id.spam).setVisible(false);
 			menu.findItem(R.id.refile).setVisible(false);
 			menu.findItem(R.id.toggle_unread).setVisible(false);
@@ -1098,22 +1083,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 				next.getIcon().setAlpha(canDoNext ? 255 : 127);
 			}
 
-			MenuItem toggleTheme = menu
-					.findItem(R.id.toggle_message_view_theme);
-			if (K9.useFixedMessageViewTheme()) {
-				toggleTheme.setVisible(false);
-			} else {
-				// Set title of menu item to switch to dark/light theme
-				if (K9.getK9MessageViewTheme() == K9.Theme.DARK) {
-					toggleTheme
-							.setTitle(R.string.message_view_theme_action_light);
-				} else {
-					toggleTheme
-							.setTitle(R.string.message_view_theme_action_dark);
-				}
-				toggleTheme.setVisible(true);
-			}
-
 			// Set title of menu item to toggle the read state of the currently
 			// displayed message
 			if (mMessageViewFragment.isMessageRead()) {
@@ -1137,40 +1106,22 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			 */
 			Menu refileSubmenu = menu.findItem(R.id.refile).getSubMenu();
 
-			if (mMessageViewFragment.isCopyCapable()) {
-				menu.findItem(R.id.copy).setVisible(
-						K9.isMessageViewCopyActionVisible());
-				refileSubmenu.findItem(R.id.copy).setVisible(true);
-			} else {
-				menu.findItem(R.id.copy).setVisible(false);
-				refileSubmenu.findItem(R.id.copy).setVisible(false);
-			}
-
 			if (mMessageViewFragment.isMoveCapable()) {
-				boolean canMessageBeArchived = mMessageViewFragment
-						.canMessageBeArchived();
 				boolean canMessageBeMovedToSpam = mMessageViewFragment
 						.canMessageBeMovedToSpam();
 
 				menu.findItem(R.id.move).setVisible(
 						K9.isMessageViewMoveActionVisible());
-				menu.findItem(R.id.archive).setVisible(
-						canMessageBeArchived
-								&& K9.isMessageViewArchiveActionVisible());
 				menu.findItem(R.id.spam).setVisible(
 						canMessageBeMovedToSpam
 								&& K9.isMessageViewSpamActionVisible());
 
 				refileSubmenu.findItem(R.id.move).setVisible(true);
-				refileSubmenu.findItem(R.id.archive).setVisible(
-						canMessageBeArchived);
 				refileSubmenu.findItem(R.id.spam).setVisible(
 						canMessageBeMovedToSpam);
 			} else {
 				menu.findItem(R.id.move).setVisible(false);
-				menu.findItem(R.id.archive).setVisible(false);
 				menu.findItem(R.id.spam).setVisible(false);
-
 				menu.findItem(R.id.refile).setVisible(false);
 			}
 
@@ -1499,21 +1450,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		}
 	}
 
-	private void restartActivity() {
-		// restart the current activity, so that the theme change can be applied
-		if (Build.VERSION.SDK_INT < 11) {
-			Intent intent = getIntent();
-			intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-			finish();
-			overridePendingTransition(0, 0); // disable animations to speed up
-												// the switch
-			startActivity(intent);
-			overridePendingTransition(0, 0);
-		} else {
-			recreate();
-		}
-	}
-
 	@Override
 	public void displayMessageSubject(String subject) {
 		if (mDisplayMode == DisplayMode.MESSAGE_VIEW) {
@@ -1633,27 +1569,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	@Override
 	public void disableDeleteAction() {
 		mMenu.findItem(R.id.delete).setEnabled(false);
-	}
-
-	private void onToggleTheme() {
-		if (K9.getK9MessageViewTheme() == K9.Theme.DARK) {
-			K9.setK9MessageViewThemeSetting(K9.Theme.LIGHT);
-		} else {
-			K9.setK9MessageViewThemeSetting(K9.Theme.DARK);
-		}
-
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				Context appContext = getApplicationContext();
-				Preferences prefs = Preferences.getPreferences(appContext);
-				Editor editor = prefs.getPreferences().edit();
-				K9.save(editor);
-				editor.commit();
-			}
-		}).start();
-
-		restartActivity();
 	}
 
 	private void showDefaultTitleView() {
