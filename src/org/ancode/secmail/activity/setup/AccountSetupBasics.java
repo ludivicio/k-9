@@ -68,7 +68,7 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 	private EditText mPasswordView;
 	private EditText mDescriptionView;
 	private EditText mNameView;
-	
+
 	private Button mNextButton;
 	private Button mManualSetupButton;
 
@@ -99,12 +99,12 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.account_setup_basics);
-		
+
 		mEmailView = (EditText) findViewById(R.id.account_email);
 		mPasswordView = (EditText) findViewById(R.id.account_password);
 		mDescriptionView = (EditText) findViewById(R.id.account_description);
 		mNameView = (EditText) findViewById(R.id.account_name);
-		
+
 		mNextButton = (Button) findViewById(R.id.next);
 		mManualSetupButton = (Button) findViewById(R.id.manual_setup);
 
@@ -114,7 +114,7 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 		mEmailView.addTextChangedListener(this);
 		mPasswordView.addTextChangedListener(this);
 		mNameView.addTextChangedListener(this);
-		
+
 		if (savedInstanceState != null
 				&& savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
 			String accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT);
@@ -133,8 +133,9 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 	}
 
 	public void initializeLoadingDialog(Context context) {
-		
-		AlertDialog.Builder builder = new AlertDialog.Builder(AccountSetupBasics.this);
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				AccountSetupBasics.this);
 		builder.setTitle(getString(R.string.account_setup_check_settings_title));
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View v = inflater.inflate(R.layout.account_setup_loading_dialog, null);// 得到加载view
@@ -142,14 +143,15 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 		mLoadingMessageView = (TextView) v.findViewById(R.id.tv_tip_message); // 提示文字
 		builder.setCancelable(false);// 不可以用“返回键”取消
 		builder.setView(v);
-		builder.setPositiveButton(getString(R.string.account_setup_check_settings_cancel),
+		builder.setNegativeButton(
+				getString(R.string.account_setup_check_settings_cancel),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						mCanceled = true;
 						setLoadingMessage(R.string.account_setup_check_settings_canceling_msg);// "正在取消...");
 					}
 				});
-		
+
 		mLoadingDialog = builder.create();
 	}
 
@@ -434,8 +436,7 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 				Log.i("lxc", "User clicked the Cancel button");
 				return;
 			}
-			showErrorDialog(R.string.account_setup_failed_dlg_auth_message_fmt,
-					afe.getMessage() == null ? "" : afe.getMessage());
+			showErrorDialog(R.string.account_setup_failed_dlg_auth_message_fmt);
 		} catch (final CertificateValidationException cve) {
 			Log.e("lxc", "Error while testing settings", cve);
 
@@ -454,9 +455,7 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 						R.string.account_setup_failed_dlg_certificate_message_fmt,
 						cve);
 			} else {
-				showErrorDialog(
-						R.string.account_setup_failed_dlg_server_message_fmt,
-						(cve.getMessage() == null ? "" : cve.getMessage()));
+				showErrorDialog(R.string.account_setup_failed_dlg_server_message_fmt);
 			}
 		} catch (final Throwable t) {
 			Log.e("lxc", "Error while testing settings", t);
@@ -467,15 +466,13 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 				return;
 			}
 
-			showErrorDialog(
-					R.string.account_setup_failed_dlg_server_message_fmt,
-					(t.getMessage() == null ? "" : t.getMessage()));
+			showErrorDialog(R.string.account_setup_failed_dlg_server_message_fmt);
 
 		}
 
 	}
 
-	private void showErrorDialog(final int msgResId, final Object... args) {
+	private void showErrorDialog(final int msgResId) {
 		mHandler.post(new Runnable() {
 			public void run() {
 
@@ -484,18 +481,8 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 				new AlertDialog.Builder(AccountSetupBasics.this)
 						.setTitle(
 								getString(R.string.account_setup_failed_dlg_title))
-						.setMessage(getString(msgResId, args))
+						.setMessage(getString(msgResId))
 						.setCancelable(true)
-						.setNegativeButton(
-								getString(R.string.account_setup_failed_dlg_continue_action),
-
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int which) {
-										mHandler.sendEmptyMessage(0x123);
-										dialog.cancel();
-									}
-								})
 						.setPositiveButton(
 								getString(R.string.account_setup_failed_dlg_edit_details_action),
 								new DialogInterface.OnClickListener() {
@@ -515,6 +502,8 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 		mHandler.post(new Runnable() {
 
 			public void run() {
+
+				showLoadingDialog(false);
 
 				String exMessage = "Unknown Error";
 
@@ -668,6 +657,7 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int which) {
+
 										try {
 											String alias = mAccount.getUuid();
 											if (mCheckIncoming) {
@@ -680,18 +670,22 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 													.addCertificateChain(alias,
 															chain);
 										} catch (CertificateException e) {
-											showErrorDialog(
-													R.string.account_setup_failed_dlg_certificate_message_fmt,
-													e.getMessage() == null ? ""
-															: e.getMessage());
+											showErrorDialog(R.string.account_setup_failed_dlg_certificate_message_fmt);
 										}
 
-										AccountSetupCheckSettings
-												.actionCheckSettings(
-														AccountSetupBasics.this,
-														mAccount,
-														mCheckIncoming,
-														mCheckOutgoing);
+										// modified by lxc at 2014-01-16
+										// Show loading dialog, and auto setup.
+										showLoadingDialog(true);
+										String email = mEmailView.getText().toString();
+										String password = mPasswordView.getText().toString();
+										onAutoSetup(email, password);
+
+										// AccountSetupCheckSettings
+										// .actionCheckSettings(
+										// AccountSetupBasics.this,
+										// mAccount,
+										// mCheckIncoming,
+										// mCheckOutgoing);
 									}
 								})
 						.setNegativeButton(
@@ -709,7 +703,11 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
-			mAccount.setDescription(mAccount.getEmail());
+			if(mAccount != null && !TextUtils.isEmpty(mAccount.getDescription())) {
+				mAccount.setDescription(mAccount.getDescription());
+			} else {
+				mAccount.setDescription(mAccount.getEmail());
+			}
 			mAccount.save(Preferences.getPreferences(this));
 			K9.setServicesEnabled(this);
 			AccountSetupOptions.actionOptions(this, mAccount, false);
@@ -721,6 +719,7 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 	private void onManualSetup() {
 		String email = mEmailView.getText().toString();
 		String password = mPasswordView.getText().toString();
+		String description = mDescriptionView.getText().toString();
 		String[] emailParts = splitEmail(email);
 		String user = emailParts[0];
 		String domain = emailParts[1];
@@ -730,6 +729,7 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 		}
 		mAccount.setName(getOwnerName());
 		mAccount.setEmail(email);
+		mAccount.setDescription(description);
 		try {
 			String userEnc = URLEncoder.encode(user, "UTF-8");
 			String passwordEnc = URLEncoder.encode(password, "UTF-8");
@@ -797,15 +797,18 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 		public void handleMessage(android.os.Message msg) {
 			if (msg.what == 0x123) {
 				showLoadingDialog(false);
-				
+
 				mAccount.setDescription(mAccount.getEmail());
 				if (Utility.requiredFieldValid(mDescriptionView)) {
-		            mAccount.setDescription(mDescriptionView.getText().toString());
-		        }
-		        mAccount.setName(mNameView.getText().toString());
-				mAccount.save(Preferences.getPreferences(AccountSetupBasics.this));
+					mAccount.setDescription(mDescriptionView.getText()
+							.toString());
+				}
+				mAccount.setName(mNameView.getText().toString());
+				mAccount.save(Preferences
+						.getPreferences(AccountSetupBasics.this));
 				K9.setServicesEnabled(AccountSetupBasics.this);
-				AccountSetupOptions.actionOptions(AccountSetupBasics.this, mAccount, false);
+				AccountSetupOptions.actionOptions(AccountSetupBasics.this,
+						mAccount, false);
 				// finish();
 			}
 		};
