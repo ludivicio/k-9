@@ -542,7 +542,7 @@
 		<outgoing uri="smtp+ssl+://smtp.qq.com" username="$user" />
 	</provider>
 	<provider id="sina" label="sina" domain="sina.com">
-		<incoming uri="pop3+ssl+://pop.sina.com" username="$user" />
-		<outgoing uri="smtp+ssl+://smtp.sina.com" username="$user" />
+		<incoming uri="pop3://pop.sina.com" username="$user" />
+		<outgoing uri="smtp://smtp.sina.com" username="$user" />
 	</provider>
 </providers>
