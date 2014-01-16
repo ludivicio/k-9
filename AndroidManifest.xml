@@ -5,7 +5,7 @@
     android:versionName="1.701" package="org.ancode.secmail"
     >
     <uses-sdk
-       android:minSdkVersion="8"
+       android:minSdkVersion="11"
        android:targetSdkVersion="14"
     />
 
