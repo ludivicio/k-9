@@ -439,14 +439,12 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
         Account[] accounts = Preferences.getPreferences(this).getAccounts();
         Intent intent = getIntent();
-        //onNewIntent(intent);
 
         // see if we should show the welcome message
         if (ACTION_IMPORT_SETTINGS.equals(intent.getAction())) {
             onImport();
         } else if (accounts.length < 1) {
         	AccountSetupSelection.actionChooseEmailProvider(this);
-//            WelcomeMessage.showWelcomeMessage(this);
             finish();
             return;
         }
@@ -1890,29 +1888,6 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             return view;
         }
 
-
-        private OnClickListener createFlaggedSearchListener(BaseAccount account) {
-            String searchTitle = getString(R.string.search_title, account.getDescription(),
-                    getString(R.string.flagged_modifier));
-
-            LocalSearch search;
-            if (account instanceof SearchAccount) {
-                search = ((SearchAccount) account).getRelatedSearch().clone();
-                search.setName(searchTitle);
-            } else {
-                search = new LocalSearch(searchTitle);
-                search.addAccountUuid(account.getUuid());
-
-                Account realAccount = (Account) account;
-                realAccount.excludeSpecialFolders(search);
-                realAccount.limitToDisplayableFolders(search);
-            }
-
-            search.and(Searchfield.FLAGGED, "1", Attribute.EQUALS);
-
-            return new AccountClickListener(search);
-        }
-
         private OnClickListener createUnreadSearchListener(BaseAccount account) {
             LocalSearch search = createUnreadSearch(Accounts.this, account);
             return new AccountClickListener(search);
@@ -1923,14 +1898,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
             public TextView email;
             public TextView size;
             public TextView newMessageCount;
-//            public TextView flaggedMessageCount;
-//            public View newMessageCountIcon;
-//            public View flaggedMessageCountIcon;
-//            public View newMessageCountWrapper;
-//            public View flaggedMessageCountWrapper;
             public LinearLayout activeIcons;
-//            public View chip;
-//            public ImageButton folders;
             public LinearLayout accountsItemLayout;
             // modified by lxc at 2013-11-22
             public TextView encryStatus;
