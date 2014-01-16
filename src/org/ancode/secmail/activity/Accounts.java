@@ -1312,9 +1312,15 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 			onCompose();
 		} else if (itemId == R.id.about) {
 			onAbout();
-		} else if (itemId == R.id.search) {
-			onSearchRequested();
-		} else if (itemId == R.id.export_all) {
+		} 
+		
+		// modified by lxc at 2014-01-16
+		// Hide search menu item.
+//		else if (itemId == R.id.search) {
+//			onSearchRequested();
+//		} 
+		
+		else if (itemId == R.id.export_all) {
 			onExport(true, null);
 		} else if (itemId == R.id.import_settings) {
 			onImport();
