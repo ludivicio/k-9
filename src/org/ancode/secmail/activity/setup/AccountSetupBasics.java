@@ -48,7 +48,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -78,7 +77,6 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 
 	private Dialog mLoadingDialog;
 	private ProgressBar mProgressBar;
-	private Button mCancelLoadingButton;
 	private TextView mLoadingMessageView;
 
 	private boolean mCanceled;
@@ -135,32 +133,24 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 	}
 
 	public void initializeLoadingDialog(Context context) {
-		mLoadingDialog = new Dialog(this, R.style.loading_dialog);
-
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(AccountSetupBasics.this);
+		builder.setTitle(getString(R.string.account_setup_check_settings_title));
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View v = inflater.inflate(R.layout.account_setup_loading_dialog, null);// 得到加载view
-		LinearLayout layout = (LinearLayout) v
-				.findViewById(R.id.loading_dialog_view);// 加载布局
-
 		mProgressBar = (ProgressBar) v.findViewById(R.id.progressbar);
-		mLoadingMessageView = (TextView) v.findViewById(R.id.tv_tip_message);// 提示文字
-		mCancelLoadingButton = (Button) v.findViewById(R.id.btn_cancel_loading);
-
-		mCancelLoadingButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				mCanceled = true;
-				setLoadingMessage(R.string.account_setup_check_settings_canceling_msg);// "正在取消...");
-			}
-		});
-
-		mLoadingDialog.setCancelable(false);// 不可以用“返回键”取消
-
-		mLoadingDialog.setContentView(layout, new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.FILL_PARENT,
-				LinearLayout.LayoutParams.FILL_PARENT));// 设置布局
-
+		mLoadingMessageView = (TextView) v.findViewById(R.id.tv_tip_message); // 提示文字
+		builder.setCancelable(false);// 不可以用“返回键”取消
+		builder.setView(v);
+		builder.setPositiveButton(getString(R.string.account_setup_check_settings_cancel),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						mCanceled = true;
+						setLoadingMessage(R.string.account_setup_check_settings_canceling_msg);// "正在取消...");
+					}
+				});
+		
+		mLoadingDialog = builder.create();
 	}
 
 	@Override
