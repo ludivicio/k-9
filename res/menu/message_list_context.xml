@@ -18,18 +18,18 @@
         android:showAsAction="always|withText"
         android:icon="?attr/iconActionMarkAsUnread"
     />
-    <item
-        android:id="@+id/move"
-        android:title="@string/move_action"
-        android:showAsAction="ifRoom"
-        android:icon="?attr/iconActionMove"
-    />
-    <item
-        android:id="@+id/spam"
-        android:title="@string/spam_action"
-        android:showAsAction="ifRoom"
-        android:icon="?attr/iconActionSpam"
-    />
+<!--     <item -->
+<!--         android:id="@+id/move" -->
+<!--         android:title="@string/move_action" -->
+<!--         android:showAsAction="ifRoom" -->
+<!--         android:icon="?attr/iconActionMove" -->
+<!--     /> -->
+<!--     <item -->
+<!--         android:id="@+id/spam" -->
+<!--         android:title="@string/spam_action" -->
+<!--         android:showAsAction="ifRoom" -->
+<!--         android:icon="?attr/iconActionSpam" -->
+<!--     /> -->
     <item
         android:id="@+id/select_all"
         android:icon="?attr/iconActionSelectAll"

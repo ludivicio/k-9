@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-     <item
-        android:id="@+id/select"
-        android:title="@string/select_action"/>
-    <item android:id="@+id/deselect"
-          android:title="@string/deselect_action"/>
+<!--      <item -->
+<!--         android:id="@+id/select" -->
+<!--         android:title="@string/select_action"/> -->
+<!--     <item android:id="@+id/deselect" -->
+<!--           android:title="@string/deselect_action"/> -->
     <item
          android:id="@+id/reply_all"
          android:title="@string/reply_all_action"/>
@@ -49,10 +49,10 @@
 <!--         android:id="@+id/unflag" -->
 <!--         android:title="@string/unflag_action" -->
 <!--     /> -->
-    <item
-        android:id="@+id/spam"
-        android:title="@string/spam_action"
-    />
+<!--     <item -->
+<!--         android:id="@+id/spam" -->
+<!--         android:title="@string/spam_action" -->
+<!--     /> -->
     <item
         android:id="@+id/same_sender"
         android:title="@string/from_same_sender" />
