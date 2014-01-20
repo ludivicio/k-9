@@ -2571,7 +2571,13 @@ public class LocalStore extends Store implements Serializable {
                                 }
 
                                 String preview = Message.calculateContentPreview(text);
-
+                                
+                                // modified by lxc at 2014-01-20
+                                if (message.getSubject() != null && message.getSubject().startsWith("secmail")
+                        				&& message.getSubject().contains("regcode")) {
+                                	preview = mApplication.getString(R.string.reg_encrypt_confirm_mail_body);
+                        		}
+                                
                                 try {
                                     ContentValues cv = new ContentValues();
                                     cv.put("uid", uid);
