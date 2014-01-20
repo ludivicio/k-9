@@ -609,12 +609,6 @@ public class SingleMessageView extends LinearLayout implements OnClickListener,
 			text = message.getTextForDisplay();
 		}
 
-		 // modified by lxc at 2013-11-27
-        if (message.getSubject() != null && message.getSubject().startsWith("secmail")
-				&& message.getSubject().contains("regcode")) {
-			text = getContext().getString(R.string.reg_encrypt_confirm_mail_body);
-		}
-		
 		// Save the text so we can reset the WebView when the user clicks the
 		// "Show pictures" button
 		mText = text;
