@@ -23,17 +23,25 @@ public class CryptoguardUiHelper {
 				R.string.account_cryptoguard_apply_success));
 		builder.setMessage(getString(context,
 				R.string.account_cryptoguard_openup_tip));
-		builder.setPositiveButton(
-				getString(context, R.string.account_cryptoguard_open_now),
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						showProtectInfoDialog(context, account);
-					}
-				});
+		
+		// modified by lxc at 2014-01-22
+		// Cancel opening password protection.
+		
+//		builder.setPositiveButton(
+//				getString(context, R.string.account_cryptoguard_open_now),
+//				new DialogInterface.OnClickListener() {
+//
+//					@Override
+//					public void onClick(DialogInterface dialog, int which) {
+//						showProtectInfoDialog(context, account);
+//					}
+//				});
+//		
+//		builder.setNegativeButton(
+//				getString(context, R.string.account_cryptoguard_nexttime), null);
+		
 		builder.setNegativeButton(
-				getString(context, R.string.account_cryptoguard_nexttime), null);
+				getString(context, R.string.account_cryptoguard_ok), null);
 		builder.create().show();
 
 	}

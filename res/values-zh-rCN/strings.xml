@@ -1001,7 +1001,8 @@
     <string name="account_cryptoguard_invalid_mobile">手机号码不正确，请重新输入！</string>
     <string name="account_cryptoguard_other_mail">密保邮箱需使用不同的邮箱!</string>
     <string name="account_cryptoguard_regist_success">注册成功</string>
-    <string name="account_cryptoguard_openup_tip">您已能够正常使用邮件加密功能，是否开通密码保护功能？</string>
+<!--     <string name="account_cryptoguard_openup_tip">您已能够正常使用邮件加密功能，是否开通密码保护功能？</string> -->
+    <string name="account_cryptoguard_openup_tip">您已能够正常使用邮件加密功能.</string>
     <string name="account_cryptoguard_open_now">马上开通</string>
     <string name="account_cryptoguard_nexttime">下次吧</string>
     <string name="account_cryptoguard_apply_success">申请成功</string>
