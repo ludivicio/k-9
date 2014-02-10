@@ -1056,7 +1056,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			menu.findItem(R.id.refile).setVisible(false);
 			menu.findItem(R.id.toggle_unread).setVisible(false);
 			menu.findItem(R.id.select_text).setVisible(false);
-			menu.findItem(R.id.toggle_message_view_theme).setVisible(false);
 			menu.findItem(R.id.show_headers).setVisible(false);
 			menu.findItem(R.id.hide_headers).setVisible(false);
 		} else {
