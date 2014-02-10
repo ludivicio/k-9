@@ -442,7 +442,7 @@
     <string name="account_setup_options_mail_display_count_all">所有邮件</string>
     <string name="move_copy_cannot_copy_unsynced_message">没有与服务器同步的邮件无法进行拷贝或移动</string>
     <string name="account_setup_failed_dlg_title">无法完成设置</string>
-    <string name="account_setup_failed_dlg_auth_message_fmt">用户名或密码错误。</string>
+    <string name="account_setup_failed_dlg_auth_message_fmt">用户名或密码错误（提示：一些邮箱需要打开POP3/SMTP服务后才能正常使用）。</string>
     <string name="account_setup_failed_dlg_certificate_message_fmt">无法使用加密方法连接到服务器。</string>
     <string name="account_setup_failed_dlg_server_message_fmt">无法连接到服务器。</string>
     <string name="account_setup_failed_dlg_edit_details_action">编辑详细信息</string>
