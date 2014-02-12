@@ -498,16 +498,20 @@ public class Utility {
         }
         // Get the extension of the file, if any.
         int index = filename.lastIndexOf('.');
-        String format;
+        
+        // modified by lxc at 2014-02-11
+        // 修复k9的bug，文件名中带%的在格式化（format）时容易出异常
+        String format = "";
+        String extension = "";
         if (index != -1) {
-            String name = filename.substring(0, index);
-            String extension = filename.substring(index);
-            format = name + "-%d" + extension;
+        	format = filename.substring(0, index);
+            extension = filename.substring(index);
         } else {
-            format = filename + "-%d";
+        	format = filename;
         }
+        
         for (int i = 2; i < Integer.MAX_VALUE; i++) {
-            file = new File(directory, String.format(format, i));
+            file = new File(directory, format + "-" + i + extension);
             if (!file.exists()) {
                 return file;
             }
