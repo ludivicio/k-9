@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -2472,27 +2471,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         switch (requestCode) {
         case ACTIVITY_REQUEST_PICK_ATTACHMENT:
-        	
         	Uri uri = data.getData();
-        	
-        	// modified by lxc at 2014-02-12
-        	// 针对Android4.4+做的处理
-        	if(Build.VERSION.SDK_INT >= 19) {
-                final int takeFlags = data.getFlags()
-                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                
-                // Check for the freshest data.
-                try {
-                	Class<? extends ContentResolver> clazz = getContentResolver().getClass();
-        			Method method = clazz.getDeclaredMethod("takePersistableUriPermission", Uri.class, int.class);
-        			method.setAccessible(true);
-        			method.invoke(getContentResolver(), uri, takeFlags);
-        		} catch (Exception e) {
-        			e.printStackTrace();
-        		}
-        	}
-        	
             addAttachment(uri);
             mDraftNeedsSaving = true;
             break;
