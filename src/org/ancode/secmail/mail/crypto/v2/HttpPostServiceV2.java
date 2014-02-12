@@ -43,6 +43,13 @@ public class HttpPostServiceV2 {
 	private static final String REG_PROTECT = "https://www.han2011.com/secmail/v2/protect_enable";
 	private static final String SEND_EMAIL = "https://www.han2011.com/secmail/v2/send";
 	private static final String RECEIVE_EMAIL = "https://www.han2011.com/secmail/v2/get";
+	
+//	private static final String REG_REQUEST = "http://www.gezimail.com/secmail/v2/reg_request";
+//	private static final String REG_CONFIRM = "http://www.gezimail.com/secmail/v2/reg_confirm";
+//	private static final String REG_PROTECT = "http://www.gezimail.com/secmail/v2/protect_enable";
+//	private static final String SEND_EMAIL = "http://www.gezimail.com/secmail/v2/send";
+//	private static final String RECEIVE_EMAIL = "http://www.gezimail.com/secmail/v2/get";
+	
 
 	private static HttpClient getHttpClient() {
 		

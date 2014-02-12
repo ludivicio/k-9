@@ -148,16 +148,16 @@ public class HttpPostUtil {
 			Log.e(TAG, "Encrypt failed");
 		}
 
-		Log.i(TAG,"from: " + from);
-		Log.i(TAG, "to: " + to);
-		Log.i(TAG, "aesKey: " + aesKey);
-		Log.i(TAG, "regCode: " + regCode);
-		Log.i(TAG, "deviceUuid: " + deviceUuid);
-		for(int i = 0; i < aesKeyList.size(); i ++) {
-			Log.e(TAG, "uuid" + (i + 1) + ": " + aesKeyList.get(i).getUuid());
-			Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i).getAesKey());
-			Log.e(TAG, "encryptkey" + (i + 1) + ": " + aesKeyList.get(i).getEncryptAesKey());
-		}
+//		Log.i(TAG,"from: " + from);
+//		Log.i(TAG, "to: " + to);
+//		Log.i(TAG, "aesKey: " + aesKey);
+//		Log.i(TAG, "regCode: " + regCode);
+//		Log.i(TAG, "deviceUuid: " + deviceUuid);
+//		for(int i = 0; i < aesKeyList.size(); i ++) {
+//			Log.e(TAG, "uuid" + (i + 1) + ": " + aesKeyList.get(i).getUuid());
+//			Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i).getAesKey());
+//			Log.e(TAG, "encryptkey" + (i + 1) + ": " + aesKeyList.get(i).getEncryptAesKey());
+//		}
 		
 		return HttpPostServiceV2.postSendEmail(from, to, verify, deviceUuid, aesKeyList);
 	}
@@ -197,16 +197,16 @@ public class HttpPostUtil {
 		
 		List<String> aesKeyList = parseAesKeys(pr, aesKey);
 		
-		Log.i(TAG, "owner:" + owner);
-		Log.i(TAG, "aesKey:" + aesKey);
-		Log.i(TAG, "regCode:" + regCode);
-		Log.i(TAG, "deviceUuid:" + deviceUuid);
-		if(aesKeyList != null && aesKeyList.size() == uuidList.size()) {
-			for (int i = 0; i < uuidList.size(); i++) {
-				Log.e(TAG, "uuid" + (i + 1) + ": " + uuidList.get(i));
-				Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i));
-			}	
-		}
+//		Log.i(TAG, "owner:" + owner);
+//		Log.i(TAG, "aesKey:" + aesKey);
+//		Log.i(TAG, "regCode:" + regCode);
+//		Log.i(TAG, "deviceUuid:" + deviceUuid);
+//		if(aesKeyList != null && aesKeyList.size() == uuidList.size()) {
+//			for (int i = 0; i < uuidList.size(); i++) {
+//				Log.e(TAG, "uuid" + (i + 1) + ": " + uuidList.get(i));
+//				Log.e(TAG, "key" + (i + 1) + ": " + aesKeyList.get(i));
+//			}	
+//		}
 		
 		return aesKeyList;
 	}
