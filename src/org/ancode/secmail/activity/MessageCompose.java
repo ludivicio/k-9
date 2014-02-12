@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -638,7 +639,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         mSubjectView = (EditText) findViewById(R.id.subject);
         mSubjectView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        
         // modified by lxc at 2013-11-22
         mCryptStatus = (TextView) findViewById(R.id.crypt_status);
 		if (mAccount.hasReg()) {
@@ -649,8 +649,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 			mCryptStatus.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_unlock));
 			encryptEnabled = false;
 		}
-
-        
         
         mAddToFromContacts = (ImageButton) findViewById(R.id.add_to);
         mAddCcFromContacts = (ImageButton) findViewById(R.id.add_cc);
@@ -2189,11 +2187,22 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         if (mAccount.getCryptoProvider().isAvailable(this)) {
             Toast.makeText(this, R.string.attachment_encryption_unsupported, Toast.LENGTH_LONG).show();
         }
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType(mime_type);
+
+        // modified by lxc at 2014-02-12
+        // Android4.4+通过Provider获取图片后，图片的URI发生了变化，因此需要进行处理
+        Intent intent = new Intent();  
+        intent.addCategory(Intent.CATEGORY_OPENABLE);  
+        intent.setType(mime_type);  
+        
+        //根据版本号不同使用不同的Action  
+        if (Build.VERSION.SDK_INT < 19) {  
+            intent.setAction(Intent.ACTION_GET_CONTENT);  
+        } else {  
+            intent.setAction("android.intent.action.OPEN_DOCUMENT");  
+        }  
+    
         mIgnoreOnPause = true;
-        startActivityForResult(Intent.createChooser(i, null), ACTIVITY_REQUEST_PICK_ATTACHMENT);
+        startActivityForResult(Intent.createChooser(intent, null), ACTIVITY_REQUEST_PICK_ATTACHMENT);
     }
 
     private void addAttachment(Uri uri) {
@@ -2463,7 +2472,28 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         switch (requestCode) {
         case ACTIVITY_REQUEST_PICK_ATTACHMENT:
-            addAttachment(data.getData());
+        	
+        	Uri uri = data.getData();
+        	
+        	// modified by lxc at 2014-02-12
+        	// 针对Android4.4+做的处理
+        	if(Build.VERSION.SDK_INT >= 19) {
+                final int takeFlags = data.getFlags()
+                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                
+                // Check for the freshest data.
+                try {
+                	Class<? extends ContentResolver> clazz = getContentResolver().getClass();
+        			Method method = clazz.getDeclaredMethod("takePersistableUriPermission", Uri.class, int.class);
+        			method.setAccessible(true);
+        			method.invoke(getContentResolver(), uri, takeFlags);
+        		} catch (Exception e) {
+        			e.printStackTrace();
+        		}
+        	}
+        	
+            addAttachment(uri);
             mDraftNeedsSaving = true;
             break;
         case CONTACT_PICKER_TO:
