@@ -254,7 +254,7 @@ public class K9 extends Application {
     
     // modified by lxc at 2014-01-13
     // Set default path of attachment.
-    private static String ATTACHMENT_DEFAULT_PATH = Environment.getExternalStorageDirectory().toString() + "/Secmail/attachment/temp/";;
+    private static String ATTACHMENT_DEFAULT_PATH = Environment.getExternalStorageDirectory().toString() + "/Secmail/attachments/";
     private static String mAttachmentDefaultPath = ATTACHMENT_DEFAULT_PATH;
     
     private static boolean mWrapFolderNames = false;
