@@ -96,6 +96,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.os.StrictMode;
 import android.provider.OpenableColumns;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -568,6 +569,13 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         super.onCreate(savedInstanceState);
 
+        // modified by lxc at 2014-02-13
+        // 允许在主线程中执行网络服务
+        if( Build.VERSION.SDK_INT > 9 ) {
+        	StrictMode.setThreadPolicy(
+            		new StrictMode.ThreadPolicy.Builder().detectNetwork().build());
+        }
+        
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
             finish();
             return;
@@ -2912,53 +2920,6 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
         return super.onCreateDialog(id);
     }
-
-    /**
-     * Add all attachments of an existing message as if they were added by hand.
-     *
-     * @param part
-     *         The message part to check for being an attachment. This method will recurse if it's
-     *         a multipart part.
-     * @param depth
-     *         The recursion depth. Currently unused.
-     *
-     * @return {@code true} if all attachments were able to be attached, {@code false} otherwise.
-     *
-     * @throws MessagingException
-     *          In case of an error
-     */
-//    private boolean loadAttachments(Part part, int depth) throws MessagingException {
-//        if (part.getBody() instanceof Multipart) {
-//            Multipart mp = (Multipart) part.getBody();
-//            boolean ret = true;
-//            for (int i = 0, count = mp.getCount(); i < count; i++) {
-//                if (!loadAttachments(mp.getBodyPart(i), depth + 1)) {
-//                    ret = false;
-//                }
-//            }
-//            return ret;
-//        }
-//
-//        String contentType = MimeUtility.unfoldAndDecode(part.getContentType());
-//        String name = MimeUtility.getHeaderParameter(contentType, "name");
-//        if (name != null) {
-//            Body body = part.getBody();
-//            if (body != null && body instanceof LocalAttachmentBody) {
-//                final Uri uri = ((LocalAttachmentBody) body).getContentUri();
-//                mHandler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        addAttachment(uri);
-//                    }
-//                });
-//            } else {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
-
-    
     
     /**
 	 * Add all attachments of an existing message as if they were added by hand.
@@ -3221,7 +3182,13 @@ public class MessageCompose extends K9Activity implements OnClickListener,
 
         // modified by lxc at 2013-11-23
         if (!mSourceMessageProcessed) {
-			if (!loadAttachments(message, 0, getAesKeyList((LocalMessage) message), 0)) {
+        	// modified by lxc at 2014-02-13
+        	// 遍历隐藏的txt附件时，loadAttachments方法会返回false，导致系统认为没有加载完所有的附件，
+        	// 如果获取的aesKeyList不为null或者size大于0，则认为这是一封加密邮件，
+        	// 并且已经加载完所有的附件
+        	List<String> aesKeyList = getAesKeyList((LocalMessage) message);
+        	boolean result = loadAttachments(message, 0, aesKeyList , 0);
+			if (!result && (aesKeyList == null || aesKeyList.size() == 0)) {
 				mHandler.sendEmptyMessage(MSG_SKIPPED_ATTACHMENTS);
 			}
 		}
@@ -3599,8 +3566,9 @@ public class MessageCompose extends K9Activity implements OnClickListener,
             mQuotedHTML.setText(mQuotedHtmlContent.getQuotedContent());
 
             // TODO: Also strip the signature from the text/plain part
-            mQuotedText.setText(quoteOriginalTextMessage(mSourceMessage,
-                    getBodyTextFromMessage(mSourceMessage, SimpleMessageFormat.TEXT), mQuoteStyle));
+            String bodyText = getBodyTextFromMessage(mSourceMessage, SimpleMessageFormat.TEXT);
+            String quoteText = quoteOriginalTextMessage(mSourceMessage, bodyText, mQuoteStyle);
+            mQuotedText.setText(quoteText);
 
         } else if (mQuotedTextFormat == SimpleMessageFormat.TEXT) {
             if (mAccount.isStripSignature() &&
@@ -3687,7 +3655,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
  		if (cryptUuidMap != null && !cryptUuidMap.isEmpty()) {
  			List<String> keys = new ArrayList<String>(cryptUuidMap.keySet());
  			Collections.sort(keys);
- 			List<String> uuidList = new ArrayList<String>();
+ 			final List<String> uuidList = new ArrayList<String>();
  			for (String key : keys) {
  				uuidList.add(cryptUuidMap.get(key));
  			}
@@ -3699,6 +3667,7 @@ public class MessageCompose extends K9Activity implements OnClickListener,
  				e.printStackTrace();
  				Log.e("lxc", "Get key list failed!");
  			}
+ 			
  		}
  		return aesKeyList;
  	}
