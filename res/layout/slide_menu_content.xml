@@ -6,17 +6,17 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50.0dip"
+        android:layout_height="48.0dip"
         android:background="#333333" >
 
-        <ImageView
-            android:id="@+id/iv_app_logo"
-            android:layout_width="35.0dip"
-            android:layout_height="35.0dip"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10.0dip"
-            android:background="@drawable/iv_app_logo"
-            android:contentDescription="@null" />
+<!--         <ImageView -->
+<!--             android:id="@+id/iv_app_logo" -->
+<!--             android:layout_width="35.0dip" -->
+<!--             android:layout_height="35.0dip" -->
+<!--             android:layout_centerVertical="true" -->
+<!--             android:layout_marginLeft="10.0dip" -->
+<!--             android:background="@drawable/iv_app_logo" -->
+<!--             android:contentDescription="@null" /> -->
 
         <TextView
             android:id="@+id/tv_user_email"
@@ -24,19 +24,19 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10.0dip"
-            android:layout_toRightOf="@id/iv_app_logo"
             android:textColor="#c1c1c1"
-            android:textSize="16.0dip" />
+            android:textSize="18.0dip" />
 
-<!--         <ImageButton -->
-<!--             android:id="@+id/ib_account_setting" -->
-<!--             android:layout_width="30dip" -->
-<!--             android:layout_height="30dip" -->
-<!--             android:layout_alignParentRight="true" -->
-<!--             android:layout_centerVertical="true" -->
-<!--             android:layout_marginRight="10dip" -->
-<!--             android:background="@drawable/ib_account_setting" -->
-<!--             android:contentDescription="@null" /> -->
+        <ImageButton
+            android:id="@+id/ib_account_encrypt"
+            android:layout_width="30dip"
+            android:layout_height="30dip"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:layout_toLeftOf="@id/tv_user_email"
+            android:background="@drawable/ic_button_lock"
+            android:contentDescription="@null" />
     </RelativeLayout>
 
     
@@ -52,7 +52,7 @@
     <TextView
             android:id="@+id/tv_account_setting"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48.0dip"
             android:gravity="center"
             android:paddingTop="3dip"
             android:paddingBottom="3dip"

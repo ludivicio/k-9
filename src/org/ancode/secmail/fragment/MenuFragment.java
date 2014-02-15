@@ -41,6 +41,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -49,12 +50,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
 
 public class MenuFragment extends SherlockFragment {
 
 	private ListView mListView;
 	private TextView mUserEmail;
 	private TextView mAccountSetting;
+	private ImageButton mEncryptButton;
 	private MessageList mActivity;
 	private Account mAccount;
 	private FolderListAdapter mAdapter;
@@ -62,7 +66,16 @@ public class MenuFragment extends SherlockFragment {
 	private FontSizes mFontSizes = K9.getFontSizes();
 	private LayoutInflater mInflater;
 	private MessagingController mController;
-
+	
+	private String mCurFolderName = "INBOX";
+	private String mFolderName = "";
+	
+	private static final int CHOOSE_FOLDER_EVENT = 0;
+	private static final int ENCRYPT_EVENT = 1;
+	private static final int DECRYPT_EVENT = 2;
+	
+	private int closedEvent;
+	
 	class FolderListHandler extends Handler {
 
 		public void newFolders(final List<FolderInfoHolder> newFolders) {
@@ -172,6 +185,31 @@ public class MenuFragment extends SherlockFragment {
 		if(mAccount != null && !TextUtils.isEmpty(mAccount.getEmail())) {
 			mUserEmail.setText(mAccount.getEmail());
 		} 
+		
+		mEncryptButton = (ImageButton) v.findViewById(R.id.ib_account_encrypt);
+		
+		if (mAccount.getRegCode() == null || mAccount.getRegCode().trim().equals("")) {
+			mEncryptButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_unlock));
+		} else {
+			mEncryptButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_lock));
+		}
+		
+		mEncryptButton.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				
+				if (mAccount.getRegCode() == null || mAccount.getRegCode().trim().equals("")) {
+					closedEvent = ENCRYPT_EVENT;
+				} else {
+					closedEvent = DECRYPT_EVENT;
+				}
+				
+				mActivity.toggle();
+			}
+			
+		});
+		
 		mAccountSetting = (TextView) v.findViewById(R.id.tv_account_setting);
 		mAccountSetting.setOnClickListener(new OnClickListener() {
 			
@@ -181,6 +219,9 @@ public class MenuFragment extends SherlockFragment {
 			}
 		});
 		
+		SlidingMenu slidingMenu = mActivity.getSlidingMenu();
+		slidingMenu.setOnClosedListener(onClosedListener);
+		
 		mListView.setFastScrollEnabled(true);
 		mListView.setItemsCanFocus(false);
 		mListView.setChoiceMode(ListView.CHOICE_MODE_NONE);
@@ -188,12 +229,10 @@ public class MenuFragment extends SherlockFragment {
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+				mFolderName = ((FolderInfoHolder) mAdapter.getItem(position)).name;
+				closedEvent = CHOOSE_FOLDER_EVENT;
 				mActivity.toggle();
-				final String folderName = ((FolderInfoHolder) mAdapter.getItem(position)).name;
-				onOpenFolder(folderName);
 			}
-
 		});
 
 		mAdapter = new FolderListAdapter();
@@ -241,6 +280,27 @@ public class MenuFragment extends SherlockFragment {
 		mController.listFolders(mAccount, forceRemote, mAdapter.mListener);
 	}
 
+	private OnClosedListener onClosedListener = new OnClosedListener() {
+		
+		@Override
+		public void onClosed() {
+			if(closedEvent == CHOOSE_FOLDER_EVENT) {
+				if(mCurFolderName != null && !mCurFolderName.equals(mFolderName)) {
+					mCurFolderName = mFolderName;
+					onOpenFolder(mFolderName);
+					closedEvent = -1;
+				} 
+			} else if(closedEvent == ENCRYPT_EVENT) {
+				closedEvent = -1;
+				mActivity.registEncryptService(mEncryptButton);
+			} else if(closedEvent == DECRYPT_EVENT) {
+				closedEvent = -1;
+				mActivity.registDecryptService(mEncryptButton);
+			}
+		}
+	};
+	
+	
 	class FolderListAdapter extends BaseAdapter implements Filterable {
 
 		private ArrayList<FolderInfoHolder> mFolders = new ArrayList<FolderInfoHolder>();
@@ -814,5 +874,5 @@ public class MenuFragment extends SherlockFragment {
 					false);
 		}
 	}
-
+	
 }

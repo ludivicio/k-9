@@ -1,5 +1,7 @@
 package org.ancode.secmail.activity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -7,11 +9,14 @@ import org.ancode.secmail.Account;
 import org.ancode.secmail.Account.SortType;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.K9.SplitViewMode;
+import org.ancode.secmail.BaseAccount;
 import org.ancode.secmail.Preferences;
 import org.ancode.secmail.R;
+import org.ancode.secmail.activity.Accounts.AccountsAdapter;
 import org.ancode.secmail.activity.setup.AccountSettings;
 import org.ancode.secmail.activity.setup.FolderSettings;
 import org.ancode.secmail.activity.setup.Prefs;
+import org.ancode.secmail.controller.MessagingController;
 import org.ancode.secmail.crypto.PgpData;
 import org.ancode.secmail.fragment.MenuFragment;
 import org.ancode.secmail.fragment.MessageListFragment;
@@ -19,6 +24,10 @@ import org.ancode.secmail.fragment.MessageListFragment.MessageListFragmentListen
 import org.ancode.secmail.fragment.MessageViewFragment;
 import org.ancode.secmail.fragment.MessageViewFragment.MessageViewFragmentListener;
 import org.ancode.secmail.mail.Message;
+import org.ancode.secmail.mail.crypto.v2.AsyncHttpTools;
+import org.ancode.secmail.mail.crypto.v2.CryptoguardUiHelper;
+import org.ancode.secmail.mail.crypto.v2.HttpPostUtil;
+import org.ancode.secmail.mail.crypto.v2.PostResultV2;
 import org.ancode.secmail.mail.store.StorageManager;
 import org.ancode.secmail.search.LocalSearch;
 import org.ancode.secmail.search.SearchAccount;
@@ -31,6 +40,7 @@ import org.ancode.secmail.view.MessageTitleView;
 import org.ancode.secmail.view.ViewSwitcher;
 import org.ancode.secmail.view.ViewSwitcher.OnSwitchCompleteListener;
 
+import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -46,7 +56,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -174,11 +186,11 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	 */
 	private boolean mNoThreading;
 	
-	private enum DisplayMode {
+	public enum DisplayMode {
 		MESSAGE_LIST, MESSAGE_VIEW, SPLIT_VIEW
 	}
 	
-	private DisplayMode mDisplayMode;
+	public DisplayMode mDisplayMode;
 	
 	private MessageReference mMessageReference;
 
@@ -189,7 +201,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	 */
 	private boolean mMessageListWasDisplayed = false;
 	
-	private boolean mSlidingMenuWasClosed = true;
+//	private boolean mSlidingMenuWasClosed = true;
 	
 	private ViewSwitcher mViewSwitcher;
 	
@@ -241,7 +253,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		initializeFragments();
 		
 		displayViews();
-
+		
 		ChangeLog cl = new ChangeLog(this);
 		if (cl.isFirstRun()) {
 			cl.getLogDialog().show();
@@ -257,18 +269,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		}		
 		return false;
 	}
-	
-	private Handler mHandler = new Handler() {
-		
-		public void handleMessage(android.os.Message msg) {
-			if(msg.what == 0x123) {
-				
-				initializeDisplayMode(null);
-				initializeFragments();
-				displayViews();
-			}
-		};
-	};
 	
 	
 	@Override
@@ -295,20 +295,9 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			return;
 		}
 		
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-
-				while( true) {
-					if( mSlidingMenuWasClosed ) {
-						mHandler.sendEmptyMessage(0x123);
-						break;
-					}
-				}
-			}
-			
-		}).start();
+		initializeDisplayMode(null);
+		initializeFragments();
+		displayViews();
 		
 	}
 
@@ -337,22 +326,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		mSlidingMenu.setFadeEnabled(true);
 		mSlidingMenu.setFadeDegree(0.35f);
 		mSlidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
-		
-		mSlidingMenu.setOnClosedListener(new OnClosedListener() {
-			
-			@Override
-			public void onClosed() {
-				mSlidingMenuWasClosed = true;
-			}
-		});
-		
-		mSlidingMenu.setOnOpenedListener(new OnOpenedListener() {
-			
-			@Override
-			public void onOpened() {
-				mSlidingMenuWasClosed = false;
-			}
-		});
 		
 	}
 
@@ -1601,4 +1574,126 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	public Account getAccount() {
     	return mAccount;
     }
+	
+	// modified by lxc at 2013-11-22
+    private static final int DIALOG_REG_SUCCESS = 0;
+	private static final int DIALOG_REG_FAILED = 1;
+	private static final int DIALOG_CANCEL_REG = 2;
+	private static final int DIALOG_PROTECT_ENABLED = 3;
+	
+	private ImageButton encryptButton;
+	public void registDecryptService(ImageButton imageButton) {
+		encryptButton = imageButton;
+		showDialog(DIALOG_CANCEL_REG);
+		encryptButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_unlock));
+	}
+	
+	public void registEncryptService(ImageButton imageButton) {
+		encryptButton = imageButton;
+
+		// modified by lxc at 2013-11-11
+		AsyncHttpTools.execute(new AsyncHttpTools.TaskListener() {
+			
+			@Override
+			public PostResultV2 executeTask() {
+				return HttpPostUtil.postRegRequest(mAccount, MessageList.this);
+			}
+			
+			@Override
+			public void callBack(PostResultV2 result) {
+				if (result == null) {
+					Toast.makeText(
+							MessageList.this,
+							getString(R.string.apply_reg_encrypt_network_anomaly),
+							Toast.LENGTH_LONG).show();
+					return;
+				}
+				if (result.isSuccess()) {
+					mAccount.setApplyReg(true);
+					mAccount.setDeviceUuid(result.getDeviceUuid());
+					mAccount.save(Preferences.getPreferences(MessageList.this));
+					showDialog(DIALOG_REG_SUCCESS);
+				} else if (result.hasProtected()) {
+					showDialog(DIALOG_PROTECT_ENABLED);
+				} else {
+					showDialog(DIALOG_REG_FAILED);
+				}
+			}
+		});
+	}
+	
+	public Handler mHandler = new Handler() {
+	    
+		public void handleMessage(android.os.Message msg) {
+			
+			if( msg.what == 0x001 ) {
+				Account account = null;
+				if(msg.obj instanceof Account) {
+					account = (Account) msg.obj;
+				}
+				
+				encryptButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_lock));
+				
+				CryptoguardUiHelper.openProtectDialog(MessageList.this, account);
+			}
+			
+			super.handleMessage(msg);
+		}
+	};
+	
+    @Override
+    public Dialog onCreateDialog(int id) {
+        // Android recreates our dialogs on configuration changes even when they have been
+        // dismissed. Make sure we have all information necessary before creating a new dialog.
+        switch (id) {
+	        // modified by lxc at 2013-11-22
+	        // Case for secmail.
+	        case DIALOG_REG_SUCCESS: {
+				return ConfirmationDialog.create(this, id, R.string.apply_reg_encrypt_result_title,
+						R.string.apply_reg_encrypt_result_success_message, R.string.okay_action, R.string.cancel_action,
+						new Runnable() {
+							@Override
+							public void run() {
+								
+								// modified by lxc at 2013-11-05
+								// Set the handler to update the ui.
+								MessagingController.getInstance(getApplication()).setHandler(mHandler);
+								MessagingController.getInstance(getApplication()).checkMail(getBaseContext(),
+										mAccount, true, true, null);
+							}
+						});
+			}
+			case DIALOG_REG_FAILED: {
+				return ConfirmationDialog.create(this, id, R.string.apply_reg_encrypt_result_title,
+						R.string.apply_reg_encrypt_result_failed_message, R.string.okay_action, R.string.cancel_action,
+						new Runnable() {
+							@Override
+							public void run() {
+							}
+						});
+			}
+			case DIALOG_CANCEL_REG: {
+				return ConfirmationDialog.create(this, id, R.string.cancel_reg_encrypt_result_title,
+						getString(R.string.cancel_reg_encrypt_message), R.string.okay_action, R.string.cancel_action,
+						new Runnable() {
+							@Override
+							public void run() {
+									// modified by lxc at 2013-11-01
+									// cancel the register action
+									mAccount.setRegCode(null);
+									mAccount.setAesKey(null);
+									mAccount.setDeviceUuid(null);
+									mAccount.save(Preferences.getPreferences(MessageList.this));
+								}
+							});
+			}
+        }
+		
+		return super.onCreateDialog(id);
+
+    }
+    
+    
+    
+	
 }

@@ -22,6 +22,7 @@ import org.ancode.secmail.R;
 import org.ancode.secmail.activity.ActivityListener;
 import org.ancode.secmail.activity.ChooseFolder;
 import org.ancode.secmail.activity.FolderInfoHolder;
+import org.ancode.secmail.activity.MessageList;
 import org.ancode.secmail.activity.MessageReference;
 import org.ancode.secmail.activity.misc.ContactPictureLoader;
 import org.ancode.secmail.cache.EmailProviderCache;
@@ -828,6 +829,7 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
 
         initializeLayout();
         mListView.setVerticalFadingEdgeEnabled(false);
+        
         return view;
     }
 

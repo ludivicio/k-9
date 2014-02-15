@@ -11,6 +11,7 @@ import org.ancode.secmail.K9;
 import org.ancode.secmail.Preferences;
 import org.ancode.secmail.R;
 import org.ancode.secmail.activity.ChooseFolder;
+import org.ancode.secmail.activity.MessageList;
 import org.ancode.secmail.activity.MessageReference;
 import org.ancode.secmail.controller.MessagingController;
 import org.ancode.secmail.controller.MessagingListener;
@@ -240,7 +241,7 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
         mMessageView.downloadRemainderButton().setOnClickListener(this);
 
         mFragmentListener.messageHeaderViewAvailable(mMessageView.getMessageHeaderView());
-
+        
         return view;
     }
 
@@ -260,6 +261,22 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
         displayMessage(messageReference, (mPgpData == null));
     }
 
+    @Override
+    public void onResume() {
+    	// modified by lxc at 2014-02-15
+        // 在邮件查看界面禁止使用侧滑菜单
+        ((MessageList) getActivity()).getSlidingMenu().setSlidingEnabled(false);
+    	super.onResume();
+    }
+    
+    @Override
+    public void onDestroyView() {
+    	// modified by lxc at 2014-02-15
+        // 在邮件列表界面允许使用侧滑菜单
+        ((MessageList) getActivity()).getSlidingMenu().setSlidingEnabled(true);
+        super.onDestroyView();
+    }
+    
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
