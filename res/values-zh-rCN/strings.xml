@@ -989,7 +989,7 @@
     <string name="update_info">检查是否有更新</string>
     <string name="update_now">检查更新并下载</string>
     
-    <string name="account_change_label">切换账户</string>
+    <string name="account_change_label">账户列表</string>
     <string name="account_cryptoguard_type">请选择密保方式：</string>
     <string name="account_cryptoguard_type_email">邮箱</string>
     <string name="account_cryptoguard_type_mobile">手机</string>
