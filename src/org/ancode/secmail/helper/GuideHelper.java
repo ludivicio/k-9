@@ -14,7 +14,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -23,7 +22,7 @@ public abstract class GuideHelper {
 	private static Context mContext;
 	private WindowManager wm;
 	private WindowManager.LayoutParams params;
-	private FrameLayout layout;
+	private LinearLayout layout;
 	private boolean isShow = false;
 	private ViewPager viewPager;
 	private String mClassName;
@@ -31,14 +30,14 @@ public abstract class GuideHelper {
 	public GuideHelper(Context context) {
 		mContext = context;
 		mClassName = mContext.getClass().getSimpleName();
-		initializeLayout();
+		
 	}
 
 	public abstract void onCreate(View view);
 
 	public void showGuide(int layoutId) {
 		isShow = true;
-		wm.addView(layout, params);
+		initializeLayout();
 		initializeViewPager();
 		initializeData(layoutId);
 	}
@@ -80,7 +79,8 @@ public abstract class GuideHelper {
 		params.width = width;
 		params.height = height;
 
-		layout = new FrameLayout(mContext);
+		layout = new LinearLayout(mContext);
+		wm.addView(layout, params);
 	}
 
 	private void initializeViewPager() {

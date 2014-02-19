@@ -251,7 +251,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 //			cl.getLogDialog().show();
 //		}
 		
-		mGuide = new MessageListGuide(this.getApplicationContext());
+		mGuide = new MessageListGuide(this);
 		if(mGuide.isFristRun()) {
 			mGuide.showGuide(R.layout.message_list_guide);
 			mGuide.saveStatus();
@@ -624,14 +624,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	}
 
 	@Override
-	protected void onStop() {
-		if(mGuide != null) {
-			mGuide.hideGuide();
-		}
-		super.onStop();
-	}
-	
-	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
@@ -660,6 +652,13 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 
 	@Override
 	public void onBackPressed() {
+		
+		// modified by lxc at 2014-02-10
+		// Hide the guide screen.
+		if(mGuide != null) {
+			mGuide.hideGuide();
+		}
+		
 		if (mDisplayMode == DisplayMode.MESSAGE_VIEW
 				&& mMessageListWasDisplayed) {
 			showMessageList();
@@ -951,7 +950,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			updateMenu();
 			return true;
 		} else if (itemId == R.id.message_list_help) {
-			mGuide.hideGuide();
+			mGuide = new MessageListGuide(this);
 			mGuide.showGuide(R.layout.message_list_guide);
 			return true;
 		}
@@ -1405,6 +1404,11 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		} else if (fragmentManager.getBackStackEntryCount() > 0) {
 			fragmentManager.popBackStack();
 		} else if (mMessageListFragment != null && mMessageListFragment.isManualSearch()) {
+			
+			if(mGuide != null) {
+				mGuide.hideGuide();
+			}
+			
 			finish();
 		} else if (!mSingleFolderMode) {
 			onAccounts();
