@@ -1404,11 +1404,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		} else if (fragmentManager.getBackStackEntryCount() > 0) {
 			fragmentManager.popBackStack();
 		} else if (mMessageListFragment != null && mMessageListFragment.isManualSearch()) {
-			
-			if(mGuide != null) {
-				mGuide.hideGuide();
-			}
-			
 			finish();
 		} else if (!mSingleFolderMode) {
 			onAccounts();

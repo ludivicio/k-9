@@ -124,8 +124,8 @@ public abstract class GuideHelper {
 		public void onPageScrollStateChanged(int arg0) {
 			if (position == 0) {
 				layout.setVisibility(View.GONE);
-				wm.removeView(layout);
 				position = 1;
+				hideGuide();
 			}
 		}
 
