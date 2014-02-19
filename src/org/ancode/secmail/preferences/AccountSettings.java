@@ -56,9 +56,9 @@ public class AccountSettings {
                 new V(1, new IntegerResourceSetting(-1,
                         R.array.account_settings_check_frequency_values))
             ));
-        s.put("chipColor", Settings.versions(
-                new V(1, new ColorSetting(0xFF0000FF))
-            ));
+//        s.put("chipColor", Settings.versions(
+//                new V(1, new ColorSetting(0xFF0000FF))
+//            ));
         s.put("cryptoApp", Settings.versions(
                 new V(1, new StringSetting(Apg.NAME))
             ));

@@ -88,7 +88,6 @@ public class AccountSettings extends K9PreferenceActivity {
     private static final String PREFERENCE_EXPUNGE_POLICY = "expunge_policy";
     private static final String PREFERENCE_AUTO_EXPAND_FOLDER = "account_setup_auto_expand_folder";
     private static final String PREFERENCE_SEARCHABLE_FOLDERS = "searchable_folders";
-    private static final String PREFERENCE_CHIP_COLOR = "chip_color";
     private static final String PREFERENCE_LED_COLOR = "led_color";
     private static final String PREFERENCE_NOTIFICATION_OPENS_UNREAD = "notification_opens_unread";
     private static final String PREFERENCE_NOTIFICATION_UNREAD_COUNT = "notification_unread_count";
@@ -161,7 +160,6 @@ public class AccountSettings extends K9PreferenceActivity {
     private ListPreference mExpungePolicy;
     private ListPreference mSearchableFolders;
     private ListPreference mAutoExpandFolder;
-    private Preference mChipColor;
     private Preference mLedColor;
     private boolean mIncomingChanged = false;
     private CheckBoxPreference mNotificationOpensUnread;
@@ -661,14 +659,6 @@ public class AccountSettings extends K9PreferenceActivity {
         }
 
         new PopulateFolderPrefsTask().execute();
-
-        mChipColor = findPreference(PREFERENCE_CHIP_COLOR);
-        mChipColor.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                onChooseChipColor();
-                return false;
-            }
-        });
 
         mLedColor = findPreference(PREFERENCE_LED_COLOR);
         mLedColor.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
