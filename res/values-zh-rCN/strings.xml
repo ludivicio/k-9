@@ -1030,4 +1030,5 @@
     <string name="account_settings_attachment_size_1024">1G</string>
     <string name="account_settings_attachment_size_any">任意（无限制）</string>
     
+    <string name="message_list_help">帮助</string>
 </resources>

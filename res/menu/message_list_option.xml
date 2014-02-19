@@ -169,7 +169,7 @@
         android:id="@+id/compose"
         android:alphabeticShortcut="c"
         android:icon="?attr/iconActionCompose"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/compose_action"/>
 
     <!-- MessageList -->
@@ -202,7 +202,7 @@
     <item
         android:id="@+id/settings"
         android:icon="?attr/iconActionSettings"
-        android:showAsAction="always"
+        android:showAsAction="never"
         android:title="@string/preferences_action">
         <menu>
             <item
@@ -217,4 +217,9 @@
         </menu>
     </item>
 
+    <item 
+        android:id="@+id/message_list_help"
+        android:showAsAction="never"
+        android:title="@string/message_list_help" />
+        
 </menu>

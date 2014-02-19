@@ -1,7 +1,5 @@
 package org.ancode.secmail.activity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -9,10 +7,8 @@ import org.ancode.secmail.Account;
 import org.ancode.secmail.Account.SortType;
 import org.ancode.secmail.K9;
 import org.ancode.secmail.K9.SplitViewMode;
-import org.ancode.secmail.BaseAccount;
 import org.ancode.secmail.Preferences;
 import org.ancode.secmail.R;
-import org.ancode.secmail.activity.Accounts.AccountsAdapter;
 import org.ancode.secmail.activity.setup.AccountSettings;
 import org.ancode.secmail.activity.setup.FolderSettings;
 import org.ancode.secmail.activity.setup.Prefs;
@@ -23,6 +19,7 @@ import org.ancode.secmail.fragment.MessageListFragment;
 import org.ancode.secmail.fragment.MessageListFragment.MessageListFragmentListener;
 import org.ancode.secmail.fragment.MessageViewFragment;
 import org.ancode.secmail.fragment.MessageViewFragment.MessageViewFragmentListener;
+import org.ancode.secmail.guide.MessageListGuide;
 import org.ancode.secmail.mail.Message;
 import org.ancode.secmail.mail.crypto.v2.AsyncHttpTools;
 import org.ancode.secmail.mail.crypto.v2.CryptoguardUiHelper;
@@ -56,7 +53,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -67,10 +63,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnClosedListener;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenedListener;
-
-import de.cketti.library.changelog.ChangeLog;
 
 /**
  * MessageList is the primary user interface for the program. This Activity
@@ -201,11 +193,11 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	 */
 	private boolean mMessageListWasDisplayed = false;
 	
-//	private boolean mSlidingMenuWasClosed = true;
-	
 	private ViewSwitcher mViewSwitcher;
 	
-	
+	// modified by lxc at 2014-02-19
+	// User guide.
+	private MessageListGuide mGuide;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -254,10 +246,17 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		
 		displayViews();
 		
-		ChangeLog cl = new ChangeLog(this);
-		if (cl.isFirstRun()) {
-			cl.getLogDialog().show();
+//		ChangeLog cl = new ChangeLog(this);
+//		if (cl.isFirstRun()) {
+//			cl.getLogDialog().show();
+//		}
+		
+		mGuide = new MessageListGuide(this.getApplicationContext());
+		if(mGuide.isFristRun()) {
+			mGuide.showGuide(R.layout.message_list_guide);
+			mGuide.saveStatus();
 		}
+		
 	}
 	
 	// modified by lxc at 2013-12-05
@@ -625,6 +624,14 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	}
 
 	@Override
+	protected void onStop() {
+		if(mGuide != null) {
+			mGuide.hideGuide();
+		}
+		super.onStop();
+	}
+	
+	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
@@ -943,6 +950,10 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			mMessageViewFragment.onToggleAllHeadersView();
 			updateMenu();
 			return true;
+		} else if (itemId == R.id.message_list_help) {
+			mGuide.hideGuide();
+			mGuide.showGuide(R.layout.message_list_guide);
+			return true;
 		}
 
 		if (!mSingleFolderMode) {
@@ -1121,6 +1132,9 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			menu.findItem(R.id.choose_message_item).setVisible(false);
 			menu.findItem(R.id.send_messages).setVisible(false);
 			menu.findItem(R.id.expunge).setVisible(false);
+			
+			// Hide the help menu item, if not in message list mode.
+			menu.findItem(R.id.message_list_help).setVisible(false);
 		} else {
 			menu.findItem(R.id.set_sort).setVisible(false);
 			menu.findItem(R.id.choose_message_item).setVisible(true);

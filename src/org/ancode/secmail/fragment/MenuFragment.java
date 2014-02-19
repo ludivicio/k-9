@@ -68,13 +68,13 @@ public class MenuFragment extends SherlockFragment {
 	private MessagingController mController;
 	
 	private String mCurFolderName = "INBOX";
-	private String mFolderName = "";
+	private String mFolderName = "INBOX";
 	
 	private static final int CHOOSE_FOLDER_EVENT = 0;
 	private static final int ENCRYPT_EVENT = 1;
 	private static final int DECRYPT_EVENT = 2;
 	
-	private int closedEvent;
+	private int closedEvent = CHOOSE_FOLDER_EVENT;
 	
 	class FolderListHandler extends Handler {
 
