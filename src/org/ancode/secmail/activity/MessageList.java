@@ -324,7 +324,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		
 		mSlidingMenu.setFadeEnabled(true);
 		mSlidingMenu.setFadeDegree(0.35f);
-		mSlidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+		mSlidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 		
 	}
 

@@ -67,6 +67,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -1469,11 +1470,25 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     }
 
     private void onImport() {
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+//        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+//        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+//        i.addCategory(Intent.CATEGORY_OPENABLE);
+//        i.setType(MimeUtility.K9_SETTINGS_MIME_TYPE);
+    	
+    	// 针对Android4.4+做特殊处理
+        Intent i = new Intent();
         i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType(MimeUtility.K9_SETTINGS_MIME_TYPE);
-
+        
+        //根据版本号不同使用不同的Action  
+        if (Build.VERSION.SDK_INT < 19) {  
+            i.setAction(Intent.ACTION_GET_CONTENT);  
+            i.setType(MimeUtility.K9_SETTINGS_MIME_TYPE);
+        } else {  
+        	i.setType("*/*");
+            i.setAction("android.intent.action.OPEN_DOCUMENT");  
+        }  
+        
         PackageManager packageManager = getPackageManager();
         List<ResolveInfo> infos = packageManager.queryIntentActivities(i, 0);
 
@@ -1487,7 +1502,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(K9.LOG_TAG, "onActivityResult requestCode = " + requestCode + ", resultCode = " + resultCode + ", data = " + data);
+        Log.i("lxc", "onActivityResult requestCode = " + requestCode + ", resultCode = " + resultCode + ", data = " + data);
         if (resultCode != RESULT_OK)
             return;
         if (data == null) {
