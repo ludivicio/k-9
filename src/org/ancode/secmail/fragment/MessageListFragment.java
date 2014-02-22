@@ -22,7 +22,6 @@ import org.ancode.secmail.R;
 import org.ancode.secmail.activity.ActivityListener;
 import org.ancode.secmail.activity.ChooseFolder;
 import org.ancode.secmail.activity.FolderInfoHolder;
-import org.ancode.secmail.activity.MessageList;
 import org.ancode.secmail.activity.MessageReference;
 import org.ancode.secmail.activity.misc.ContactPictureLoader;
 import org.ancode.secmail.cache.EmailProviderCache;
@@ -1600,7 +1599,9 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             mHandler.remoteSearchFinished();
             mExtraSearchResults = extraResults;
             if (extraResults != null && extraResults.size() > 0) {
-                mHandler.updateFooter(String.format(mContext.getString(R.string.load_more_messages_fmt), acct.getRemoteSearchNumResults()));
+            	// modified by lxc at 2014-02-22
+            	// 再加载25封邮件 改为 加载更多邮件
+                mHandler.updateFooter(String.format(mContext.getString(R.string.message_list_load_more_messages_action), acct.getRemoteSearchNumResults()));
             } else {
                 mHandler.updateFooter("");
             }
@@ -1951,11 +1952,9 @@ public class MessageListFragment extends SherlockFragment implements OnItemClick
             } else {
                 String message;
                 if (!mCurrentFolder.lastCheckFailed) {
-                    if (mAccount.getDisplayCount() == 0) {
-                        message = mContext.getString(R.string.message_list_load_more_messages_action);
-                    } else {
-                        message = String.format(mContext.getString(R.string.load_more_messages_fmt), mAccount.getDisplayCount());
-                    }
+                	// modified by lxc at 2014-02-22
+                	// 再加载25封邮件 改为 加载更多邮件
+                	message = mContext.getString(R.string.message_list_load_more_messages_action);
                 } else {
                     message = mContext.getString(R.string.status_loading_more_failed);
                 }
