@@ -716,6 +716,27 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 		}
 	}
 
+	/**
+	 * modified by lxc at 2014-02-22
+	 * 用户点击返回按钮时，删除未配置完成的账户
+	 */
+	@Override
+	public void onBackPressed() {
+		if(mAccount != null) {
+            try {
+            	mAccount.getLocalStore().delete();
+            } catch (Exception e) {
+                // Ignore, this may lead to localStores on sd-cards that
+                // are currently not inserted to be left
+            }
+            MessagingController.getInstance(getApplication()).notifyAccountCancel(AccountSetupBasics.this, mAccount);
+            Preferences.getPreferences(AccountSetupBasics.this).deleteAccount(mAccount);
+            K9.setServicesEnabled(AccountSetupBasics.this);
+		}
+		super.onBackPressed();
+	}
+	
+	
 	private void onManualSetup() {
 		String email = mEmailView.getText().toString();
 		String password = mPasswordView.getText().toString();
