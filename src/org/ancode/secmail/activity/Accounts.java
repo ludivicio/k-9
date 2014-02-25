@@ -51,6 +51,7 @@ import org.ancode.secmail.search.SearchSpecification.Attribute;
 import org.ancode.secmail.search.SearchSpecification.Searchfield;
 import org.ancode.secmail.update.AppUpdate;
 import org.ancode.secmail.update.AppUpdateService;
+import org.ancode.secmail.update.internal.IgnorePersistent;
 import org.ancode.secmail.update.internal.SimpleJSONParser;
 
 import android.app.Activity;
@@ -156,8 +157,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     private TextView mActionBarUnread;
     
     // modified by lxc at 2013-11-22
-    private final static String UPDATE_URL = "http://www.han2011.com/update/update.ini";
-//    private final static String UPDATE_URL = "http://www.gezimail.com/update/update.ini";
+    private final static String UPDATE_URL = "http://www.gezimail.com/update.json";
     private AppUpdate appUpdate;
 	
     
@@ -431,8 +431,14 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         super.onCreate(icicle);
 
         // modified by lxc at 2013-11-22
-        appUpdate = AppUpdateService.getAppUpdate(this);
-		appUpdate.checkLatestVersion(UPDATE_URL, new SimpleJSONParser());
+        
+        long oldTime = new IgnorePersistent(this).load();
+        long newTime = System.currentTimeMillis();
+        
+        if(oldTime == 0 || newTime - oldTime > 3600 * 24 * 7 * 1000L) {
+        	appUpdate = AppUpdateService.getAppUpdate(this);
+        	appUpdate.checkLatestVersion(UPDATE_URL, new SimpleJSONParser());
+        }
         
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts();
@@ -1152,7 +1158,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         // Case for secmail.
         case DIALOG_REG_SUCCESS: {
 			return ConfirmationDialog.create(this, id, R.string.apply_reg_encrypt_result_title,
-					R.string.apply_reg_encrypt_result_success_message, R.string.okay_action, R.string.cancel_action,
+					R.string.apply_reg_encrypt_result_success_message, R.string.okay_action, -1,
 					new Runnable() {
 						@Override
 						public void run() {
@@ -1185,6 +1191,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 								
 								// modified by lxc at 2013-11-01
 								// cancel the register action
+								realAccount.setApplyReg(false);
 								realAccount.setRegCode(null);
 								realAccount.setAesKey(null);
 								realAccount.setDeviceUuid(null);
@@ -1311,15 +1318,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 			onCompose();
 		} else if (itemId == R.id.about) {
 			onAbout();
-		} 
-		
-		// modified by lxc at 2014-01-16
-		// Hide search menu item.
-//		else if (itemId == R.id.search) {
-//			onSearchRequested();
-//		} 
-		
-		else if (itemId == R.id.export_all) {
+		} else if (itemId == R.id.check_update) {
+			onCheckNewVersion();
+		} else if (itemId == R.id.export_all) {
 			onExport(true, null);
 		} else if (itemId == R.id.import_settings) {
 			onImport();
@@ -1404,6 +1405,12 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         .show();
     }
 
+    private void onCheckNewVersion() {
+    	appUpdate = AppUpdateService.getAppUpdate(this);
+    	appUpdate.checkLatestVersion(UPDATE_URL, new SimpleJSONParser());
+    }
+    
+    
     /**
      * Get current version number.
      *
@@ -1920,14 +1927,12 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         }
     }
 
-    
-    
     private class RegDecryptClickListener implements OnClickListener {
 
 		final Account account;
 
-		RegDecryptClickListener(Account nAccount) {
-			account = nAccount;
+		RegDecryptClickListener(Account mAccount) {
+			account = mAccount;
 		}
 
 		@Override
@@ -1943,8 +1948,8 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 		final Account account;
 		Context context;
 
-		RegEncryptClickListener(Account nAccount, Context mContext) {
-			account = nAccount;
+		RegEncryptClickListener(Account mAccount, Context mContext) {
+			account = mAccount;
 			context = mContext;
 		}
 
@@ -1985,7 +1990,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
 	}
     
-    
+	
     private class AccountClickListener implements OnClickListener {
 
         final LocalSearch search;

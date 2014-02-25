@@ -1644,9 +1644,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 				if(msg.obj instanceof Account) {
 					account = (Account) msg.obj;
 				}
-				
 				encryptButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_lock));
-				
 				CryptoguardUiHelper.openProtectDialog(MessageList.this, account);
 			}
 			
@@ -1663,7 +1661,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	        // Case for secmail.
 	        case DIALOG_REG_SUCCESS: {
 				return ConfirmationDialog.create(this, id, R.string.apply_reg_encrypt_result_title,
-						R.string.apply_reg_encrypt_result_success_message, R.string.okay_action, R.string.cancel_action,
+						R.string.apply_reg_encrypt_result_success_message, R.string.okay_action, -1,
 						new Runnable() {
 							@Override
 							public void run() {
@@ -1693,6 +1691,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 							public void run() {
 									// modified by lxc at 2013-11-01
 									// cancel the register action
+									mAccount.setApplyReg(false);
 									mAccount.setRegCode(null);
 									mAccount.setAesKey(null);
 									mAccount.setDeviceUuid(null);

@@ -768,8 +768,12 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
     	
         final List<String> uuidList = getUuids(message, account);
         
+        for(String uuid : uuidList) {
+        	Log.i("lxc", "uuid: " + uuid);
+        }
+        
         if(uuidList.size() == 0) {
-        	Log.e("lxc", "代码执行到了这里，uuidList的size值为0");
+        	Log.e("lxc", "uuidList的size值为0");
         	setMessage(message, account, pgpData, null);
         	return;
         }
@@ -809,11 +813,19 @@ public class MessageViewFragment extends SherlockFragment implements OnClickList
 					toast.setGravity(Gravity.TOP, 0, 0);
 					toast.show();
 					
+					mAccount.setApplyReg(false);
 					mAccount.setRegCode(null);
 					mAccount.setAesKey(null);
 					mAccount.setDeviceUuid(null);
 					mAccount.save(Preferences.getPreferences(getActivity()));
 				} else {
+					
+//					Log.i("lxc", "from: " + mAccount.getEmail());
+//					Log.i("lxc", "aesKey: " + mAccount.getAesKey());
+//					Log.i("lxc", "regCode: " + mAccount.getRegCode());
+//					Log.i("lxc", "deviceUuid: " + mAccount.getDeviceUuid());
+//					Log.i("lxc", "aesKeyList.size() == " + ((ArrayList<String>) obj).size());
+					
 					setMessage(message, account, pgpData, (ArrayList<String>) obj);
 					// Show the download button.
 					mMessageView.setShowDownloadButton(message);

@@ -39,7 +39,6 @@ public class FoundVersionDialog {
 		View ignore = dialog.findViewById(R.id.ignore);
 		View update = dialog.findViewById(R.id.update);
 		final CheckBox laterOnWifi = (CheckBox) dialog.findViewById(R.id.only_wifi);
-
 		if (NetworkUtil.getNetworkType(context) != NetworkUtil.WIFI) {
 			laterOnWifi.setVisibility(View.VISIBLE);
 		} else {

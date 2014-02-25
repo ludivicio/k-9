@@ -13,7 +13,7 @@ public class SimpleJSONParser implements ResponseParser {
 	@Override
 	public Version parser(String response) {
 		Version version = null;
-		Log.v("secmail", response);
+		Log.v("lxc", response);
 		try {
 			JSONTokener jsonParser = new JSONTokener(response);
 			JSONObject v = (JSONObject) jsonParser.nextValue();

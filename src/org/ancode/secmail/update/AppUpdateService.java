@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.ancode.secmail.R;
 import org.ancode.secmail.update.internal.FoundVersionDialog;
+import org.ancode.secmail.update.internal.IgnorePersistent;
 import org.ancode.secmail.update.internal.NetworkUtil;
 import org.ancode.secmail.update.internal.ResponseCallback;
 import org.ancode.secmail.update.internal.VerifyTask;
@@ -218,6 +219,7 @@ public class AppUpdateService {
 
 		@Override
 		public void doIgnore() {
+			new IgnorePersistent(context).save(System.currentTimeMillis());
 		}
 
 	}

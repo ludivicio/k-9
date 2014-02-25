@@ -18,4 +18,10 @@
         <change>添加对国内常用邮箱的支持</change>
         <change>实现侧滑菜单</change>
     </release> 
+    <release version="1.72" versioncode="19003" >
+        <change>增加对Android4.4的支持</change>
+        <change>优化侧滑菜单</change>
+        <change>增加检查更新功能</change>
+        <change>修复一些bug</change>
+    </release> 
 </changelog>

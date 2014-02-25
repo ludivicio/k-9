@@ -46,6 +46,7 @@ public class ConfirmationDialog {
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title);
         builder.setMessage(message);
+        builder.setCancelable(false);
         builder.setPositiveButton(confirmButton,
         new DialogInterface.OnClickListener() {
             @Override
@@ -54,16 +55,19 @@ public class ConfirmationDialog {
                 action.run();
             }
         });
-        builder.setNegativeButton(cancelButton,
-        new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                activity.dismissDialog(dialogId);
-                if (negativeAction != null) {
-                    negativeAction.run();
-                }
-            }
-        });
+        
+        if(cancelButton != -1) {
+	        builder.setNegativeButton(cancelButton,
+	        new DialogInterface.OnClickListener() {
+	            @Override
+	            public void onClick(DialogInterface dialog, int which) {
+	                activity.dismissDialog(dialogId);
+	                if (negativeAction != null) {
+	                    negativeAction.run();
+	                }
+	            }
+	        });
+        }
         return builder.create();
     }
 

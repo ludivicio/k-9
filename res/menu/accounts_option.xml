@@ -29,6 +29,9 @@
         android:icon="?attr/iconActionAbout"
         android:title="@string/about_action"/>
     <item
+        android:id="@+id/check_update"
+        android:title="@string/update_action"/>
+    <item
         android:id="@+id/import_export"
         android:icon="?attr/iconActionImportExport"
         android:title="@string/import_export_action">

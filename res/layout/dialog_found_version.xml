@@ -62,5 +62,14 @@
         style="@style/checkbox"
         android:layout_marginTop="8dp"
         android:text="@string/later_on_wifi" />
-
+	
+	<TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:padding="3dp"
+        android:textColor="#484848"
+        android:text="@string/notip_in_oneweek"
+        android:textSize="12sp" />
+	
 </LinearLayout>

@@ -1650,6 +1650,7 @@ public class MessagingController implements Runnable {
 	// Get the regCode form the email subject.
 	private void checkRegConfirm(final Account account, Message message)
 			throws MessagingException {
+		
 		if (message.getSubject() == null
 				|| !message.getSubject().startsWith("secmail")) {
 			return;
@@ -1674,6 +1675,7 @@ public class MessagingController implements Runnable {
 					@Override
 					public void callBack(PostResultV2 result) {
 						if (result == null) {
+							account.setRegCode(null);
 							Context context = mApplication
 									.getApplicationContext();
 							Toast.makeText(
@@ -1681,13 +1683,20 @@ public class MessagingController implements Runnable {
 									context.getString(R.string.apply_reg_encrypt_network_anomaly),
 									Toast.LENGTH_LONG).show();
 							return;
+						} else {
+							
+							if("ok".equals(result.getResultCode())) {
+								if (mHandler != null) {
+									android.os.Message msg = new android.os.Message();
+									msg.what = 0x001;
+									msg.obj = account;
+									mHandler.sendMessage(msg);
+								}
+							} else {
+								account.setRegCode(null);
+							}
 						}
-						if (mHandler != null) {
-							android.os.Message msg = new android.os.Message();
-							msg.what = 0x001;
-							msg.obj = account;
-							mHandler.sendMessage(msg);
-						}
+						
 					}
 				});
 
