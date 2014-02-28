@@ -51,12 +51,12 @@ public class Prefs extends K9PreferenceActivity {
 //    private static final String PREFERENCE_ANIMATIONS = "animations";
 //    private static final String PREFERENCE_GESTURES = "gestures";
     private static final String PREFERENCE_VOLUME_NAVIGATION = "volumeNavigation";
-    private static final String PREFERENCE_START_INTEGRATED_INBOX = "start_integrated_inbox";
+//    private static final String PREFERENCE_START_INTEGRATED_INBOX = "start_integrated_inbox";
     private static final String PREFERENCE_CONFIRM_ACTIONS = "confirm_actions";
     private static final String PREFERENCE_NOTIFICATION_HIDE_SUBJECT = "notification_hide_subject";
 //    private static final String PREFERENCE_MEASURE_ACCOUNTS = "measure_accounts";
 //    private static final String PREFERENCE_COUNT_SEARCH = "count_search";
-    private static final String PREFERENCE_HIDE_SPECIAL_ACCOUNTS = "hide_special_accounts";
+//    private static final String PREFERENCE_HIDE_SPECIAL_ACCOUNTS = "hide_special_accounts";
 //    private static final String PREFERENCE_MESSAGELIST_CHECKBOXES = "messagelist_checkboxes";
     private static final String PREFERENCE_MESSAGELIST_PREVIEW_LINES = "messagelist_preview_lines";
 //    private static final String PREFERENCE_MESSAGELIST_SENDER_ABOVE_SUBJECT = "messagelist_sender_above_subject";
@@ -106,12 +106,12 @@ public class Prefs extends K9PreferenceActivity {
 //    private CheckBoxPreference mAnimations;
 //    private CheckBoxPreference mGestures;
     private CheckBoxListPreference mVolumeNavigation;
-    private CheckBoxPreference mStartIntegratedInbox;
+//    private CheckBoxPreference mStartIntegratedInbox;
     private CheckBoxListPreference mConfirmActions;
     private ListPreference mNotificationHideSubject;
 //    private CheckBoxPreference mMeasureAccounts;
 //    private CheckBoxPreference mCountSearch;
-    private CheckBoxPreference mHideSpecialAccounts;
+//    private CheckBoxPreference mHideSpecialAccounts;
     private ListPreference mPreviewLines;
 //    private CheckBoxPreference mSenderAboveSubject;
 //    private CheckBoxPreference mCheckboxes;
@@ -197,8 +197,8 @@ public class Prefs extends K9PreferenceActivity {
         mVolumeNavigation.setItems(new CharSequence[] {getString(R.string.volume_navigation_message), getString(R.string.volume_navigation_list)});
         mVolumeNavigation.setCheckedItems(new boolean[] {K9.useVolumeKeysForNavigationEnabled(), K9.useVolumeKeysForListNavigationEnabled()});
 
-        mStartIntegratedInbox = (CheckBoxPreference)findPreference(PREFERENCE_START_INTEGRATED_INBOX);
-        mStartIntegratedInbox.setChecked(K9.startIntegratedInbox());
+//        mStartIntegratedInbox = (CheckBoxPreference)findPreference(PREFERENCE_START_INTEGRATED_INBOX);
+//        mStartIntegratedInbox.setChecked(K9.startIntegratedInbox());
 
         mConfirmActions = (CheckBoxListPreference) findPreference(PREFERENCE_CONFIRM_ACTIONS);
 
@@ -230,8 +230,9 @@ public class Prefs extends K9PreferenceActivity {
 //        mCountSearch = (CheckBoxPreference)findPreference(PREFERENCE_COUNT_SEARCH);
 //        mCountSearch.setChecked(K9.countSearchMessages());
 
-        mHideSpecialAccounts = (CheckBoxPreference)findPreference(PREFERENCE_HIDE_SPECIAL_ACCOUNTS);
-        mHideSpecialAccounts.setChecked(K9.isHideSpecialAccounts());
+        
+//        mHideSpecialAccounts = (CheckBoxPreference)findPreference(PREFERENCE_HIDE_SPECIAL_ACCOUNTS);
+//        mHideSpecialAccounts.setChecked(K9.isHideSpecialAccounts());
 
 
         mPreviewLines = setupListPreference(PREFERENCE_MESSAGELIST_PREVIEW_LINES,
@@ -508,11 +509,14 @@ public class Prefs extends K9PreferenceActivity {
         K9.setMessageListCheckboxes(K9.messageListCheckboxes());
         // Show 'Delete' button
         K9.setNotificationQuickDeleteBehaviour(NotificationQuickDelete.NEVER);
-        
+        // 是否从全局收件箱启动
+        K9.setStartIntegratedInbox(K9.startIntegratedInbox());
+        // 隐藏特殊账户
+        K9.setHideSpecialAccounts(K9.isHideSpecialAccounts());
         
         K9.setUseVolumeKeysForNavigation(mVolumeNavigation.getCheckedItems()[0]);
         K9.setUseVolumeKeysForListNavigation(mVolumeNavigation.getCheckedItems()[1]);
-        K9.setStartIntegratedInbox(!mHideSpecialAccounts.isChecked() && mStartIntegratedInbox.isChecked());
+        
         K9.setNotificationHideSubject(NotificationHideSubject.valueOf(mNotificationHideSubject.getValue()));
 
         int index = 0;
@@ -523,7 +527,7 @@ public class Prefs extends K9PreferenceActivity {
         }
         K9.setConfirmSpam(mConfirmActions.getCheckedItems()[index++]);
          
-        K9.setHideSpecialAccounts(mHideSpecialAccounts.isChecked());
+        
         K9.setMessageListPreviewLines(Integer.parseInt(mPreviewLines.getValue()));
         
         K9.setShowCorrespondentNames(mShowCorrespondentNames.isChecked());
