@@ -51,8 +51,12 @@ import org.ancode.secmail.search.SearchSpecification.Attribute;
 import org.ancode.secmail.search.SearchSpecification.Searchfield;
 import org.ancode.secmail.update.AppUpdate;
 import org.ancode.secmail.update.AppUpdateService;
+import org.ancode.secmail.update.DisplayDelegate;
+import org.ancode.secmail.update.Version;
+import org.ancode.secmail.update.internal.FoundVersionDialog;
 import org.ancode.secmail.update.internal.IgnorePersistent;
 import org.ancode.secmail.update.internal.SimpleJSONParser;
+import org.ancode.secmail.update.internal.VersionDialogListener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -436,8 +440,10 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         long newTime = System.currentTimeMillis();
         
         if(oldTime == 0 || newTime - oldTime > 3600 * 24 * 7 * 1000L) {
-        	appUpdate = AppUpdateService.getAppUpdate(this);
-        	appUpdate.checkLatestVersion(UPDATE_URL, new SimpleJSONParser());
+        	final boolean showTip = false;
+			onCheckNewVersion(showTip);
+//        	appUpdate = AppUpdateService.getAppUpdate(this);
+//        	appUpdate.checkLatestVersion(UPDATE_URL, new SimpleJSONParser());
         }
         
         if (!K9.isHideSpecialAccounts()) {
@@ -1319,7 +1325,8 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 		} else if (itemId == R.id.about) {
 			onAbout();
 		} else if (itemId == R.id.check_update) {
-			onCheckNewVersion();
+			final boolean showTip = true;
+			onCheckNewVersion(showTip);
 		} else if (itemId == R.id.export_all) {
 			onExport(true, null);
 		} else if (itemId == R.id.import_settings) {
@@ -1405,8 +1412,24 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         .show();
     }
 
-    private void onCheckNewVersion() {
+    private void onCheckNewVersion(final boolean showTip) {
     	appUpdate = AppUpdateService.getAppUpdate(this);
+    	appUpdate.setDisplayDelegate(new DisplayDelegate() {
+
+			@Override
+			public void showFoundLatestVersion(Version version) {
+				FoundVersionDialog dialog = new FoundVersionDialog(Accounts.this, version, (VersionDialogListener)appUpdate);
+				dialog.show();
+			}
+
+			@Override
+			public void showIsLatestVersion() {
+				if(showTip) {
+					Toast.makeText(Accounts.this, R.string.is_latest_version_label, Toast.LENGTH_SHORT).show();
+				}
+			}
+    		
+    	});
     	appUpdate.checkLatestVersion(UPDATE_URL, new SimpleJSONParser());
     }
     
@@ -1511,7 +1534,8 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i("lxc", "onActivityResult requestCode = " + requestCode + ", resultCode = " + resultCode + ", data = " + data);
         if (resultCode != RESULT_OK)
-            return;
+        	finish();
+//        	return;
         if (data == null) {
             return;
         }
@@ -1717,9 +1741,11 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         public void show(final Accounts activity, SparseBooleanArray selection) {
             List<String> contents = new ArrayList<String>();
 
-            if (mImportContents.globalSettings) {
-                contents.add(activity.getString(R.string.settings_import_global_settings));
-            }
+            // modified  by lxc at 2014-02-28
+            // Hide the global setting.
+//            if (mImportContents.globalSettings) {
+//                contents.add(activity.getString(R.string.settings_import_global_settings));
+//            }
 
             for (AccountDescription account : mImportContents.accounts) {
                 contents.add(account.name);
