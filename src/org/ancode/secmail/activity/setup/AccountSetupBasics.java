@@ -429,20 +429,16 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 			mHandler.sendEmptyMessage(0x123);
 
 		} catch (final AuthenticationFailedException afe) {
-			Log.e("lxc", "Error while testing settings", afe);
 
 			if (mCanceled) {
 				showLoadingDialog(false);
-				Log.i("lxc", "User clicked the Cancel button");
 				return;
 			}
 			showErrorDialog(R.string.account_setup_failed_dlg_auth_message_fmt);
 		} catch (final CertificateValidationException cve) {
-			Log.e("lxc", "Error while testing settings", cve);
 
 			if (mCanceled) {
 				showLoadingDialog(false);
-				Log.i("lxc", "User clicked the Cancel button");
 				return;
 			}
 
@@ -458,11 +454,9 @@ public class AccountSetupBasics extends K9Activity implements OnClickListener,
 				showErrorDialog(R.string.account_setup_failed_dlg_server_message_fmt);
 			}
 		} catch (final Throwable t) {
-			Log.e("lxc", "Error while testing settings", t);
 
 			if (mCanceled) {
 				showLoadingDialog(false);
-				Log.i("lxc", "User clicked the Cancel button");
 				return;
 			}
 

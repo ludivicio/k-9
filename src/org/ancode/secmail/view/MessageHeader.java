@@ -232,11 +232,6 @@ public class MessageHeader extends ScrollView implements OnClickListener {
         mDateView.setText(dateTime);
 
         Address[] froms = message.getFrom();
-        for(int i = 0; i < froms.length; i ++ ) {
-        	Log.i("lxc", "address: " + froms[i].getAddress());
-        }
-        Log.i("lxc", "from: " + from);
-        
         
         mFromView.setText(from);
 

@@ -1532,10 +1532,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i("lxc", "onActivityResult requestCode = " + requestCode + ", resultCode = " + resultCode + ", data = " + data);
-        if (resultCode != RESULT_OK)
+        if (resultCode != RESULT_OK) {
         	finish();
-//        	return;
+        }
         if (data == null) {
             return;
         }
