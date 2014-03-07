@@ -64,6 +64,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
 	private String updateUrl;
 
+	private String email;
+
 	private CrashHandler() {
 	}
 
@@ -79,6 +81,10 @@ public class CrashHandler implements UncaughtExceptionHandler {
 	public void init(String appName, String url) {
 		this.appName = appName;
 		this.updateUrl = url;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	@Override
@@ -104,7 +110,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
 			Log.e(TAG, sb.toString());
 
-			new PostErrorInfoToServerTask().execute(sb.toString());
+			new PostErrorInfoToServerTask().execute(sb.toString(), email);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -171,10 +177,20 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
 		@Override
 		protected Boolean doInBackground(String... parameters) {
-			// TODO Auto-generated method stub
+
+			if (parameters == null) {
+				return false;
+			}
+
+			String crashInfo = parameters[0];
+			String email = "";
+			if (parameters.length > 1) {
+				email = parameters[1];
+			}
 
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair("crash", parameters[0]));
+			params.add(new BasicNameValuePair("crash", crashInfo));
+			params.add(new BasicNameValuePair("mail", email));
 
 			// 提交错误信息到服务器
 			post(updateUrl, params);

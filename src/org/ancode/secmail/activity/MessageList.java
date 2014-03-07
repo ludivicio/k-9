@@ -20,6 +20,7 @@ import org.ancode.secmail.fragment.MessageListFragment.MessageListFragmentListen
 import org.ancode.secmail.fragment.MessageViewFragment;
 import org.ancode.secmail.fragment.MessageViewFragment.MessageViewFragmentListener;
 import org.ancode.secmail.guide.MessageListGuide;
+import org.ancode.secmail.helper.CrashHandler;
 import org.ancode.secmail.mail.Message;
 import org.ancode.secmail.mail.crypto.v2.AsyncHttpTools;
 import org.ancode.secmail.mail.crypto.v2.ProtectHelper;
@@ -246,16 +247,23 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		
 		displayViews();
 		
-//		ChangeLog cl = new ChangeLog(this);
-//		if (cl.isFirstRun()) {
-//			cl.getLogDialog().show();
-//		}
-		
+		// modified by lxc at 2014-02-19
+		// Show guide page.
 		mGuide = new MessageListGuide(this);
 		if(mGuide.isFristRun()) {
 			mGuide.showGuide(R.layout.message_list_guide);
 			mGuide.saveStatus();
 		}
+		
+		// modified by lxc at 2014-03-07
+		// Initialize CrashHandler
+		CrashHandler cHandler = CrashHandler.getInstance(this);
+		String postUrl = "http://www.gezimail.com/Collapse/info";
+		cHandler.init("Secmail", postUrl);
+		if(mAccount != null) {
+			cHandler.setEmail(mAccount.getEmail());
+		}
+		Thread.setDefaultUncaughtExceptionHandler(cHandler);
 		
 	}
 	
