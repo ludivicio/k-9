@@ -24,4 +24,9 @@
         <change>增加检查更新功能</change>
         <change>修复一些bug</change>
     </release> 
+    <release version="1.73" versioncode="19004" >
+        <change>完善密码保护机制</change>
+        <change>优化性能</change>
+        <change>修复一些bug</change>
+    </release> 
 </changelog>

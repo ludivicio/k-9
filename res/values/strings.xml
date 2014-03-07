@@ -1026,8 +1026,8 @@ http://k9mail.googlecode.com/</string>
     <string name="cancel_dialog_title">Cancel protect service</string>
     <string name="cancel_dialog_message">You are now in protect status, you must cancel the service before apply for a password-protected e-mail encryption function, need to cancel the services?</string>
     
-    <string name="protect_already_opened">You have opened protect service, please don't repeat.</string>
-    <string name="protect_already_cancel">You have canceled protect service, please don't repeat.</string>
+    <string name="protect_already_opened">You have opened protect service, please don\'t repeat.</string>
+    <string name="protect_already_cancel">You have canceled protect service, please don\'t repeat.</string>
     <string name="protect_apply_failed">Apply failed, please re-apply it again.</string>
     <string name="protect_cancel_failed">Cancel failed, please try it again.</string>
     <string name="protect_active_success">Activation success. Now, you can use it normally.</string>
