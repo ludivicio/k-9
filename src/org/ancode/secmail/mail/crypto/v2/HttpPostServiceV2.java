@@ -38,19 +38,24 @@ public class HttpPostServiceV2 {
 	
 	private static HttpClient httpClient;
 	
-	private static final String REG_REQUEST = "https://www.han2011.com/secmail/v2/reg_request";
-	private static final String REG_CONFIRM = "https://www.han2011.com/secmail/v2/reg_confirm";
-	private static final String REG_PROTECT = "https://www.han2011.com/secmail/v2/protect_enable";
-	private static final String SEND_EMAIL = "https://www.han2011.com/secmail/v2/send";
-	private static final String RECEIVE_EMAIL = "https://www.han2011.com/secmail/v2/get";
+//	private static final String REG_REQUEST = "https://www.han2011.com/secmail/v2/reg_request";
+//	private static final String REG_CONFIRM = "https://www.han2011.com/secmail/v2/reg_confirm";
+//	private static final String SEND_EMAIL = "https://www.han2011.com/secmail/v2/send";
+//	private static final String RECEIVE_EMAIL = "https://www.han2011.com/secmail/v2/get";
+//	private static final String REG_PROTECT_ENABLE = "https://www.han2011.com/secmail/v2/protect_enable";
+//	private static final String REG_PROTECT_DISABLE = "https://www.han2011.com/secmail/v2/protect_disable";
+//	private static final String REG_PROTECT_ACTIVE = "https://www.han2011.com/secmail/v2/protect_active";
+//	private static final String REG_PROTECT_CANCEL = "https://www.han2011.com/secmail/v2/protect_cancel";
 	
-//	private static final String REG_REQUEST = "http://www.gezimail.com/secmail/v2/reg_request";
-//	private static final String REG_CONFIRM = "http://www.gezimail.com/secmail/v2/reg_confirm";
-//	private static final String REG_PROTECT = "http://www.gezimail.com/secmail/v2/protect_enable";
-//	private static final String SEND_EMAIL = "http://www.gezimail.com/secmail/v2/send";
-//	private static final String RECEIVE_EMAIL = "http://www.gezimail.com/secmail/v2/get";
+	private static final String REG_REQUEST = "http://www.gezimail.com/Secmail/v2/reg_request";
+	private static final String REG_CONFIRM = "http://www.gezimail.com/Secmail/v2/reg_confirm";
+	private static final String SEND_EMAIL = "http://www.gezimail.com/Secmail/v2/send";
+	private static final String RECEIVE_EMAIL = "http://www.gezimail.com/Secmail/v2/get";
+	private static final String REG_PROTECT_ENABLE = "http://www.gezimail.com/Secmail/v2/protect_enable";
+	private static final String REG_PROTECT_DISABLE = "http://www.gezimail.com/Secmail/v2/protect_disable";
+	private static final String REG_PROTECT_ACTIVE = "http://www.gezimail.com/Secmail/v2/protect_active";
+	private static final String REG_PROTECT_CANCEL = "http://www.gezimail.com/Secmail/v2/protect_cancel";
 	
-
 	private static HttpClient getHttpClient() {
 		
 		if( httpClient != null) {
@@ -229,7 +234,7 @@ public class HttpPostServiceV2 {
 	 * @param deviceUuid
 	 * @return
 	 */
-	public static PostResultV2 postProtectRequest(String mail, String type,
+	public static PostResultV2 postEnableProtectRequest(String mail, String type,
 			String protect, String verify, String deviceUuid) {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("mail", mail));
@@ -237,10 +242,72 @@ public class HttpPostServiceV2 {
 		params.add(new BasicNameValuePair("protect", protect));
 		params.add(new BasicNameValuePair("verify", verify));
 		params.add(new BasicNameValuePair("device", deviceUuid));
-		InputStream is = post(REG_PROTECT, params);
+		InputStream is = post(REG_PROTECT_ENABLE, params);
 		return parsePostResult(is);
 	}
 
+	
+	/**
+	 * Do post to send cancel protect data.
+	 * <p>
+	 * <strong>post:</strong>https://www.han2011.com/secmail/v2/protect_disable<br>
+	 * <strong>mail:</strong>test@163.com<br>
+	 * <strong>verify:</strong>aes256_encrypt(regCode+random(32),AESKEY)<br>
+	 * <strong>device:</strong>deviceUuid
+	 * </p>
+	 * @param mail
+	 * @param verify
+	 * @param deviceUuid
+	 * @return
+	 */
+	public static PostResultV2 postDisableProtectRequest(String mail) {
+	
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("mail", mail));
+		InputStream is = post(REG_PROTECT_DISABLE, params);
+		return parsePostResult(is);
+	}
+	
+	
+	/**
+	 * Apply password protect feature, send a request to confirm activation.
+	 * <p>
+	 * <strong>post:</strong>https://www.gezimail.com/secmail/v2/protect_verify<br>
+	 * <strong>mail:</strong>test@163.com<br>
+	 * <strong>verify:</strong>aes256_encrypt(regCode+random(32),AESKEY)<br>
+	 * </p>
+	 * @param mail
+	 * @param captcha
+	 * @param verify
+	 * @param device
+	 * @return
+	 */
+	public static PostResultV2 postActiveProtectRequest(String mail, String captcha, String verify, String deviceUuid) {
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("mail", mail));
+		params.add(new BasicNameValuePair("captcha", captcha));
+		params.add(new BasicNameValuePair("verify", verify));
+		params.add(new BasicNameValuePair("device", deviceUuid));
+		InputStream is = post(REG_PROTECT_ACTIVE, params);
+		return parsePostResult(is);
+	}
+	
+	/**
+	 * Cancel password protect feature, send a request to confirm activation. 
+	 * @param mail
+	 * @param captcha
+	 * @param verify
+	 * @param deviceUuid
+	 * @return
+	 */
+	public static PostResultV2 postCancelProtectRequest(String mail, String captcha) {
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("mail", mail));
+		params.add(new BasicNameValuePair("captcha", captcha));
+		InputStream is = post(REG_PROTECT_CANCEL, params);
+		return parsePostResult(is);
+	}
+	
 	/**
 	 * Do post to send email encrypt information.
 	 * 

@@ -8,6 +8,12 @@
         android:title="@string/empty_trash_action" />
     <item android:id="@+id/account_settings"
         android:title="@string/account_settings_action" />
+    
+    <item android:id="@+id/enable_protect"
+        android:title="@string/protect_menu_enable" />
+    <item android:id="@+id/disable_protect"
+        android:title="@string/protect_menu_disable" />
+    
     <item android:id="@+id/delete_account"
         android:title="@string/remove_account_action" />
     <item android:id="@+id/clear"

@@ -954,27 +954,83 @@
 
     <string name="mark_all_as_read">标记为已读</string>
     
+    
     <!-- 鸽子密邮  -->
+   
     <string name="image_saved_as">保存图片到文件 \"<xliff:g id="filename">%s</xliff:g>\"</string>
     <string name="image_saving_failed">保存图片失败</string>
+    <string name="account_change_label">账户列表</string>
+    
+    <!-- 开通/取消 邮件加密服务 -->
     <string name="apply_reg_encrypt">注册加密</string>
     <string name="applied_reg_encrypt">已加密</string>
     <string name="apply_reg_encrypt_network_anomaly">网络异常，请重新尝试！</string>
     <string name="apply_reg_encrypt_result_title">申请加密</string>
     <string name="apply_reg_encrypt_result_success_message">加密申请发送成功。您将会收到鸽子密邮官方发送的邮件，如果未收到的话，请重新查收。</string>
     <string name="apply_reg_encrypt_result_failed_message">加密申请发送失败，请重试。</string>
-    <string name="apply_reg_encrypt_result_protect_enabled">当前账号已经开启了密码保护功能，请关闭该功能后重试！</string>
     <string name="cancel_reg_encrypt_result_title">取消加密</string>
     <string name="cancel_reg_encrypt_message">加密功能将被取消，是否继续？</string>
     <string name="reg_encrypt_confirm_mail_body">欢迎使用鸽子密邮加密邮件系统，您无需回复这封邮件，鸽子密邮会自动处理这封邮件.</string>
     <string name="reg_encrypt_confirm_dialog">正常阅读此邮件及其附件需要开启加密邮件功能，是否开启？</string>
-    <string name="encrypt_mail_failed">发送前加密邮件失败，请重试！</string>
+    <string name="encrypt_mail_failed">加密邮件失败，请重试！</string>
     <string name="encrypt_mail_body_message">这是一封来自鸽子密邮的加密邮件，请使用鸽子密邮打开阅读！如尚未安装，请移步此处（http://www.gezimail.com)下载鸽子密邮。</string>
     <string name="encrypt_mail_encrypted">邮件已经被加密。</string>
     <string name="encrypt_mail_invalid_key">本机的加密验证已经失效，可能是由于您的帐号在其他设备上进行了绑定。</string>
+    <string name="apply_encrypt_service_success">注册成功</string>
+    <string name="apply_open_protect_tip">您已经能够正常的使用邮件加密功能，是否开通密码保护功能？</string>
+    <string name="apply_reg_encrypt_result_protect_enabled">当前账号已经开启了密码保护功能，请关闭该功能后重试！</string>
+    <string name="button_open_protect_now">马上开通</string>
+    <string name="button_open_protect_nexttime">以后再说</string>
     
     
-    <!-- update -->
+    <!-- 开通/取消 密码保护服务 -->
+    <string name="protect_menu_enable">开通密码保护</string>
+    <string name="protect_menu_disable">取消密码保护</string>
+    
+    <string name="protect_type_email">邮箱</string>
+	<string name="protect_type_mobile">手机</string>
+	
+    <string name="protect_button_apply">申请</string>
+	<string name="protect_button_ok">确定</string>
+	<string name="protect_button_verify">验证</string>
+	<string name="protect_button_cancel">取消</string>
+	
+	<string name="protect_dialog_title">填写密保信息</string>
+    <string name="protect_dialog_choose_type">请选择密保方式：</string>
+	
+	<string name="protect_dialog_input_mail">请输入您的邮箱地址：</string>
+	<string name="protect_dialog_input_mobile">请输入您的手机号码：</string>
+	<string name="protect_dialog_not_input">请输入密保信息！</string>
+	<string name="protect_dialog_invalid_mail">邮箱格式不正确，请重新输入！</string>
+	<string name="protect_dialog_invalid_mobile">手机号码不正确，请重新输入！</string>
+	<string name="protect_dialog_other_mail">密保邮箱需使用不同的邮箱!</string>
+    
+    <string name="protect_network_anomaly">网络异常，请重新尝试！</string>
+    
+    <string name="captcha_dialog_title">填写验证码</string>
+	<string name="captcha_dialog_message">密邮服务器已向您的密保邮箱（手机）中发送了验证码，请在下边输入框中填写您收到的验证码！</string>
+	<string name="captcha_dialog_edittext_hint">请输入验证码</string>
+	<string name="captcha_dialog_not_input">请填写验证码！</string>
+	
+	<string name="cancel_dialog_title">取消密码保护</string>
+	<string name="cancel_dialog_message">您目前处于密码保护状态，必须在取消密码保护服务后才能够再次申请邮件加密功能，需要取消该服务吗？</string>
+	
+    <string name="protect_already_opened">您已经开通了密码保护服务，请勿重复操作！</string>
+    <string name="protect_already_cancel">您已经取消了密码保护服务，请勿重复操作！</string>
+    
+	<string name="protect_apply_failed">申请密码保护服务失败，请重新尝试！</string>
+	<string name="protect_cancel_failed">取消密码保护服务失败，请重新尝试！</string>
+	
+	<string name="protect_active_success">激活成功,已开通密码保护服务！</string>
+	<string name="protect_cancel_success">操作成功，密码保护服务已取消！</string>
+	
+	<string name="protect_verify_failed">验证失败，请重新尝试！</string>
+	
+	<string name="protect_active_verify_failed">您取消了验证，激活密码保护功能失败！</string>
+	<string name="protect_cancel_verify_failed">您取消了验证，取消密码保护功能失败！</string>
+	
+	
+    <!-- 密邮升级 -->
     <string name="download_failure">下载最新版本失败!</string>
     <string name="apk_file_not_exists">Apk文件不存在!</string>
     <string name="is_latest_version_label">你的应用已经是最新版本了！</string>
@@ -993,30 +1049,8 @@
     <string name="update_now">检查更新并下载</string>
     <string name="update_action">检查更新</string>
     
-    <string name="account_change_label">账户列表</string>
-    <string name="account_cryptoguard_type">请选择密保方式：</string>
-    <string name="account_cryptoguard_type_email">邮箱</string>
-    <string name="account_cryptoguard_type_mobile">手机</string>
-    <string name="account_cryptoguard_dialog_title">填写密保信息</string>
-    <string name="account_cryptoguard_choose_mail">请输入您的邮箱地址：</string>
-    <string name="account_cryptoguard_choose_mobile">请输入您的手机号码：</string>
-    <string name="account_cryptoguard_not_input">请输入密保信息！</string>
-    <string name="account_cryptoguard_invalid_mail">邮箱格式不正确，请重新输入！</string>
-    <string name="account_cryptoguard_invalid_mobile">手机号码不正确，请重新输入！</string>
-    <string name="account_cryptoguard_other_mail">密保邮箱需使用不同的邮箱!</string>
-    <string name="account_cryptoguard_regist_success">注册成功</string>
-<!--     <string name="account_cryptoguard_openup_tip">您已能够正常使用邮件加密功能，是否开通密码保护功能？</string> -->
-    <string name="account_cryptoguard_openup_tip">您已能够正常使用邮件加密功能.</string>
-    <string name="account_cryptoguard_open_now">马上开通</string>
-    <string name="account_cryptoguard_nexttime">下次吧</string>
-    <string name="account_cryptoguard_apply_success">申请成功</string>
-    <string name="account_cryptoguard_activate_tip">密码保护功能申请成功，您需要到填写的邮箱或短信中激活该功能！</string>
-    <string name="account_cryptoguard_apply_failed">申请失败</string>
-    <string name="account_cryptoguard_failed_tip">申请失败，您可以在设置选项中重新进行申请。</string>
-    <string name="account_cryptoguard_apply">申请</string>
-    <string name="account_cryptoguard_ok">确定</string>
-    <string name="account_cryptoguard_cancel">取消</string>
     
+    <!-- 密邮设置 -->
     <string name="account_attachment_size_failed_tip">添加失败，附件应小于{0}M！ 如需更改，请到“账户设置 -> 发送邮件设置”中进行设置</string>
     <string name="account_attachment_size_large_tip">附件过大的话，邮件发送会比较慢，请您耐心等待。</string>
     
@@ -1034,5 +1068,7 @@
     <string name="account_settings_attachment_size_1024">1G</string>
     <string name="account_settings_attachment_size_any">任意（无限制）</string>
     
+    
+    <!-- 密邮菜单 -->
     <string name="message_list_help">帮助</string>
 </resources>

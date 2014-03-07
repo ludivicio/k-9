@@ -736,9 +736,9 @@
     </string-array>
     
     <!-- sec mail -->
-    <string-array name="account_cryptoguard_types">
-        <item>@string/account_cryptoguard_type_email</item>
-        <item>@string/account_cryptoguard_type_mobile</item>
+    <string-array name="account_protect_types">
+        <item>@string/protect_type_email</item>
+	<!-- <item>@string/protect_type_mobile</item> -->
     </string-array>
     
     <string-array name="account_email_providers">

@@ -32,7 +32,7 @@ import org.ancode.secmail.mail.ServerSettings;
 import org.ancode.secmail.mail.Store;
 import org.ancode.secmail.mail.Transport;
 import org.ancode.secmail.mail.crypto.v2.AsyncHttpTools;
-import org.ancode.secmail.mail.crypto.v2.CryptoguardUiHelper;
+import org.ancode.secmail.mail.crypto.v2.ProtectHelper;
 import org.ancode.secmail.mail.crypto.v2.HttpPostUtil;
 import org.ancode.secmail.mail.crypto.v2.PostResultV2;
 import org.ancode.secmail.mail.internet.MimeUtility;
@@ -135,7 +135,6 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
     private static final int DIALOG_REG_SUCCESS = 5;
 	private static final int DIALOG_REG_FAILED = 6;
 	private static final int DIALOG_CANCEL_REG = 7;
-	private static final int DIALOG_PROTECT_ENABLED = 8;
 
     private ConcurrentHashMap<String, AccountStats> accountStats = new ConcurrentHashMap<String, AccountStats>();
 
@@ -277,7 +276,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 				if(msg.obj instanceof Account) {
 					account = (Account)msg.obj;
 				}
-				CryptoguardUiHelper.openProtectDialog(Accounts.this, account);
+				
+				account.save(Preferences.getPreferences(Accounts.this));
+				ProtectHelper.showApplyProtectDialog(Accounts.this, account);
 			}
 			
 			super.handleMessage(msg);
@@ -1213,17 +1214,6 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 						}
 					});
 		}
-		case DIALOG_PROTECT_ENABLED: {
-			return ConfirmationDialog.create(this, id, R.string.apply_reg_encrypt_result_title,
-					R.string.apply_reg_encrypt_result_protect_enabled, R.string.okay_action, R.string.cancel_action,
-					new Runnable() {
-						@Override
-						public void run() {
-						}
-					});
-		}
-        
-        
         
         }
 
@@ -1287,11 +1277,21 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 			onMove(realAccount, true);
 		} else if (itemId == R.id.move_down) {
 			onMove(realAccount, false);
+		} else if (itemId == R.id.enable_protect) {
+			onEnableProtect(realAccount);
+		} else if (itemId == R.id.disable_protect) {
+			onDisableProtect(realAccount);
 		}
         return true;
     }
 
-
+    private void onEnableProtect(Account account) {
+    	ProtectHelper.showEnableProtectDialog(this, account);
+    }
+    
+    private void onDisableProtect(Account account) {
+    	ProtectHelper.showDisableProtectDialog(this, account);
+    }
 
     private void onClear(Account account) {
         showDialog(DIALOG_CLEAR_ACCOUNT);
@@ -1473,7 +1473,24 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         if ((account instanceof Account) && !((Account) account).isEnabled()) {
             getMenuInflater().inflate(R.menu.disabled_accounts_context, menu);
         } else {
+        	
             getMenuInflater().inflate(R.menu.accounts_context, menu);
+            
+            if(((Account) account).hasReg() && !TextUtils.isEmpty(((Account) account).getAesKey())) {
+            	if(((Account) account).hasVerification()) {
+                	menu.findItem(R.id.enable_protect).setVisible(false);
+                	menu.findItem(R.id.disable_protect).setVisible(true);
+                } else {
+                	menu.findItem(R.id.enable_protect).setVisible(true);
+                	menu.findItem(R.id.disable_protect).setVisible(false);
+                }
+            } else {
+            	menu.findItem(R.id.enable_protect).setVisible(false);
+            	if(!((Account) account).hasVerification()) {
+            		menu.findItem(R.id.disable_protect).setVisible(false);
+                } 
+            }
+            
         }
 
         if (account instanceof SearchAccount) {
@@ -1481,8 +1498,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 android.view.MenuItem item = menu.getItem(i);
                     item.setVisible(false);
             }
-        }
-        else {
+        } else {
             EnumSet<ACCOUNT_LOCATION> accountLocation = accountLocation(account);
             if (accountLocation.contains(ACCOUNT_LOCATION.TOP)) {
                 menu.findItem(R.id.move_up).setEnabled(false);
@@ -1986,7 +2002,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 				
 				@Override
 				public PostResultV2 executeTask() {
-					return HttpPostUtil.postRegRequest(account, getApplicationContext());
+					return HttpPostUtil.postRegRequest(getApplicationContext(), account);
 				}
 				
 				@Override
@@ -2004,7 +2020,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 						account.save(Preferences.getPreferences(context));
 						showDialog(DIALOG_REG_SUCCESS);
 					} else if (result.hasProtected()) {
-						showDialog(DIALOG_PROTECT_ENABLED);
+						ProtectHelper.showDisableProtectDialog(Accounts.this, account);
 					} else {
 						showDialog(DIALOG_REG_FAILED);
 					}

@@ -40,6 +40,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.larswerkman.colorpicker.ColorPicker;
@@ -236,7 +237,6 @@ public class Account implements BaseAccount {
  	// Crypt flag
  	private boolean mHasApplyReg;
     
-
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
      *
@@ -424,7 +424,6 @@ public class Account implements BaseAccount {
  		mDeviceUuid = prefs.getString(mUuid + ".deviceUuid", "");
  		mVerification = prefs.getString(mUuid + ".verification", "");
  		mHasApplyReg = prefs.getBoolean(mUuid + ".hasApplyReg", false);
-        
         
         mMaxPushFolders = prefs.getInt(mUuid + ".maxPushFolders", 10);
         goToUnreadMessageSearch = prefs.getBoolean(mUuid + ".goToUnreadMessageSearch", false);
@@ -1242,6 +1241,13 @@ public class Account implements BaseAccount {
 
 	public void setApplyReg(boolean mHasApplyReg) {
 		this.mHasApplyReg = mHasApplyReg;
+	}
+	
+	public boolean hasVerification() {
+		if(TextUtils.isEmpty(mVerification) || mVerification.startsWith("#")) {
+			return false;
+		}
+		return true;
 	}
 	
 	public String getVerification() {

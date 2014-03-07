@@ -22,7 +22,7 @@ import org.ancode.secmail.fragment.MessageViewFragment.MessageViewFragmentListen
 import org.ancode.secmail.guide.MessageListGuide;
 import org.ancode.secmail.mail.Message;
 import org.ancode.secmail.mail.crypto.v2.AsyncHttpTools;
-import org.ancode.secmail.mail.crypto.v2.CryptoguardUiHelper;
+import org.ancode.secmail.mail.crypto.v2.ProtectHelper;
 import org.ancode.secmail.mail.crypto.v2.HttpPostUtil;
 import org.ancode.secmail.mail.crypto.v2.PostResultV2;
 import org.ancode.secmail.mail.store.StorageManager;
@@ -1592,7 +1592,6 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
     private static final int DIALOG_REG_SUCCESS = 0;
 	private static final int DIALOG_REG_FAILED = 1;
 	private static final int DIALOG_CANCEL_REG = 2;
-	private static final int DIALOG_PROTECT_ENABLED = 3;
 	
 	private ImageButton encryptButton;
 	public void registDecryptService(ImageButton imageButton) {
@@ -1609,7 +1608,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 			
 			@Override
 			public PostResultV2 executeTask() {
-				return HttpPostUtil.postRegRequest(mAccount, MessageList.this);
+				return HttpPostUtil.postRegRequest(MessageList.this, mAccount);
 			}
 			
 			@Override
@@ -1627,7 +1626,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 					mAccount.save(Preferences.getPreferences(MessageList.this));
 					showDialog(DIALOG_REG_SUCCESS);
 				} else if (result.hasProtected()) {
-					showDialog(DIALOG_PROTECT_ENABLED);
+					ProtectHelper.showDisableProtectDialog(MessageList.this, mAccount);
 				} else {
 					showDialog(DIALOG_REG_FAILED);
 				}
@@ -1645,7 +1644,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 					account = (Account) msg.obj;
 				}
 				encryptButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_lock));
-				CryptoguardUiHelper.openProtectDialog(MessageList.this, account);
+				ProtectHelper.showApplyProtectDialog(MessageList.this, account);
 			}
 			
 			super.handleMessage(msg);

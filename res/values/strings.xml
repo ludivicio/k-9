@@ -921,8 +921,6 @@ http://k9mail.googlecode.com/</string>
     <string name="webview_contextmenu_email_save_action">Save to Contacts</string>
     <string name="webview_contextmenu_email_copy_action">Copy address to clipboard</string>
     <string name="webview_contextmenu_email_clipboard_label">Email address</string>
-    <string name="image_saved_as">Saved image as \"<xliff:g id="filename">%s</xliff:g>\"</string>
-    <string name="image_saving_failed">Saving the image failed.</string>
     <string name="account_settings_remote_search_num_results_entries_all">All</string>
     <string name="account_settings_remote_search_num_results_entries_10">10</string>
     <string name="account_settings_remote_search_num_results_entries_25">25</string>
@@ -978,13 +976,15 @@ http://k9mail.googlecode.com/</string>
     <!-- Sec mail Strings -->
     <string name="image_saved_as">Saved image as \"<xliff:g id="filename">%s</xliff:g>\"</string>
     <string name="image_saving_failed">Saving the image failed.</string>
+    <string name="account_change_label">Accounts list</string>
+
+    <!-- 开通/取消 邮件加密服务 -->
     <string name="apply_reg_encrypt">Apply encrypt</string>
     <string name="applied_reg_encrypt">Applied encrypt</string>
     <string name="apply_reg_encrypt_network_anomaly">Network anomalies, please try again.</string>
     <string name="apply_reg_encrypt_result_title">Apply encrypt</string>
     <string name="apply_reg_encrypt_result_success_message">Send encypt request successfully. You will receive the gezimail official mail, if not yet received, please check again.</string>
     <string name="apply_reg_encrypt_result_failed_message">Send encypt request failed. Please go back to re-try later.</string>
-    <string name="apply_reg_encrypt_result_protect_enabled">The current account has opened possword protect function. Please close it and try again.</string>
     <string name="cancel_reg_encrypt_result_title">Cancel encrypt</string>
     <string name="cancel_reg_encrypt_message">Are you sure to cancel encypt?</string>
     <string name="reg_encrypt_confirm_mail_body">Welcome to use secmail crypt system, you do not need to reply, Sec will auto process this mail.</string>
@@ -993,8 +993,50 @@ http://k9mail.googlecode.com/</string>
     <string name="encrypt_mail_body_message">You can only use K9 client to read this email.</string>
     <string name="encrypt_mail_encrypted">Mail is encrypted.</string>
     <string name="encrypt_mail_invalid_key">Native encrypted authentication has failed, probably due to your account on another device is bound.</string>
+    <string name="apply_reg_encrypt_result_protect_enabled">The current account has opened possword protect function. Please close it and try again.</string>
+    <string name="apply_encrypt_service_success">Register successfully.</string>
+    <string name="apply_open_protect_tip">Normal use E-mail encryption, whether to open the password protection function now?</string>
+    <string name="button_open_protect_now">Open now</string>
+    <string name="button_open_protect_nexttime">Next time</string>
+
+    <!-- Open/Cancel protect service -->
+    <string name="protect_menu_enable">Open protect service</string>
+    <string name="protect_menu_disable">Cancel protect service</string>
+    <string name="protect_type_email">Email</string>
+    <string name="protect_type_mobile">Mobile</string>
+    <string name="protect_button_apply">Apply</string>
+    <string name="protect_button_ok">Okey</string>
+    <string name="protect_button_verify">Verify</string>
+    <string name="protect_button_cancel">Cancel</string>
+    <string name="protect_dialog_title">Please enter the encrypted information.</string>
+    <string name="protect_dialog_choose_type">Please select a secret way:</string>
+    <string name="protect_dialog_input_mail">Please enter your email address:</string>
+    <string name="protect_dialog_input_mobile">Please enter your phone number:</string>
+    <string name="protect_dialog_not_input">Please enter the encrypted information.</string>
+    <string name="protect_dialog_invalid_mail">Invalid email address.Please enter again.</string>
+    <string name="protect_dialog_invalid_mobile">Invalid phone number.Please enter again.</string>
+    <string name="protect_dialog_other_mail">Encrypted mail need to use a different email.</string>
+    <string name="protect_network_anomaly">Network anomalies, please try again.</string>
     
+    <string name="captcha_dialog_title">Input captcha</string>
+    <string name="captcha_dialog_message">GeziMail server has sent a verification code to your security mailbox(phone), please fill the code you received in this input box.</string>
+    <string name="captcha_dialog_edittext_hint">Please input captcha</string>
+    <string name="captcha_dialog_not_input">Please input captcha.</string>
     
+    <string name="cancel_dialog_title">Cancel protect service</string>
+    <string name="cancel_dialog_message">You are now in protect status, you must cancel the service before apply for a password-protected e-mail encryption function, need to cancel the services?</string>
+    
+    <string name="protect_already_opened">You have opened protect service, please don't repeat.</string>
+    <string name="protect_already_cancel">You have canceled protect service, please don't repeat.</string>
+    <string name="protect_apply_failed">Apply failed, please re-apply it again.</string>
+    <string name="protect_cancel_failed">Cancel failed, please try it again.</string>
+    <string name="protect_active_success">Activation success. Now, you can use it normally.</string>
+    <string name="protect_cancel_success">Successful operation. The protect service has been canceled.</string>
+    <string name="protect_verify_failed">Authentication failed, please try it again.</string>
+    <string name="protect_active_verify_failed">You canceled the verification, and activation failed.</string>
+    <string name="protect_cancel_verify_failed">You canceled the verification, and activation failed.</string>
+
+
 <!-- update -->
     <string name="download_failure">Download latest version failure !</string>
     <string name="apk_file_not_exists">Apk file not exists !</string>
@@ -1010,26 +1052,7 @@ http://k9mail.googlecode.com/</string>
     <string name="update_info">Check and SHOW latest version dialog</string>
     <string name="update_now">Check and update directly</string>
     
-    <string name="account_cryptoguard_type">Please select a secret way:</string>
-    <string name="account_cryptoguard_type_email">Email</string>
-    <string name="account_cryptoguard_type_mobile">Mobile</string>
- 	<string name="account_cryptoguard_not_input">Please enter the encrypted information.</string>
-    <string name="account_cryptoguard_choose_mail">Please enter your email address:</string>
-    <string name="account_cryptoguard_choose_mobile">Please enter your phone number:</string>
-    <string name="account_cryptoguard_invalid_mail">Invalid email address.Please enter again.</string>
-    <string name="account_cryptoguard_invalid_mobile">Invalid phone number.Please enter again.</string>
-    <string name="account_cryptoguard_other_mail">Encrypted mail need to use a different email.</string>
-    <string name="account_cryptoguard_regist_success">Register successfully.</string>
-    <string name="account_cryptoguard_openup_tip">Normal use E-mail encryption, whether to open the password protection function now?</string>
-    <string name="account_cryptoguard_open_now">Open now</string>
-    <string name="account_cryptoguard_nexttime">Next time</string>
-    <string name="account_cryptoguard_apply_success">Apply Successfully.</string>
-    <string name="account_cryptoguard_activate_tip">Cryptoguard function is successful, you need to activate the feature in the fill email or sms message.</string>
-    <string name="account_cryptoguard_apply_failed">Apply Failed.</string>
-    <string name="account_cryptoguard_failed_tip">Apply failed, you can re-apply it in the setting option.</string>
-    <string name="account_cryptoguard_apply">Apply</string>
-    <string name="account_cryptoguard_ok">OK</string>
-    <string name="account_cryptoguard_cancel">Cancel</string>
+    
     
     <string name="account_attachment_size_failed_tip">Failed to add, attachments should be less than {0}M! For a change, go to "Account Settings -> Sending mail" to set.</string>
     <string name="account_attachment_size_large_tip">Attachment is too large, the message sent will be relatively slow, please wait patiently.</string>

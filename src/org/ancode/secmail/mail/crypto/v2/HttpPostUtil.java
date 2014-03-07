@@ -19,7 +19,7 @@ public class HttpPostUtil {
 	 * @param context
 	 * @return
 	 */
-	public static PostResultV2 postRegRequest(Account account, Context context) {
+	public static PostResultV2 postRegRequest(Context context, Account account) {
 
 		// 1. Get the aeskey from account, if not existed, generated it.
 		String aesKey = account.getAesKey();
@@ -85,7 +85,7 @@ public class HttpPostUtil {
 	 * @param verification
 	 * @return
 	 */
-	public static PostResultV2 postProtectRequest(Account account, String type, String verification) {
+	public static PostResultV2 postEnableProtectRequest(Account account, String type, String verification) {
 		
 		String email = account.getEmail();
 		String aesKey = account.getAesKey();
@@ -117,11 +117,80 @@ public class HttpPostUtil {
 //		Log.i(TAG, "regCode: " + regCode);
 //		Log.i(TAG, "deviceUuid: " + deviceUuid);
 //		Log.i(TAG, "protect: " + protect);
+//		Log.i(TAG, "type: " + type);
 //		Log.i(TAG, "verify: " + verify);
 		
-		return HttpPostServiceV2.postProtectRequest(email, type, protect, verify, deviceUuid);
+		return HttpPostServiceV2.postEnableProtectRequest(email, type, protect, verify, deviceUuid);
 	}
 
+	
+	/**
+	 * 
+	 * @param account
+	 * @return
+	 */
+	public static PostResultV2 postDisableProtectRequest(Account account) {
+		String email = account.getEmail();
+		return HttpPostServiceV2.postDisableProtectRequest(email);
+	}
+	
+	/**
+	 * 
+	 * @param context
+	 * @param account
+	 * @param captcha
+	 * @return
+	 */
+	public static PostResultV2 postActiveProtectRequest(Account account, String captcha) {
+		String email = account.getEmail();
+		String aesKey = account.getAesKey();
+		String regCode = account.getRegCode();
+		String deviceUuid = account.getDeviceUuid();
+		String verify = null;
+		String encryptCaptcha = null;
+		
+		if(TextUtils.isEmpty(aesKey)) {
+			return null;
+		}
+		
+		if(TextUtils.isEmpty(regCode)) {
+			return null;
+		}
+		
+		if(TextUtils.isEmpty(deviceUuid)) {
+			return null;
+		}
+		
+		try{
+			verify = regCode + AESKeyGenerator.generateAesKey();
+			verify = new AesCryptor(aesKey).encrypt(verify);
+		} catch (CryptorException e) {
+			Log.e(TAG, "get the encrypted key failed!");
+		}
+		
+		try{
+			encryptCaptcha = new AesCryptor(aesKey).encrypt(captcha);
+		} catch (CryptorException e) {
+			Log.e(TAG, "get the encrypted key failed!");
+		}
+		
+		return HttpPostServiceV2.postActiveProtectRequest(email, encryptCaptcha, verify, deviceUuid);
+		
+	}
+	
+	/**
+	 * 
+	 * @param context
+	 * @param account
+	 * @param captcha
+	 * @return
+	 */
+	public static PostResultV2 postCancelProtectRequest(Context context, Account account, String captcha) {
+		String email = account.getEmail();
+		return HttpPostServiceV2.postCancelProtectRequest(email, captcha);
+	}
+	
+	
 	/**
 	 * 
 	 * @param account
