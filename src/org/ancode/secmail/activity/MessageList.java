@@ -55,7 +55,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -1601,15 +1600,11 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 	private static final int DIALOG_REG_FAILED = 1;
 	private static final int DIALOG_CANCEL_REG = 2;
 	
-	private ImageButton encryptButton;
-	public void registDecryptService(ImageButton imageButton) {
-		encryptButton = imageButton;
+	public void registDecryptService() { 
 		showDialog(DIALOG_CANCEL_REG);
-		encryptButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_unlock));
 	}
 	
-	public void registEncryptService(ImageButton imageButton) {
-		encryptButton = imageButton;
+	public void registEncryptService() { 
 
 		// modified by lxc at 2013-11-11
 		AsyncHttpTools.execute(new AsyncHttpTools.TaskListener() {
@@ -1651,7 +1646,7 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 				if(msg.obj instanceof Account) {
 					account = (Account) msg.obj;
 				}
-				encryptButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_lock));
+				
 				ProtectHelper.showApplyProtectDialog(MessageList.this, account);
 			}
 			
@@ -1711,8 +1706,5 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		return super.onCreateDialog(id);
 
     }
-    
-    
-    
 	
 }

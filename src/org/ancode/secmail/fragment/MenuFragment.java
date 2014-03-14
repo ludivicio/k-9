@@ -71,8 +71,8 @@ public class MenuFragment extends SherlockFragment {
 	private String mFolderName = "INBOX";
 	
 	private static final int CHOOSE_FOLDER_EVENT = 0;
-	private static final int ENCRYPT_EVENT = 1;
-	private static final int DECRYPT_EVENT = 2;
+//	private static final int ENCRYPT_EVENT = 1;
+//	private static final int DECRYPT_EVENT = 2;
 	
 	private int closedEvent = CHOOSE_FOLDER_EVENT;
 	
@@ -194,22 +194,6 @@ public class MenuFragment extends SherlockFragment {
 			mEncryptButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_button_lock));
 		}
 		
-		mEncryptButton.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				
-				if (mAccount.getRegCode() == null || mAccount.getRegCode().trim().equals("")) {
-					closedEvent = ENCRYPT_EVENT;
-				} else {
-					closedEvent = DECRYPT_EVENT;
-				}
-				
-				mActivity.toggle();
-			}
-			
-		});
-		
 		mAccountSetting = (TextView) v.findViewById(R.id.tv_account_setting);
 		mAccountSetting.setOnClickListener(new OnClickListener() {
 			
@@ -290,13 +274,7 @@ public class MenuFragment extends SherlockFragment {
 					onOpenFolder(mFolderName);
 					closedEvent = -1;
 				} 
-			} else if(closedEvent == ENCRYPT_EVENT) {
-				closedEvent = -1;
-				mActivity.registEncryptService(mEncryptButton);
-			} else if(closedEvent == DECRYPT_EVENT) {
-				closedEvent = -1;
-				mActivity.registDecryptService(mEncryptButton);
-			}
+			} 
 		}
 	};
 	
@@ -496,9 +474,7 @@ public class MenuFragment extends SherlockFragment {
 			
 			holder.activeIcons.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-//					Toast toast = Toast.makeText(getApplication(),
-//							getString(R.string.tap_hint), Toast.LENGTH_SHORT);
-//					toast.show();
+
 				}
 			});
 
