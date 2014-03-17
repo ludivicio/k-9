@@ -128,7 +128,7 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
     private static final int DIALOG_REMOVE_ACCOUNT = 1;
     private static final int DIALOG_CLEAR_ACCOUNT = 2;
-    private static final int DIALOG_RECREATE_ACCOUNT = 3;
+//    private static final int DIALOG_RECREATE_ACCOUNT = 3;
     private static final int DIALOG_NO_FILE_MANAGER = 4;
     
     // modified by lxc at 2013-11-22
@@ -686,9 +686,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 
     }
 
-    private void onClearCommands(Account account) {
-        MessagingController.getInstance(getApplication()).clearAllPending(account);
-    }
+//    private void onClearCommands(Account account) {
+//        MessagingController.getInstance(getApplication()).clearAllPending(account);
+//    }
 
     private void onEmptyTrash(Account account) {
         MessagingController.getInstance(getApplication()).emptyTrash(account, null);
@@ -1121,30 +1121,30 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                 }
             });
         }
-        case DIALOG_RECREATE_ACCOUNT: {
-            if (mSelectedContextAccount == null) {
-                return null;
-            }
-
-            return ConfirmationDialog.create(this, id,
-                                             R.string.account_recreate_dlg_title,
-                                             getString(R.string.account_recreate_dlg_instructions_fmt,
-                                                     mSelectedContextAccount.getDescription()),
-                                             R.string.okay_action,
-                                             R.string.cancel_action,
-            new Runnable() {
-                @Override
-                public void run() {
-                    if (mSelectedContextAccount instanceof Account) {
-                        Account realAccount = (Account) mSelectedContextAccount;
-                        mHandler.workingAccount(realAccount,
-                                                R.string.recreating_account);
-                        MessagingController.getInstance(getApplication())
-                        .recreate(realAccount, null);
-                    }
-                }
-            });
-        }
+//        case DIALOG_RECREATE_ACCOUNT: {
+//            if (mSelectedContextAccount == null) {
+//                return null;
+//            }
+//
+//            return ConfirmationDialog.create(this, id,
+//                                             R.string.account_recreate_dlg_title,
+//                                             getString(R.string.account_recreate_dlg_instructions_fmt,
+//                                                     mSelectedContextAccount.getDescription()),
+//                                             R.string.okay_action,
+//                                             R.string.cancel_action,
+//            new Runnable() {
+//                @Override
+//                public void run() {
+//                    if (mSelectedContextAccount instanceof Account) {
+//                        Account realAccount = (Account) mSelectedContextAccount;
+//                        mHandler.workingAccount(realAccount,
+//                                                R.string.recreating_account);
+//                        MessagingController.getInstance(getApplication())
+//                        .recreate(realAccount, null);
+//                    }
+//                }
+//            });
+//        }
         case DIALOG_NO_FILE_MANAGER: {
             return ConfirmationDialog.create(this, id,
                                              R.string.import_dialog_error_title,
@@ -1234,11 +1234,11 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
                                        mSelectedContextAccount.getDescription()));
             break;
         }
-        case DIALOG_RECREATE_ACCOUNT: {
-            alert.setMessage(getString(R.string.account_recreate_dlg_instructions_fmt,
-                                       mSelectedContextAccount.getDescription()));
-            break;
-        }
+//        case DIALOG_RECREATE_ACCOUNT: {
+//            alert.setMessage(getString(R.string.account_recreate_dlg_instructions_fmt,
+//                                       mSelectedContextAccount.getDescription()));
+//            break;
+//        }
         }
 
         super.onPrepareDialog(id, d);
@@ -1263,15 +1263,19 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
 			onEditAccount(realAccount);
 		} else if (itemId == R.id.activate) {
 			onActivateAccount(realAccount);
-		} else if (itemId == R.id.clear_pending) {
-			onClearCommands(realAccount);
-		} else if (itemId == R.id.empty_trash) {
+		} 
+//		else if (itemId == R.id.clear_pending) {
+//			onClearCommands(realAccount);
+//		} 
+		else if (itemId == R.id.empty_trash) {
 			onEmptyTrash(realAccount);
 		} else if (itemId == R.id.clear) {
 			onClear(realAccount);
-		} else if (itemId == R.id.recreate) {
-			onRecreate(realAccount);
-		} else if (itemId == R.id.export) {
+		} 
+//		else if (itemId == R.id.recreate) {
+//			onRecreate(realAccount);
+//		} 
+		else if (itemId == R.id.export) {
 			onExport(false, realAccount);
 		} else if (itemId == R.id.move_up) {
 			onMove(realAccount, true);
@@ -1297,9 +1301,9 @@ public class Accounts extends K9ListActivity implements OnItemClickListener {
         showDialog(DIALOG_CLEAR_ACCOUNT);
 
     }
-    private void onRecreate(Account account) {
-        showDialog(DIALOG_RECREATE_ACCOUNT);
-    }
+//    private void onRecreate(Account account) {
+//        showDialog(DIALOG_RECREATE_ACCOUNT);
+//    }
     private void onMove(final Account account, final boolean up) {
         MoveAccountAsyncTask asyncTask = new MoveAccountAsyncTask(this, account, up);
         setNonConfigurationInstance(asyncTask);

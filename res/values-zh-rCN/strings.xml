@@ -876,9 +876,9 @@
     <string name="messagelist_sent_to_me_sigil">»</string>
     <string name="messagelist_sent_cc_me_sigil">›</string>
     <string name="error_unable_to_connect">无法连接</string>
-    <string name="import_export_action">设置导入&amp;导出</string>
+    <string name="import_export_action">导入&amp;导出</string>
     <string name="settings_export_account">导出账户设置</string>
-    <string name="settings_export_all">导出账户以及账户设定</string>
+    <string name="settings_export_all">导出设定</string>
     <string name="settings_import_dialog_title">导入</string>
     <string name="settings_export_dialog_title">导出</string>
     <string name="settings_import">导入设定</string>

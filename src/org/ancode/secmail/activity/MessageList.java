@@ -864,9 +864,9 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		finish();
 	}
 
-	private void onEditPrefs() {
-		Prefs.actionPrefs(this);
-	}
+//	private void onEditPrefs() {
+//		Prefs.actionPrefs(this);
+//	}
 
 	private void onEditAccount() {
 		AccountSettings.actionSettings(this, mAccount);
@@ -910,10 +910,12 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		} else if (itemId == R.id.choose_message_item) {
 			mMessageListFragment.manualSelectMessage();
 			return true;
-		} else if (itemId == R.id.app_settings) {
-			onEditPrefs();
-			return true;
-		} else if (itemId == R.id.account_settings) {
+		} 
+//		else if (itemId == R.id.app_settings) {
+//			onEditPrefs();
+//			return true;
+//		} 
+		else if (itemId == R.id.account_settings) {
 			onEditAccount();
 			return true;
 		} else if (itemId == R.id.search) {
@@ -973,12 +975,14 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		if (itemId == R.id.send_messages) {
 			mMessageListFragment.onSendPendingMessages();
 			return true;
-		} else if (itemId == R.id.folder_settings) {
-			if (mFolderName != null) {
-				FolderSettings.actionSettings(this, mAccount, mFolderName);
-			}
-			return true;
-		} else if (itemId == R.id.expunge) {
+		} 
+//		else if (itemId == R.id.folder_settings) {
+//			if (mFolderName != null) {
+//				FolderSettings.actionSettings(this, mAccount, mFolderName);
+//			}
+//			return true;
+//		} 
+		else if (itemId == R.id.expunge) {
 			mMessageListFragment.onExpunge();
 			return true;
 		} else {
@@ -1022,12 +1026,12 @@ public class MessageList extends K9FragmentActivity implements MessageListFragme
 		// Set visibility of account/folder settings menu items
 		if (mMessageListFragment == null) {
 			menu.findItem(R.id.account_settings).setVisible(false);
-			menu.findItem(R.id.folder_settings).setVisible(false);
+//			menu.findItem(R.id.folder_settings).setVisible(false);
 		} else {
 			menu.findItem(R.id.account_settings).setVisible(
 					mMessageListFragment.isSingleAccountMode());
-			menu.findItem(R.id.folder_settings).setVisible(
-					mMessageListFragment.isSingleFolderMode());
+//			menu.findItem(R.id.folder_settings).setVisible(
+//					mMessageListFragment.isSingleFolderMode());
 		}
 
 		/*
